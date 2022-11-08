@@ -3,7 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TsqlAnalyser", "TsqlAnalyser\TsqlAnalyser.csproj", "{E3736C4C-2E74-44E0-B414-B65268BC4D97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TsqlAnalyser", "TsqlAnalyser\TsqlAnalyser.csproj", "{E3736C4C-2E74-44E0-B414-B65268BC4D97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleDb", "SampleDb\SampleDb.csproj", "{37EAA697-3D98-47F8-92BB-EFF4770D977B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolnItems", "SolnItems", "{77024E46-E01C-4D99-AB61-644CDC3EC8AD}"
+	ProjectSection(SolutionItems) = preProject
+		Todo.txt = Todo.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +22,10 @@ Global
 		{E3736C4C-2E74-44E0-B414-B65268BC4D97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3736C4C-2E74-44E0-B414-B65268BC4D97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3736C4C-2E74-44E0-B414-B65268BC4D97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37EAA697-3D98-47F8-92BB-EFF4770D977B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37EAA697-3D98-47F8-92BB-EFF4770D977B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37EAA697-3D98-47F8-92BB-EFF4770D977B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37EAA697-3D98-47F8-92BB-EFF4770D977B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

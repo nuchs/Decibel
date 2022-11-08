@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------------
+Test data
+-------------------------------------------------------------------------------
+
+Four tables
+2 entity, 
+1 join,
+1 unused
+
+Four stored procs
+2 using custom type read/write
+1 simple
+1 unused
+
+Two functions
+1 used, 
+1 unused
+
+Two types
+1 used
+1 unused
+
+-------------------------------------------------------------------------------
+Patcher
+-------------------------------------------------------------------------------
+Examines git history generates patches
+Runs linter (optional)
+Add git tag indicating pacth number being generated (optional)
+
+-------------------------------------------------------------------------------
+Linter
+-------------------------------------------------------------------------------
+Easy to add new rules (somethign modular)
+
+Linter rules
+- Find unused types
+- Find unused tables
+- Find unused functions
+- Highlight private stored procs
+- concept of readonly stored procedures based on schema
+- Concep tof privielged actions
+- dropping referenced type
+- changing signature of referenced type
+- dropping referenced proc
+- changing signature of referenced proc
+- dropping referenced function
+- changing signature of referenced function
+- dropping referenced table column
+- changing referemced table column
+- has tabs rather than spaces
