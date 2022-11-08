@@ -1,7 +1,7 @@
-﻿CREATE TABLE [dbo].[Customer]
+﻿CREATE TABLE [dbo].[Turkey]
 (
 	[Id] INT NOT NULL PRIMARY KEY, 
     [Name] NVARCHAR(MAX) NULL, 
-    [FamilyId] INT NULL, 
-    [Enroled] DATETIME2 NULL
+    [Speed] INT NULL, 
+    [Born] DATETIME2 NULL,
 )

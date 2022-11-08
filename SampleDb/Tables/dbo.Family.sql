@@ -1,4 +1,5 @@
 ﻿CREATE TABLE [dbo].[Members] (
-    [FamilyId]   INT NOT NULL,
-    [CustomerId] INT NOT NULL, 
+  	[Id] INT NOT NULL PRIMARY KEY, 
+    [Surname] NVARCHAR(MAX) NULL, 
+    [Motto] NVARCHAR(MAX) NULL, 
 );
