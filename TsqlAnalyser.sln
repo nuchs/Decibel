@@ -12,6 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolnItems", "SolnItems", "{
 		Todo.txt = Todo.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lindt", "Lindt\Lindt.csproj", "{687CE196-1C09-4DAB-AAA4-B4EB86389FCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{DBD88C55-0FD8-42B4-B6E9-528F662C264B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +30,14 @@ Global
 		{37EAA697-3D98-47F8-92BB-EFF4770D977B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37EAA697-3D98-47F8-92BB-EFF4770D977B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37EAA697-3D98-47F8-92BB-EFF4770D977B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{687CE196-1C09-4DAB-AAA4-B4EB86389FCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{687CE196-1C09-4DAB-AAA4-B4EB86389FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{687CE196-1C09-4DAB-AAA4-B4EB86389FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{687CE196-1C09-4DAB-AAA4-B4EB86389FCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBD88C55-0FD8-42B4-B6E9-528F662C264B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBD88C55-0FD8-42B4-B6E9-528F662C264B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBD88C55-0FD8-42B4-B6E9-528F662C264B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBD88C55-0FD8-42B4-B6E9-528F662C264B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
