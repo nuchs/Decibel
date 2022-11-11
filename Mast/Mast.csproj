@@ -1,20 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ExampleScripts\**" />
-    <EmbeddedResource Remove="ExampleScripts\**" />
-    <None Remove="ExampleScripts\**" />
+    <PackageReference Include="Microsoft.SqlServer.DacFx" Version="161.6374.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SqlServer.DacFx" Version="160.6296.0" />
+    <ProjectReference Include="..\Log\Log.csproj" />
   </ItemGroup>
 
 </Project>

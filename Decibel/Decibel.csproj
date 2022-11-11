@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Guitar\Guitar.csproj" />
+    <ProjectReference Include="..\Lindt\Lindt.csproj" />
+    <ProjectReference Include="..\Log\Log.csproj" />
+    <ProjectReference Include="..\Mast\Mast.csproj" />
+    <ProjectReference Include="..\Patchwerk\Patchwerk.csproj" />
+    <ProjectReference Include="..\SampleDb\SampleDb.csproj" />
+  </ItemGroup>
+
+</Project>

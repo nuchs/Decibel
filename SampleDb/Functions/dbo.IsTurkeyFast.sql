@@ -1,4 +1,8 @@
-CREATE FUNCTION dbo.IsTurkeyFast (@TurkeyId int)
+CREATE FUNCTION dbo.IsTurkeyFast (
+	@TurkeyId int not null,
+	@Pointless nvarchar(10) null,
+	@dflt int = 42
+)
 RETURNS int
 AS
 BEGIN
