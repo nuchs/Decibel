@@ -1,7 +1,6 @@
-﻿using Mast.Dbo;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace Mast;
+namespace Mast.Dbo;
 
 internal class Visitor : TSqlFragmentVisitor
 {

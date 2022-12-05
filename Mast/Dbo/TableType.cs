@@ -11,6 +11,7 @@ public class TableType
     public string Schema;
     public List<Column> Columns = new();
     public List<Index> Indices = new();
+    public PrimaryKey Primary;
 
     public TableType(CreateTypeTableStatement node)
     {
@@ -31,10 +32,10 @@ public class TableType
         {
             Indices.Add(new Index(Columns, index));
         }
-    }
 
-    public string GeneratePatch(TableType target)
-    {
-        return "";
+        var primaryCol = node.Definition.ColumnDefinitions.FirstOrDefault(p => p.Constraints.OfType<UniqueConstraintDefinition>().Where(uq => uq.IsPrimaryKey).Any());
+        var compoundPrimary = node.Definition.TableConstraints.OfType<UniqueConstraintDefinition>().FirstOrDefault(uq => uq.IsPrimaryKey);
+        Primary = primaryCol != null ? new PrimaryKey(primaryCol) :
+             compoundPrimary != null ? new PrimaryKey(compoundPrimary) : null;
     }
-}
+  }

@@ -10,6 +10,26 @@ public class AstFactory
 
     public void Parse(Database db, string content)
     {
+        var tree = MakeAbstractSyntaxTree(content);
+        AddToDb(tree, db);
+    }
+
+    private static void AddToDb(TSqlFragment tree, Database db)
+    {
+        try
+        {
+            Visitor visitor = new(db);
+            tree.Accept(visitor);
+        }
+        catch (Exception e)
+        {
+            Log.Error($"Failed to build db object\n{e}");
+            throw;
+        }
+    }
+
+    private static TSqlFragment MakeAbstractSyntaxTree(string content)
+    {
         TSql150Parser parser = new(true, SqlEngineType.All);
         var tree = parser.Parse(new StringReader(content), out var errors);
 
@@ -22,10 +42,9 @@ public class AstFactory
                 Log.Error(err.ToString());
             }
 
-            return;
+            throw new InvalidOperationException("Parse error");
         }
 
-        Visitor visitor = new(db);
-        tree.Accept(visitor);
+        return tree;
     }
 }
