@@ -13,7 +13,7 @@ var func = File.ReadAllText(@"Functions\dbo.IsTurkeyFast.sql");
 var proc1 = File.ReadAllText(@"StoredProcedures\dbo.GetCustomers.sql");
 var proc2 = File.ReadAllText(@"StoredProcedures\dbo.GetFastTurkeys.sql");
 var db = new Database();
-var factory = new AstFactory();
+var factory = new ScriptParser();
 factory.Parse(db, func);
 factory.Parse(db, proc1);
 factory.Parse(db, proc2);

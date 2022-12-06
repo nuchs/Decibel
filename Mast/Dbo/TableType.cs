@@ -6,7 +6,6 @@ public class TableType
 {
     public string Content;
     public List<object> ReferencedBy = new();
-    public List<object> References = new();
     public string Name;
     public string Schema;
     public List<Column> Columns = new();
@@ -35,7 +34,7 @@ public class TableType
 
         var primaryCol = node.Definition.ColumnDefinitions.FirstOrDefault(p => p.Constraints.OfType<UniqueConstraintDefinition>().Where(uq => uq.IsPrimaryKey).Any());
         var compoundPrimary = node.Definition.TableConstraints.OfType<UniqueConstraintDefinition>().FirstOrDefault(uq => uq.IsPrimaryKey);
-        Primary = primaryCol != null ? new PrimaryKey(primaryCol) :
-             compoundPrimary != null ? new PrimaryKey(compoundPrimary) : null;
+        //Primary = primaryCol != null ? new PrimaryKey(primaryCol) :
+        //     compoundPrimary != null ? new PrimaryKey(compoundPrimary) : null;
     }
   }

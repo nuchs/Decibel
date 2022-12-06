@@ -4,9 +4,9 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast;
 
-public class AstFactory
+public class ScriptParser
 {
-    private static ILog Log = LoggerFactory.CreateLogger<AstFactory>();
+    private static ILog Log = LoggerFactory.CreateLogger<ScriptParser>();
 
     public void Parse(Database db, string content)
     {
@@ -39,7 +39,7 @@ public class AstFactory
 
             foreach (var err in errors)
             {
-                Log.Error(err.ToString());
+                Log.Error($"Error {err.Number} : [{err.Line}, {err.Offset}] {err.Message}");
             }
 
             throw new InvalidOperationException("Parse error");

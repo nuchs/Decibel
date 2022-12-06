@@ -1,44 +1,51 @@
-﻿using Microsoft.SqlServer.Dac.Model;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
+
 public class Function
 {
-    public string Content;
-    public List<object> ReferencedBy = new();
-    public List<object> References = new();
-    public string Name;
-    public string Schema;
-    public List<Parameter> Parameters = new();
-    public object ReturnType;
-
     public Function(CreateFunctionStatement node)
     {
-        var tokenValues = node.ScriptTokenStream.Select(t => t.Text);
-        Content = string.Join(string.Empty, tokenValues);
-
-        Name = node.Name.BaseIdentifier.Value;
-        Schema = node.Name.SchemaIdentifier.Value;
-
-            var rtnTokens = 
-            node.ScriptTokenStream
-                .Take(node.ReturnType.FirstTokenIndex .. (node.ReturnType.FirstTokenIndex+1))
-                .Select(f => f.Text);
-        ReturnType = string.Join("", rtnTokens).Trim();
-
-        foreach (var paramDef in node.Parameters)
-        {
-            Parameters.Add(new Parameter(paramDef));
-        }
+        Schema = GetFunctionSchema(node);
+        Name = GetFunctionName(node);
+        Content = AssembleFunctionContent(node);
+        ReturnType = AssembleReturnType(node);
+        Parameters = CollectParameters(node);
     }
 
-    public string GeneratePatch(Function target)
+    public string Content { get; }
+
+    public string Name { get; }
+
+    public IEnumerable<Parameter> Parameters { get; }
+
+    public List<object> ReferencedBy { get; } = new();
+
+    public string ReturnType { get; }
+
+    public string Schema { get; }
+
+    private static string AssembleFunctionContent(CreateFunctionStatement node)
     {
-        return "";
+        var tokenValues = node.ScriptTokenStream.Select(t => t.Text);
+        return string.Join(string.Empty, tokenValues);
     }
+
+    private static string AssembleReturnType(CreateFunctionStatement node)
+    {
+        var rtnTokens = node.ScriptTokenStream
+            .Take(node.ReturnType.FirstTokenIndex..(node.ReturnType.LastTokenIndex + 1))
+            .Select(f => f.Text);
+
+        return string.Join("", rtnTokens).Trim();
+    }
+
+    private static string GetFunctionName(CreateFunctionStatement node)
+        => node.Name.BaseIdentifier.Value;
+
+    private static string GetFunctionSchema(CreateFunctionStatement node)
+            => node.Name.SchemaIdentifier.Value;
+
+    private List<Parameter> CollectParameters(CreateFunctionStatement node)
+                        => node.Parameters.Select(p => new Parameter(p)).ToList();
 }

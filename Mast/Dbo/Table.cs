@@ -11,7 +11,6 @@ public class Table
 {
     public string Content;
     public List<object> ReferencedBy = new();
-    public List<object> References = new();
     public string Name;
     public string Schema;
     public List<Column> Columns = new();

@@ -7,7 +7,6 @@ public class StoredProcedure
 {
     public string Content;
     public List<object> ReferencedBy = new();
-    public List<object> References = new();
     public string Name;
     public string Schema;
     public List<object> Parameters = new();
@@ -25,26 +24,4 @@ public class StoredProcedure
             Parameters.Add(new Parameter(paramDef));
         }
     }
-
-    public string GeneratePatch(StoredProcedure target)
-    {
-        if (target.Content == Content)
-            return "";
-
-        StringBuilder patch = new();
-        var (drop, create) = Recreate();
-        patch.AppendLine(drop);
-        patch.AppendLine(create);
-
-        return patch.ToString();
-    }
-
-    public (string drop, string create) Recreate()
-    {
-        var drop = $@"IF dbo.StoredProcExists({Schema}.{Name}) = 1
-    DROP PROCEDURE {Schema}.{Name}
-END IF";
-
-        return (drop, Content);
-    }
-}
+  }
