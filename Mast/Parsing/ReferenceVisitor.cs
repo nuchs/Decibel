@@ -1,6 +1,7 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Dbo;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace Mast.Dbo;
+namespace Mast.Parsing;
 
 internal class ReferenceVisitor : TSqlFragmentVisitor
 {

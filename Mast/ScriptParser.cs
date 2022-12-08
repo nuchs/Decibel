@@ -1,5 +1,6 @@
 ﻿using Log;
 using Mast.Dbo;
+using Mast.Parsing;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast;
@@ -12,21 +13,14 @@ public class ScriptParser
     {
         var tree = MakeAbstractSyntaxTree(content);
         AddToDb(tree, db);
+        BuildReferences(tree, db);
     }
 
     private static void AddToDb(TSqlFragment tree, Database db)
-    {
-        try
-        {
-            DefinitionVisitor visitor = new(db);
-            tree.Accept(visitor);
-        }
-        catch (Exception e)
-        {
-            Log.Error($"Failed to build db object\n{e}");
-            throw;
-        }
-    }
+        => VisitTree(tree, new DefinitionVisitor(db), "Failed to build db representation");
+
+    private static void BuildReferences(TSqlFragment tree, Database db)
+        => VisitTree(tree, new ReferenceVisitor(db), "Failed to cross reference db objects");
 
     private static TSqlFragment MakeAbstractSyntaxTree(string content)
     {
@@ -46,5 +40,18 @@ public class ScriptParser
         }
 
         return tree;
+    }
+
+    private static void VisitTree(TSqlFragment tree, TSqlFragmentVisitor visitor, string errMsg)
+    {
+        try
+        {
+            tree.Accept(visitor);
+        }
+        catch (Exception e)
+        {
+            Log.Error($"{errMsg}\n{e}");
+            throw;
+        }
     }
 }
