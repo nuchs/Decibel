@@ -18,7 +18,7 @@ public class ScriptParser
     {
         try
         {
-            Visitor visitor = new(db);
+            DefinitionVisitor visitor = new(db);
             tree.Accept(visitor);
         }
         catch (Exception e)

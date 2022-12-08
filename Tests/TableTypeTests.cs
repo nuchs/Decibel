@@ -15,7 +15,7 @@ public class TableTypeTests
         var type = $"CREATE TYPE dbo.{expected} AS TABLE (StubColumn int)";
 
         parser.Parse(db, type);
-        var result = db.Types.First();
+        var result = db.TableTypes.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
     }
@@ -27,7 +27,7 @@ public class TableTypeTests
         var type = $"CREATE TYPE {expected}.StubName AS TABLE (StubColumn int)";
 
         parser.Parse(db, type);
-        var result = db.Types.First();
+        var result = db.TableTypes.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
     }
@@ -39,7 +39,7 @@ public class TableTypeTests
         var type = $"CREATE TYPE dbo.[{expected}] AS TABLE (StubColumn int)";
 
         parser.Parse(db, type);
-        var result = db.Types.First();
+        var result = db.TableTypes.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
     }
@@ -51,7 +51,7 @@ public class TableTypeTests
         var type = $"CREATE TYPE [{expected}].StubName AS TABLE (StubColumn int)";
 
         parser.Parse(db, type);
-        var result = db.Types.First();
+        var result = db.TableTypes.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
     }

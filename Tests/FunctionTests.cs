@@ -60,9 +60,9 @@ public class FunctionTests
     public void Content()
     {
         var expected = """
-            CREATE FUNCTION dbo.stub() 
-            RETURNS INT 
-            AS 
+            CREATE FUNCTION dbo.stub()
+            RETURNS INT
+            AS
             BEGIN
                 DECLARE @val int;
                 set @val = 42;
@@ -77,15 +77,29 @@ public class FunctionTests
     }
 
     [Test]
+    [TestCase("", 0)]
+    [TestCase("@a int", 1)]
+    [TestCase("@a int, @b int, @c int", 3)]
+    public void ParameterCount(string paramList, int expected)
+    {
+        var function = $"CREATE FUNCTION dbo.stub({paramList}) RETURNS TABLE AS RETURN SELECT 1";
+
+        parser.Parse(db, function);
+        var result = db.Functions.First();
+
+        Assert.That(result.Parameters, Has.Exactly(expected).Items);
+    }
+
+    [Test]
     [TestCase("INT", "1")]
     [TestCase("varchar(max)", "'wibble'")]
     [TestCase("nchar(10)", "'bacon'")]
     public void ReturnScalerType(string expected, string returnValue)
     {
         var function = $"""
-            CREATE FUNCTION dbo.stub () 
-            RETURNS {expected} 
-            AS 
+            CREATE FUNCTION dbo.stub ()
+            RETURNS {expected}
+            AS
             BEGIN
             RETURN {returnValue};
             END
@@ -102,7 +116,7 @@ public class FunctionTests
     {
         var expected = "SELECT 1";
         var function = $"""
-            CREATE FUNCTION dbo.stub () 
+            CREATE FUNCTION dbo.stub ()
             RETURNS TABLE
             RETURN {expected}
             """;
@@ -118,7 +132,7 @@ public class FunctionTests
     {
         var expected = "@retVal TABLE ( Id int )";
         var function = $"""
-            CREATE FUNCTION dbo.stub () 
+            CREATE FUNCTION dbo.stub ()
             RETURNS {expected}
             AS
             BEGIN

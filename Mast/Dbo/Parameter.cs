@@ -1,31 +1,65 @@
 ﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mast.Dbo;
 
 public class Parameter
 {
-	public Parameter(ProcedureParameter parameter)
-	{
-		Name = parameter.VariableName.Value;
-		IsNullable = parameter.Nullable is null || parameter.Nullable.Nullable;
-		DataType = new DataType(parameter.DataType);
-		if(parameter.Value is not null)
-		{
-			var dfltTokens = parameter.ScriptTokenStream
-					.Take(parameter.Value.FirstTokenIndex..(parameter.Value.LastTokenIndex + 1))
-					.Select(d => d.Text);
-		Default = string.Join("", dfltTokens).Trim();
-		}
-	}
+    public Parameter(ProcedureParameter parameter)
+    {
+        Name = GetName(parameter);
+        IsNullable = GetNullability(parameter);
+        DataType = new ScalarType(parameter.DataType);
+        Default = AssembleDefaultValue(parameter);
+        Modifier = GetModifier(parameter);
+    }
 
-	public string Name { get; }
-	public bool IsNullable;
-	public DataType DataType { get; set; }
+    public ScalarType DataType { get; }
 
-	public string Default = String.Empty;
+    public string Default { get; }
+
+    public bool? IsNullable { get; }
+
+    public ParameterMod Modifier { get; }
+
+    public string Name { get; }
+
+    public override string ToString()
+    {
+        var nullSpec = IsNullable is null ? string.Empty :
+                       IsNullable.Value ? " NULL" : " NOT NULL";
+        var defaultSpec = string.IsNullOrWhiteSpace(Default) ? string.Empty : $" = {Default}";
+        return $"@{Name} {DataType}{nullSpec}{defaultSpec}";
+    }
+
+    private static string AssembleDefaultValue(ProcedureParameter parameter)
+    {
+        if (parameter.Value is not null)
+        {
+            var dfltTokens = parameter.ScriptTokenStream
+                    .Take(parameter.Value.FirstTokenIndex..(parameter.Value.LastTokenIndex + 1))
+                    .Select(d => d.Text);
+            return string.Join("", dfltTokens).Trim();
+        }
+
+        return string.Empty;
+    }
+
+    private static string GetName(ProcedureParameter parameter)
+    {
+        return parameter.VariableName.Value;
+    }
+
+    private static bool? GetNullability(ProcedureParameter parameter)
+    {
+        return parameter.Nullable is null ? null : parameter.Nullable.Nullable;
+    }
+
+    private ParameterMod GetModifier(ProcedureParameter parameter)
+                                            => parameter.Modifier switch
+                                            {
+                                                ParameterModifier.None => ParameterMod.None,
+                                                ParameterModifier.Output => ParameterMod.Output,
+                                                ParameterModifier.ReadOnly => ParameterMod.Readonly,
+                                                _ => throw new InvalidDataException($"Unrecognised parameter modifier {parameter.Modifier}")
+                                            };
 }

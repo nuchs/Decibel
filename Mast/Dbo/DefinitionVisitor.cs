@@ -2,11 +2,11 @@
 
 namespace Mast.Dbo;
 
-internal class Visitor : TSqlFragmentVisitor
+internal class DefinitionVisitor : TSqlFragmentVisitor
 {
     private readonly Database db;
 
-    public Visitor(Database db)
+    public DefinitionVisitor(Database db)
     {
         this.db = db;
     }
@@ -24,7 +24,17 @@ internal class Visitor : TSqlFragmentVisitor
     {
         TableType type = new(node);
 
-        db.Types.Add(type);
+        db.TableTypes.Add(type);
+
+        base.Visit(node);
+    }
+
+
+    public override void Visit(CreateTypeUddtStatement node)
+    {
+        ScalarType type = new(node);
+
+        db.ScalarTypes.Add(type);
 
         base.Visit(node);
     }
@@ -47,13 +57,24 @@ internal class Visitor : TSqlFragmentVisitor
         base.Visit(node);
     }
 
-    public override void Visit(FunctionCall node)
+    public override void Visit(CreateSchemaStatement node)
     {
         base.Visit(node);
     }
 
-    public override void Visit(ExecuteStatement node)
+    public override void Visit(CreateTriggerStatement node)
     {
+        base.Visit(node);
+    }
+
+    public override void Visit(CreateViewStatement node)
+    {
+        base.Visit(node);
+    }
+
+    public override void Visit(CreateUserStatement node)
+    {
+        // Are grants separate?
         base.Visit(node);
     }
 }

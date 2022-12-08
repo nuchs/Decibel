@@ -5,7 +5,7 @@ namespace Mast.Dbo;
 public class Column
 {
     public string name;
-    public DataType DataType;
+    public ScalarType DataType;
 
     public bool IsNullable;
     public bool IsPrimary;
@@ -17,7 +17,7 @@ public class Column
     public Column(ColumnDefinition colDef)
     {
         name = colDef.ColumnIdentifier.Value;
-        DataType = new DataType(colDef.DataType);
+        DataType = new ScalarType(colDef.DataType);
 
         IsNullable = colDef.Constraints.OfType<NullableConstraintDefinition>().Select(n => n.Nullable).FirstOrDefault();
         if (colDef.DefaultConstraint is not null)

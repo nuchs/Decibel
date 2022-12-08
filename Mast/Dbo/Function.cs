@@ -19,11 +19,11 @@ public class Function
 
     public IEnumerable<Parameter> Parameters { get; }
 
-    public List<object> ReferencedBy { get; } = new();
-
     public string ReturnType { get; }
 
     public string Schema { get; }
+
+    public override string ToString() => Content;
 
     private static string AssembleFunctionContent(CreateFunctionStatement node)
     {
@@ -43,9 +43,9 @@ public class Function
     private static string GetFunctionName(CreateFunctionStatement node)
         => node.Name.BaseIdentifier.Value;
 
-    private static string GetFunctionSchema(CreateFunctionStatement node)
-            => node.Name.SchemaIdentifier.Value;
+    private static string GetFunctionSchema(CreateFunctionStatement node) 
+        => node.Name.SchemaIdentifier.Value;
 
-    private List<Parameter> CollectParameters(CreateFunctionStatement node)
-                        => node.Parameters.Select(p => new Parameter(p)).ToList();
+    private List<Parameter> CollectParameters(CreateFunctionStatement node) 
+        => node.Parameters.Select(p => new Parameter(p)).ToList();
 }
