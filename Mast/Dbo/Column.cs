@@ -9,7 +9,7 @@ public class Column
         Name = GetName(colDef);
         DataType = new ScalarType(colDef.DataType);
         IsNullable = GetNullability(colDef);
-        IsPrimary = GetPrimary(colDef);
+        PrimaryKey = GetPrimaryKey(colDef);
         IsUnique = GetUniqueness(colDef);
         Content = AssembleColumnValue(colDef);
 
@@ -39,7 +39,7 @@ public class Column
 
     public bool IsNullable { get; }
 
-    public bool IsPrimary { get; }
+    public PrimaryKey? PrimaryKey { get; }
 
     public bool IsUnique { get; }
 
@@ -113,8 +113,12 @@ public class Column
         return string.Join("", dfltTokens).Trim();
     }
 
-    private bool GetPrimary(ColumnDefinition colDef)
-        => colDef.Constraints.OfType<UniqueConstraintDefinition>().Where(uq => uq.IsPrimaryKey).Any();
+    private PrimaryKey? GetPrimaryKey(ColumnDefinition colDef)
+    {
+        var primaryConstraint = colDef.Constraints.OfType<UniqueConstraintDefinition>().Where(uq => uq.IsPrimaryKey).FirstOrDefault();
+
+        return primaryConstraint is not null ? new PrimaryKey(this, primaryConstraint) : null;
+    }
 
     private bool GetUniqueness(ColumnDefinition colDef)
         => colDef.Constraints.OfType<UniqueConstraintDefinition>().Any();

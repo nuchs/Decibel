@@ -33,19 +33,7 @@ internal class ColumnTests
         Assert.That(result.DefaultName, Is.Null);
     }
 
-    [Test]
-    [TestCase("", false)]
-    [TestCase("PRIMARY KEY", true)]
-    public void PrimaryKey(string constraint, bool expected)
-    {
-        var table = $"CREATE TABLE dbo.stub (stub int {constraint})";
-
-        parser.Parse(db, table);
-        var result = db.Tables.First().Columns.First();
-
-        Assert.That(result.IsPrimary, Is.EqualTo(expected));
-    }
-
+   
     [Test]
     [TestCase("", false)]
     [TestCase("PRIMARY KEY", true)]
