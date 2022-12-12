@@ -20,7 +20,7 @@ public class Index
             var idParts = col.Column.MultiPartIdentifier.Identifiers.Select(i => i.Value);
             var id = string.Join('.', idParts);
 
-            var c = tableColumns.Where(t => t.name == id);
+            var c = tableColumns.Where(t => t.Name == id);
 
             if (c.Count()!= 1)
             {

@@ -11,7 +11,10 @@ public class Parameter
         DataType = new ScalarType(parameter.DataType);
         Default = AssembleDefaultValue(parameter);
         Modifier = GetModifier(parameter);
+        Content = AssembleParameterContent(parameter);
     }
+
+    public string Content { get; }
 
     public ScalarType DataType { get; }
 
@@ -23,13 +26,7 @@ public class Parameter
 
     public string Name { get; }
 
-    public override string ToString()
-    {
-        var nullSpec = IsNullable is null ? string.Empty :
-                       IsNullable.Value ? " NULL" : " NOT NULL";
-        var defaultSpec = string.IsNullOrWhiteSpace(Default) ? string.Empty : $" = {Default}";
-        return $"@{Name} {DataType}{nullSpec}{defaultSpec}";
-    }
+    public override string ToString() => Content;
 
     private static string AssembleDefaultValue(ProcedureParameter parameter)
     {
@@ -42,6 +39,12 @@ public class Parameter
         }
 
         return string.Empty;
+    }
+
+    private static string AssembleParameterContent(ProcedureParameter parameter)
+    {
+        var tokenValues = parameter.ScriptTokenStream.Take(parameter.FirstTokenIndex..(parameter.LastTokenIndex + 1)).Select(t => t.Text);
+        return string.Join(string.Empty, tokenValues);
     }
 
     private static string GetName(ProcedureParameter parameter)

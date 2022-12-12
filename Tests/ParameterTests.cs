@@ -10,6 +10,18 @@ internal class ParameterTests
     private Random rand = new();
 
     [Test]
+    public void Content()
+    {
+        var expected = "@SomeParam int not null";
+        var function = $"CREATE FUNCTION dbo.stub({expected}) RETURNS TABLE AS RETURN SELECT 1";
+
+        parser.Parse(db, function);
+        var result = db.Functions.First().Parameters.First();
+
+        Assert.That(result.Content, Is.EqualTo(expected));
+    }
+
+    [Test]
     [TestCase("INT")]
     [TestCase("dbo.INT")]
     [TestCase("NVARCHAR(max)")]

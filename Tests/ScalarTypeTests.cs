@@ -12,9 +12,9 @@ internal class ScalarTypeTests
     public void BareName()
     {
         var expected = "bareNakedName";
-        var function = $"CREATE TYPE dbo.{expected} FROM INT";
+        var type = $"CREATE TYPE dbo.{expected} FROM INT";
 
-        parser.Parse(db, function);
+        parser.Parse(db, type);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -24,9 +24,9 @@ internal class ScalarTypeTests
     public void BareSchema()
     {
         var expected = "nudeSchema";
-        var function = $"CREATE TYPE {expected}.StubName FROM INT";
+        var type = $"CREATE TYPE {expected}.StubName FROM INT";
 
-        parser.Parse(db, function);
+        parser.Parse(db, type);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
@@ -36,9 +36,9 @@ internal class ScalarTypeTests
     public void BracketedName()
     {
         var expected = "Don't bracket me";
-        var function = $"CREATE TYPE dbo.[{expected}] FROM INT";
+        var type = $"CREATE TYPE dbo.[{expected}] FROM INT";
 
-        parser.Parse(db, function);
+        parser.Parse(db, type);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -48,12 +48,23 @@ internal class ScalarTypeTests
     public void BracketedSchema()
     {
         var expected = "Hyphenate-this";
-        var function = $"CREATE TYPE [{expected}].StubName FROM INT";
+        var type = $"CREATE TYPE [{expected}].StubName FROM INT";
 
-        parser.Parse(db, function);
+        parser.Parse(db, type);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void Content()
+    {
+        var expected = "CREATE TYPE dbo.stub FROM int";
+
+        parser.Parse(db, expected);
+        var result = db.ScalarTypes.First();
+
+        Assert.That(result.Content, Is.EqualTo(expected));
     }
 
     [Test]
@@ -62,9 +73,9 @@ internal class ScalarTypeTests
     [TestCase(" NOT NULL", false)]
     public void Nullability(string nullSpecifier, bool nullable)
     {
-        var function = $"CREATE TYPE dbo.stub FROM INT{nullSpecifier}";
+        var type = $"CREATE TYPE dbo.stub FROM INT{nullSpecifier}";
 
-        parser.Parse(db, function);
+        parser.Parse(db, type);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.IsNullable, Is.EqualTo(nullable));
@@ -76,9 +87,9 @@ internal class ScalarTypeTests
     [TestCase("max")]
     public void ParameterisedType(string expected)
     {
-        var function = $"CREATE TYPE dbo.stub FROM NVARCHAR({expected})";
+        var type = $"CREATE TYPE dbo.stub FROM NVARCHAR({expected})";
 
-        parser.Parse(db, function);
+        parser.Parse(db, type);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Parameters, Is.EquivalentTo(new List<string> { expected }));

@@ -9,6 +9,7 @@ public class ScalarType
         Name = GetName(dataTypeRef.Name);
         Schema = GetSchema(dataTypeRef.Name);
         Parameters = CollectParameters(dataTypeRef);
+        Content = AssembleTypeContent(dataTypeRef.ScriptTokenStream, dataTypeRef.FirstTokenIndex, dataTypeRef.LastTokenIndex);
     }
 
     public ScalarType(CreateTypeUddtStatement node)
@@ -17,17 +18,10 @@ public class ScalarType
         Schema = GetSchema(node.Name);
         IsNullable = GetNullability(node);
         Parameters = CollectParameters(node.DataType);
+        Content = AssembleTypeContent(node.ScriptTokenStream, node.FirstTokenIndex, node.LastTokenIndex);
     }
 
-    public override string ToString()
-    {
-        var schemaPart = string.IsNullOrWhiteSpace(Schema) ? string.Empty : $"{Schema}."; 
-        var parameters = string.Join(", ", Parameters);
-        var parameterList = parameters == string.Empty ? string.Empty : $"({parameters})";
-        var nullSepc = IsNullable is null ? string.Empty :
-                       IsNullable.Value   ? " NULL" : " NOT NULL";
-        return $"{schemaPart}{Name}{parameterList}{nullSepc}";
-    }
+    public string Content { get; }
 
     public bool? IsNullable { get; }
 
@@ -36,6 +30,14 @@ public class ScalarType
     public IEnumerable<string> Parameters { get; }
 
     public string Schema { get; }
+
+    public override string ToString() => Content;
+
+    private static string AssembleTypeContent(IList<TSqlParserToken> tokenStream, int first, int last)
+    {
+        var tokenValues = tokenStream.Take(first .. (last+1)).Select(t => t.Text);
+        return string.Join(string.Empty, tokenValues);
+    }
 
     private static IEnumerable<string> CollectParameters(DataTypeReference dataTypeRef)
         => dataTypeRef is SqlDataTypeReference sqlRef ?
