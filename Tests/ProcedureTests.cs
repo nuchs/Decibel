@@ -49,7 +49,7 @@ public class ProcedureTests
     }
 
     [Test]
-    public void ParsingBareName()
+    public void BareName()
     {
         var expected = "bareNakedName";
         var proc = $"CREATE PROCEDURE dbo.{expected} AS SELECT 1";
@@ -61,7 +61,7 @@ public class ProcedureTests
     }
 
     [Test]
-    public void ParsingBareSchema()
+    public void BareSchema()
     {
         var expected = "nudeSchema";
         var proc = $"CREATE PROCEDURE {expected}.StubName AS SELECT 1";
@@ -73,7 +73,7 @@ public class ProcedureTests
     }
 
     [Test]
-    public void ParsingBracketedName()
+    public void BracketedName()
     {
         var expected = "Don't bracket me";
         var proc = $"CREATE PROCEDURE dbo.[{expected}] AS SELECT 1";
@@ -85,7 +85,7 @@ public class ProcedureTests
     }
 
     [Test]
-    public void ParsingBracketedSchema()
+    public void BracketedSchema()
     {
         var expected = "Hyphenate-this";
         var proc = $"CREATE PROCEDURE [{expected}].StubName AS SELECT 1";

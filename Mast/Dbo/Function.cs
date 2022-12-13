@@ -2,20 +2,16 @@
 
 namespace Mast.Dbo;
 
-public class Function
+public class Function : DbObject
 {
     public Function(CreateFunctionStatement node)
+        : base(node)
     {
-        Schema = GetFunctionSchema(node);
-        Name = GetFunctionName(node);
-        Content = AssembleFunctionContent(node);
-        ReturnType = AssembleReturnType(node);
+        Name = GetName(node);
+        Schema = GetSchema(node);
         Parameters = CollectParameters(node);
+        ReturnType = AssembleReturnType(node);
     }
-
-    public string Content { get; }
-
-    public string Name { get; }
 
     public IEnumerable<Parameter> Parameters { get; }
 
@@ -23,27 +19,13 @@ public class Function
 
     public string Schema { get; }
 
-    public override string ToString() => Content;
+    private string AssembleReturnType(CreateFunctionStatement node) 
+        => AssembleFragment(node.ReturnType);
 
-    private static string AssembleFunctionContent(CreateFunctionStatement node)
-    {
-        var tokenValues = node.ScriptTokenStream.Select(t => t.Text);
-        return string.Join(string.Empty, tokenValues);
-    }
-
-    private static string AssembleReturnType(CreateFunctionStatement node)
-    {
-        var rtnTokens = node.ScriptTokenStream
-            .Take(node.ReturnType.FirstTokenIndex..(node.ReturnType.LastTokenIndex + 1))
-            .Select(f => f.Text);
-
-        return string.Join("", rtnTokens).Trim();
-    }
-
-    private static string GetFunctionName(CreateFunctionStatement node)
+    private static string GetName(CreateFunctionStatement node)
         => node.Name.BaseIdentifier.Value;
 
-    private static string GetFunctionSchema(CreateFunctionStatement node) 
+    private static string GetSchema(CreateFunctionStatement node) 
         => node.Name.SchemaIdentifier.Value;
 
     private List<Parameter> CollectParameters(CreateFunctionStatement node) 

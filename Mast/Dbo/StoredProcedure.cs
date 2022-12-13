@@ -2,31 +2,19 @@
 
 namespace Mast.Dbo;
 
-public class StoredProcedure
+public class StoredProcedure :DbObject
 {
     public StoredProcedure(CreateProcedureStatement node)
+        : base(node)
     {
         Name = GetName(node);
         Schema = GetSchema(node);
-        Content = AssembleFunctionContent(node);
         Parameters = CollectParameters(node);
     }
-
-    public string Content { get; }
-
-    public string Name { get; }
 
     public List<Parameter> Parameters { get; }
 
     public string Schema { get; }
-
-    public override string ToString() => Content;
-
-    private static string AssembleFunctionContent(CreateProcedureStatement node)
-    {
-        var tokenValues = node.ScriptTokenStream.Select(t => t.Text);
-        return string.Join(string.Empty, tokenValues);
-    }
 
     private static string GetName(CreateProcedureStatement node)
         => node.ProcedureReference.Name.BaseIdentifier.Value;

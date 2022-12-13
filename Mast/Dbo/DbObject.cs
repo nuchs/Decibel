@@ -9,19 +9,22 @@ public class DbObject
         Content = AssembleFragment(fragment);
     }
 
-    public string Name { get; protected set; }
+    public string Name { get; protected set; } = string.Empty;
 
     public string Content { get; }
 
     public override string ToString() => Content;
 
-    protected string AssembleFragment(TSqlFragment fragment)
+    protected string AssembleFragment(TSqlFragment fragment) => 
+        AssembleFragment(fragment, fragment.FirstTokenIndex, fragment.LastTokenIndex + 1);
+
+    protected string AssembleFragment(TSqlFragment fragment, int start, int end)
     {
         var tokenValues = fragment
-         .ScriptTokenStream
-         .Take(fragment.FirstTokenIndex..(fragment.LastTokenIndex + 1))
-         .Select(t => t.Text);
+            .ScriptTokenStream
+            .Take(start..end)
+            .Select(t => t.Text);
 
-        return string.Join(string.Empty, tokenValues);
+        return string.Join(string.Empty, tokenValues).Trim();
     }
 }

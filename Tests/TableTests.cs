@@ -9,7 +9,7 @@ public class TableTests
     private ScriptParser parser = new();
 
     [Test]
-    public void ParsingBareName()
+    public void BareName()
     {
         var expected = "bareNakedName";
         var type = $"CREATE TABLE dbo.{expected} (StubColumn int)";
@@ -21,7 +21,7 @@ public class TableTests
     }
 
     [Test]
-    public void ParsingBareSchema()
+    public void BareSchema()
     {
         var expected = "nudeSchema";
         var type = $"CREATE TABLE {expected}.StubName (StubColumn int)";
@@ -33,7 +33,7 @@ public class TableTests
     }
 
     [Test]
-    public void ParsingBracketedName()
+    public void BracketedName()
     {
         var expected = "Don't bracket me";
         var type = $"CREATE TABLE dbo.[{expected}] (StubColumn int)";
@@ -45,7 +45,7 @@ public class TableTests
     }
 
     [Test]
-    public void ParsingBracketedSchema()
+    public void BracketedSchema()
     {
         var expected = "Hyphenate-this";
         var type = $"CREATE TABLE [{expected}].StubName (StubColumn int)";

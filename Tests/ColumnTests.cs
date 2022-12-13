@@ -1,6 +1,5 @@
 ﻿using Mast;
 using Mast.Dbo;
-using System.Net.Http.Headers;
 
 namespace Tests;
 
@@ -33,7 +32,6 @@ internal class ColumnTests
         Assert.That(result.DefaultName, Is.Null);
     }
 
-   
     [Test]
     [TestCase("", false)]
     [TestCase("PRIMARY KEY", true)]
@@ -110,54 +108,14 @@ internal class ColumnTests
     }
 
     [Test]
-    public void BareIdentitySeed()
+    public void Identity()
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int identity)";
 
         parser.Parse(db, type);
         var result = db.TableTypes.First().Columns.First();
 
-        Assert.That(result.Identity?.Seed, Is.EqualTo(1));
-    }
-
-    [Test]
-    public void BareIdentityIncrement()
-    {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int identity)";
-
-        parser.Parse(db, type);
-        var result = db.TableTypes.First().Columns.First();
-
-        Assert.That(result.Identity?.Increment, Is.EqualTo(1));
-    }
-
-    [Test]
-    [TestCase(0)]
-    [TestCase(-1)]
-    [TestCase(1)]
-    public void IdentitySeed(int expected)
-    {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int identity({expected}, 1))";
-
-        parser.Parse(db, type);
-        var result = db.TableTypes.First().Columns.First();
-
-        Assert.That(result.Identity?.Seed, Is.EqualTo(expected));
-    }
-
-    [Test]
-    [TestCase(0)]
-    [TestCase(-1)]
-    [TestCase(1)]
-    [TestCase(2)]
-    public void IdentityIncrement(int expected)
-    {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int identity(0, {expected}))";
-
-        parser.Parse(db, type);
-        var result = db.TableTypes.First().Columns.First();
-
-        Assert.That(result.Identity?.Increment, Is.EqualTo(expected));
+        Assert.That(result.Identity, Is.Not.Null);
     }
 
     [SetUp]

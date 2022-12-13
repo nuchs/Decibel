@@ -2,20 +2,21 @@
 
 namespace Mast.Dbo;
 
-public class TableType
+public class TableType : DbObject
 {
-    public string Content;
+    //public string Content;
     public List<object> ReferencedBy = new();
-    public string Name;
+    //public string Name;
     public string Schema;
     public List<Column> Columns = new();
     public List<Index> Indices = new();
     public PrimaryKey Primary;
 
     public TableType(CreateTypeTableStatement node)
+        : base(node)
     {
-        var tokenValues = node.ScriptTokenStream.Select(t => t.Text);
-        Content = string.Join(string.Empty, tokenValues);
+        //var tokenValues = node.ScriptTokenStream.Select(t => t.Text);
+        //Content = string.Join(string.Empty, tokenValues);
 
         Schema = node.Name.SchemaIdentifier.Value;
 

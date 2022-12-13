@@ -7,11 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Mast.Dbo;
-public class Table
+public class Table : DbObject
 {
-    public string Content;
     public List<object> ReferencedBy = new();
-    public string Name;
     public string Schema;
     public List<Column> Columns = new();
     public List<object> ForeignKeys = new();
@@ -19,10 +17,8 @@ public class Table
     public object PrimaryKey;
 
     public Table(CreateTableStatement node)
+        : base(node)
     {
-        var tokenValues = node.ScriptTokenStream.Select(t => t.Text);
-        Content = string.Join(string.Empty, tokenValues);
-
         Schema = node.SchemaObjectName.SchemaIdentifier.Value;
 
         var identifiers = node.SchemaObjectName.Identifiers.Skip(1).Select(id => id.Value);

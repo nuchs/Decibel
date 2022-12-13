@@ -2,16 +2,16 @@
 
 namespace Mast.Dbo;
 
-public class Column
+public class Column : DbObject
 {
     public Column(ColumnDefinition colDef)
+        : base(colDef)
     {
         Name = GetName(colDef);
         DataType = new ScalarType(colDef.DataType);
         IsNullable = GetNullability(colDef);
         PrimaryKey = GetPrimaryKey(colDef);
         IsUnique = GetUniqueness(colDef);
-        Content = AssembleColumnValue(colDef);
 
         if (HasDefault(colDef))
         {
@@ -21,13 +21,9 @@ public class Column
 
         if (HasIdentity(colDef))
         {
-            Identity = new(
-                AssembleIdentitySeed(colDef.IdentityOptions),
-                AssembleIdentityIncrement(colDef.IdentityOptions));
+            Identity = new(colDef.IdentityOptions);
         }
     }
-
-    public string Content { get; }
 
     public ScalarType DataType { get; }
 
@@ -43,50 +39,6 @@ public class Column
 
     public bool IsUnique { get; }
 
-    public string Name { get; }
-
-    public override string ToString() => Content;
-
-    private static string AssembleColumnValue(ColumnDefinition colDef)
-    {
-        var tokenValues = colDef
-            .ScriptTokenStream
-            .Take(colDef.FirstTokenIndex..(colDef.LastTokenIndex + 1))
-            .Select(t => t.Text);
-
-        return string.Join(string.Empty, tokenValues);
-    }
-
-    private static int AssembleIdentityIncrement(IdentityOptions id)
-    {
-        if (id.IdentityIncrement is null)
-        {
-            return 1;
-        }
-
-        var incrementTokens = id
-          .IdentityIncrement.ScriptTokenStream
-          .Take(id.IdentityIncrement.FirstTokenIndex..(id.IdentityIncrement.LastTokenIndex + 1))
-          .Select(t => t.Text);
-
-        return int.Parse(string.Join(string.Empty, incrementTokens));
-    }
-
-    private static int AssembleIdentitySeed(IdentityOptions id)
-    {
-        if (id.IdentitySeed is null)
-        {
-            return 1;
-        }
-
-        var seedTokens = id
-          .IdentitySeed.ScriptTokenStream
-          .Take(id.IdentitySeed.FirstTokenIndex..(id.IdentitySeed.LastTokenIndex + 1))
-          .Select(t => t.Text);
-
-        return int.Parse(string.Join(string.Empty, seedTokens));
-    }
-
     private static string? GetDefaultName(ColumnDefinition colDef)
         => colDef.DefaultConstraint.ConstraintIdentifier?.Value;
 
@@ -99,19 +51,14 @@ public class Column
             .Constraints.OfType<NullableConstraintDefinition>()
             .Select(n => n.Nullable);
 
-        return nullConstrints.Any() ? nullConstrints.First() : true;
+        return !nullConstrints.Any() || nullConstrints.First();
     }
 
-    private string AssembleDefaultValue(ColumnDefinition colDef)
-    {
-        var dfltTokens = colDef
-            .DefaultConstraint
-            .ScriptTokenStream
-            .Take((colDef.DefaultConstraint.FirstTokenIndex + 1)..(colDef.DefaultConstraint.LastTokenIndex + 1))
-            .Select(d => d.Text);
-
-        return string.Join("", dfltTokens).Trim();
-    }
+    private string AssembleDefaultValue(ColumnDefinition colDef) 
+        => AssembleFragment(
+            colDef.DefaultConstraint, 
+            colDef.DefaultConstraint.FirstTokenIndex + 1, 
+            colDef.DefaultConstraint.LastTokenIndex + 1);
 
     private PrimaryKey? GetPrimaryKey(ColumnDefinition colDef)
     {
