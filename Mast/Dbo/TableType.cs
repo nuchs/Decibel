@@ -4,11 +4,11 @@ namespace Mast.Dbo;
 
 public class TableType : DbObject
 {
-    public List<object> ReferencedBy = new();
-    public string Schema;
     public List<Column> Columns = new();
     public List<Index> Indices = new();
     public PrimaryKey Primary;
+    public List<object> ReferencedBy = new();
+    public string Schema;
 
     public TableType(CreateTypeTableStatement node)
         : base(node)
@@ -33,4 +33,4 @@ public class TableType : DbObject
         //Primary = primaryCol != null ? new PrimaryKey(primaryCol) :
         //     compoundPrimary != null ? new PrimaryKey(compoundPrimary) : null;
     }
-  }
+}

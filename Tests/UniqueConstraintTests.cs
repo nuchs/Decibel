@@ -1,6 +1,6 @@
 ﻿namespace Tests;
 
-internal class UniqueConstraintTests : BaseMastTest
+public class UniqueConstraintTests : BaseMastTest
 {
     [Test]
     [TestCase("", false)]

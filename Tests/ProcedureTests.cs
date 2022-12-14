@@ -3,10 +3,11 @@
 public class ProcedureTests : BaseMastTest
 {
     [Test]
-    public void BareName()
+    [TestCase("bear", "bear")]
+    [TestCase("[bracketed]", "bracketed")]
+    public void Name(string name, string expected)
     {
-        var expected = "bareNakedName";
-        var proc = $"CREATE PROCEDURE dbo.{expected} AS SELECT 1";
+        var proc = $"CREATE PROCEDURE dbo.{name} AS SELECT 1";
 
         parser.Parse(db, proc);
         var result = db.Procedures.First();
@@ -15,41 +16,18 @@ public class ProcedureTests : BaseMastTest
     }
 
     [Test]
-    public void BareSchema()
+    [TestCase("bear", "bear")]
+    [TestCase("[bracketed]", "bracketed")]
+    public void Schema(string schema, string expected)
     {
-        var expected = "nudeSchema";
-        var proc = $"CREATE PROCEDURE {expected}.StubName AS SELECT 1";
+        var proc = $"CREATE PROCEDURE {schema}.StubName AS SELECT 1";
 
         parser.Parse(db, proc);
         var result = db.Procedures.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
     }
-
-    [Test]
-    public void BracketedName()
-    {
-        var expected = "Don't bracket me";
-        var proc = $"CREATE PROCEDURE dbo.[{expected}] AS SELECT 1";
-
-        parser.Parse(db, proc);
-        var result = db.Procedures.First();
-
-        Assert.That(result.Name, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void BracketedSchema()
-    {
-        var expected = "Hyphenate-this";
-        var proc = $"CREATE PROCEDURE [{expected}].StubName AS SELECT 1";
-
-        parser.Parse(db, proc);
-        var result = db.Procedures.First();
-
-        Assert.That(result.Schema, Is.EqualTo(expected));
-    }
-
+  
     [Test]
     public void Content()
     {

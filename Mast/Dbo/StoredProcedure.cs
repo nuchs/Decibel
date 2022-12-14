@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class StoredProcedure :DbObject
+public class StoredProcedure : DbObject
 {
     public StoredProcedure(CreateProcedureStatement node)
         : base(node)
@@ -16,11 +16,11 @@ public class StoredProcedure :DbObject
 
     public string Schema { get; }
 
-    private static string GetName(CreateProcedureStatement node)
-        => node.ProcedureReference.Name.BaseIdentifier.Value;
+    private string GetName(CreateProcedureStatement node)
+        => GetId(node.ProcedureReference.Name.BaseIdentifier);
 
-    private static string GetSchema(CreateProcedureStatement node)
-                => node.ProcedureReference.Name.SchemaIdentifier.Value;
+    private string GetSchema(CreateProcedureStatement node)
+        => GetId(node.ProcedureReference.Name.SchemaIdentifier);
 
     private List<Parameter> CollectParameters(CreateProcedureStatement node)
         => node.Parameters.Select(p => new Parameter(p)).ToList();

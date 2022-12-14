@@ -13,9 +13,9 @@ public class DefaultConstraint : DbObject
 
     public string Value { get; }
 
-    private static string GetName(DefaultConstraintDefinition def)
-       => def.ConstraintIdentifier?.Value ?? string.Empty;
+    private string GetName(DefaultConstraintDefinition def)
+       => GetId(def.ConstraintIdentifier);
 
     private string GetValue(DefaultConstraintDefinition def)
-                => AssembleFragment(def, def.FirstTokenIndex + 1, def.LastTokenIndex + 1);
+       => AssembleFragment(def, def.FirstTokenIndex + 1, def.LastTokenIndex + 1);
 }

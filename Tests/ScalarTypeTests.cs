@@ -1,12 +1,13 @@
 ﻿namespace Tests;
 
-internal class ScalarTypeTests : BaseMastTest
+public class ScalarTypeTests : BaseMastTest
 {
     [Test]
-    public void BareName()
+    [TestCase("bear", "bear")]
+    [TestCase("[bracketed]", "bracketed")]
+    public void Name(string name, string expected)
     {
-        var expected = "bareNakedName";
-        var type = $"CREATE TYPE dbo.{expected} FROM INT";
+        var type = $"CREATE TYPE dbo.{name} FROM INT";
 
         parser.Parse(db, type);
         var result = db.ScalarTypes.First();
@@ -15,41 +16,18 @@ internal class ScalarTypeTests : BaseMastTest
     }
 
     [Test]
-    public void BareSchema()
+    [TestCase("bear", "bear")]
+    [TestCase("[bracketed]", "bracketed")]
+    public void Schema(string schema, string expected)
     {
-        var expected = "nudeSchema";
-        var type = $"CREATE TYPE {expected}.StubName FROM INT";
+        var type = $"CREATE TYPE {schema}.StubName FROM INT";
 
         parser.Parse(db, type);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
     }
-
-    [Test]
-    public void BracketedName()
-    {
-        var expected = "Don't bracket me";
-        var type = $"CREATE TYPE dbo.[{expected}] FROM INT";
-
-        parser.Parse(db, type);
-        var result = db.ScalarTypes.First();
-
-        Assert.That(result.Name, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void BracketedSchema()
-    {
-        var expected = "Hyphenate-this";
-        var type = $"CREATE TYPE [{expected}].StubName FROM INT";
-
-        parser.Parse(db, type);
-        var result = db.ScalarTypes.First();
-
-        Assert.That(result.Schema, Is.EqualTo(expected));
-    }
-
+ 
     [Test]
     public void Content()
     {

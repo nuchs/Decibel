@@ -1,6 +1,6 @@
 ﻿namespace Tests;
 
-internal class IdentityConstraintTests : BaseMastTest
+public class IdentityConstraintTests : BaseMastTest
 {
     [Test]
     public void BareIdentityIncrement()

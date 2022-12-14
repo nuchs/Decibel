@@ -3,10 +3,11 @@ namespace Tests;
 public class TableTypeTests : BaseMastTest
 {
     [Test]
-    public void BareName()
+    [TestCase("bear", "bear")]
+    [TestCase("[bracketed]", "bracketed")]
+    public void Name(string name, string expected)
     {
-        var expected = "bareNakedName";
-        var type = $"CREATE TYPE dbo.{expected} AS TABLE (StubColumn int)";
+        var type = $"CREATE TYPE dbo.{name} AS TABLE (StubColumn int)";
 
         parser.Parse(db, type);
         var result = db.TableTypes.First();
@@ -15,44 +16,16 @@ public class TableTypeTests : BaseMastTest
     }
 
     [Test]
-    public void BareSchema()
+    [TestCase("bear", "bear")]
+    [TestCase("[bracketed]", "bracketed")]
+    public void Schema(string schema, string expected)
     {
-        var expected = "nudeSchema";
-        var type = $"CREATE TYPE {expected}.StubName AS TABLE (StubColumn int)";
+        var type = $"CREATE TYPE {schema}.StubName AS TABLE (StubColumn int)";
 
         parser.Parse(db, type);
         var result = db.TableTypes.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void BracketedName()
-    {
-        var expected = "Don't bracket me";
-        var type = $"CREATE TYPE dbo.[{expected}] AS TABLE (StubColumn int)";
-
-        parser.Parse(db, type);
-        var result = db.TableTypes.First();
-
-        Assert.That(result.Name, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void BracketedSchema()
-    {
-        var expected = "Hyphenate-this";
-        var type = $"CREATE TYPE [{expected}].StubName AS TABLE (StubColumn int)";
-
-        parser.Parse(db, type);
-        var result = db.TableTypes.First();
-
-        Assert.That(result.Schema, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void CompoundPrimaryKey()
-    {
     }
 
     [Test]
@@ -72,11 +45,6 @@ public class TableTypeTests : BaseMastTest
     }
 
     [Test]
-    public void NumberChecks()
-    {
-    }
-
-    [Test]
     [TestCase("Stub int", 1)]
     [TestCase("Stub1 int, Stub2 int", 2)]
     public void NumberColumns(string columns, int expected)
@@ -91,15 +59,5 @@ public class TableTypeTests : BaseMastTest
         var result = db.TableTypes.First();
 
         Assert.That(result.Columns, Has.Exactly(expected).Items);
-    }
-
-    [Test]
-    public void NumberIndexes()
-    {
-    }
-
-    [Test]
-    public void PrimaryKey()
-    {
     }
 }

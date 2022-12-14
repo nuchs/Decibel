@@ -1,11 +1,7 @@
 ﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mast.Dbo;
+
 public class Index
 {
     public List<Column> Columns = new();
@@ -22,7 +18,7 @@ public class Index
 
             var c = tableColumns.Where(t => t.Name == id);
 
-            if (c.Count()!= 1)
+            if (c.Count() != 1)
             {
                 throw new InvalidOperationException("Wrong number of columns");
             }

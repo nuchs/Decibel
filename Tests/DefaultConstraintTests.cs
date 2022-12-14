@@ -1,6 +1,6 @@
 ﻿namespace Tests;
 
-internal class DefaultConstraintTests : BaseMastTest
+public class DefaultConstraintTests : BaseMastTest
 {
     [Test]
     public void Content()

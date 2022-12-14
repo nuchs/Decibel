@@ -4,12 +4,16 @@ namespace Mast.Dbo;
 
 public class IdentityConstraint : DbObject
 {
-	public IdentityConstraint(IdentityOptions id)
-		: base(id)
-	{
+    public IdentityConstraint(IdentityOptions id)
+        : base(id)
+    {
         Seed = AssembleIdentitySeed(id);
         Increment = AssembleIdentityIncrement(id);
-	}
+    }
+
+    public int Increment { get; }
+
+    public int Seed { get; }
 
     private int AssembleIdentityIncrement(IdentityOptions id)
     {
@@ -30,9 +34,4 @@ public class IdentityConstraint : DbObject
 
         return int.Parse(AssembleFragment(id.IdentitySeed));
     }
-
-    public int Seed { get; }
-	
-	public int Increment { get; }
-
 }

@@ -22,13 +22,13 @@ public class Parameter : DbObject
 
     public ParameterMod Modifier { get; }
 
-    private string AssembleDefaultValue(ProcedureParameter parameter) 
-        => parameter.Value is not null ? AssembleFragment(parameter.Value) : string.Empty;
+    private string GetName(ProcedureParameter parameter) => GetId(parameter.VariableName);
 
-    private static string GetName(ProcedureParameter parameter) => parameter.VariableName.Value;
-
-    private static bool? GetNullability(ProcedureParameter parameter) 
+    private static bool? GetNullability(ProcedureParameter parameter)
         => parameter.Nullable is null ? null : parameter.Nullable.Nullable;
+
+    private string AssembleDefaultValue(ProcedureParameter parameter)
+        => parameter.Value is not null ? AssembleFragment(parameter.Value) : string.Empty;
 
     private ParameterMod GetModifier(ProcedureParameter parameter)
         => parameter.Modifier switch

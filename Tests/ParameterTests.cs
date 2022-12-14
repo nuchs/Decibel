@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-internal class ParameterTests : BaseMastTest
+public class ParameterTests : BaseMastTest
 {
     private Random rand = new();
 

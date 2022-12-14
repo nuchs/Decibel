@@ -67,10 +67,11 @@ public class ColumnTests : BaseMastTest
     }
 
     [Test]
-    public void Name()
+    [TestCase("Michael", "Michael")]
+    [TestCase("[Michael]", "Michael")]
+    public void Name(string name, string expected)
     {
-        var expected = "Michael";
-        var type = $"CREATE TYPE dbo.stub AS TABLE ({expected} int)";
+        var type = $"CREATE TYPE dbo.stub AS TABLE ({name} int)";
 
         parser.Parse(db, type);
         var result = db.TableTypes.First().Columns.First();

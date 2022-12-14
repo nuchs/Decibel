@@ -19,15 +19,15 @@ public class Function : DbObject
 
     public string Schema { get; }
 
-    private string AssembleReturnType(CreateFunctionStatement node) 
+    private string GetName(CreateFunctionStatement node)
+        => GetId(node.Name.BaseIdentifier);
+
+    private string GetSchema(CreateFunctionStatement node)
+        => GetId(node.Name.SchemaIdentifier);
+
+    private string AssembleReturnType(CreateFunctionStatement node)
         => AssembleFragment(node.ReturnType);
 
-    private static string GetName(CreateFunctionStatement node)
-        => node.Name.BaseIdentifier.Value;
-
-    private static string GetSchema(CreateFunctionStatement node) 
-        => node.Name.SchemaIdentifier.Value;
-
-    private List<Parameter> CollectParameters(CreateFunctionStatement node) 
+    private List<Parameter> CollectParameters(CreateFunctionStatement node)
         => node.Parameters.Select(p => new Parameter(p)).ToList();
 }

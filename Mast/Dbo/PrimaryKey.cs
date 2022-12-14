@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class PrimaryKey :DbObject
+public class PrimaryKey : DbObject
 {
     private readonly List<Column> columns = new();
 

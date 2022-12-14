@@ -33,11 +33,11 @@ public class ScalarType : DbObject
             new List<string>();
 
     private string GetName(SchemaObjectName fullyQualifiedName)
-        => fullyQualifiedName.BaseIdentifier.Value ?? string.Empty;
+        => GetId(fullyQualifiedName.BaseIdentifier);
 
     private bool GetNullability(CreateTypeUddtStatement node)
         => node.NullableConstraint is null || node.NullableConstraint.Nullable;
 
     private string GetSchema(SchemaObjectName fullyQualifiedName)
-        => fullyQualifiedName.SchemaIdentifier?.Value ?? string.Empty;
+        => GetId(fullyQualifiedName.SchemaIdentifier);
 }

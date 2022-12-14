@@ -3,10 +3,11 @@
 public class FunctionTests : BaseMastTest
 {
     [Test]
-    public void BareName()
+    [TestCase("bear", "bear")]
+    [TestCase("[bracketed]", "bracketed")]
+    public void Name(string name, string expected)
     {
-        var expected = "bareNakedName";
-        var function = $"CREATE FUNCTION dbo.{expected} () RETURNS TABLE AS RETURN SELECT 1";
+        var function = $"CREATE FUNCTION dbo.{name} () RETURNS TABLE AS RETURN SELECT 1";
 
         parser.Parse(db, function);
         var result = db.Functions.First();
@@ -15,41 +16,18 @@ public class FunctionTests : BaseMastTest
     }
 
     [Test]
-    public void BareSchema()
+    [TestCase("bear", "bear")]
+    [TestCase("[bracketed]", "bracketed")]
+    public void Schema(string schema, string expected)
     {
-        var expected = "nudeSchema";
-        var function = $"CREATE FUNCTION {expected}.StubName () RETURNS TABLE AS RETURN SELECT 1";
+        var function = $"CREATE FUNCTION {schema}.StubName () RETURNS TABLE AS RETURN SELECT 1";
 
         parser.Parse(db, function);
         var result = db.Functions.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
     }
-
-    [Test]
-    public void BracketedName()
-    {
-        var expected = "Don't bracket me";
-        var function = $"CREATE FUNCTION dbo.[{expected}] () RETURNS TABLE AS RETURN SELECT 1";
-
-        parser.Parse(db, function);
-        var result = db.Functions.First();
-
-        Assert.That(result.Name, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void BracketedSchema()
-    {
-        var expected = "Hyphenate-this";
-        var function = $"CREATE FUNCTION [{expected}].StubName () RETURNS TABLE AS RETURN SELECT 1";
-
-        parser.Parse(db, function);
-        var result = db.Functions.First();
-
-        Assert.That(result.Schema, Is.EqualTo(expected));
-    }
-
+ 
     [Test]
     public void Content()
     {

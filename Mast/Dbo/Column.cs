@@ -13,17 +13,11 @@ public class Column : DbObject
         PrimaryKey = GetPrimaryKey(colDef);
         Unique = GetUniqueness(colDef);
         Check = GetCheck(colDef);
-
-        if (HasDefault(colDef))
-        {
-            Default = new(colDef.DefaultConstraint);
-        }
-
-        if (HasIdentity(colDef))
-        {
-            Identity = new(colDef.IdentityOptions);
-        }
+        Default = GetDefault(colDef);
+        Identity = GetIdentity(colDef);
     }
+
+    public CheckConstraint? Check { get; }
 
     public ScalarType DataType { get; }
 
@@ -37,11 +31,6 @@ public class Column : DbObject
 
     public UniqueConstraint? Unique { get; }
 
-    public CheckConstraint? Check { get; } 
-
-    private static string GetName(ColumnDefinition colDef)
-        => colDef.ColumnIdentifier.Value;
-
     private static bool GetNullability(ColumnDefinition colDef)
     {
         var nullConstrints = colDef
@@ -50,6 +39,22 @@ public class Column : DbObject
 
         return !nullConstrints.Any() || nullConstrints.First();
     }
+
+    private CheckConstraint? GetCheck(ColumnDefinition colDef)
+    {
+        var check = colDef.Constraints.OfType<CheckConstraintDefinition>().FirstOrDefault();
+
+        return check is not null ? new CheckConstraint(check) : null;
+    }
+
+    private DefaultConstraint? GetDefault(ColumnDefinition colDef) 
+        => colDef.DefaultConstraint is not null ? new(colDef.DefaultConstraint) : null;
+
+    private IdentityConstraint? GetIdentity(ColumnDefinition colDef) 
+        => colDef.IdentityOptions is not null ? new(colDef.IdentityOptions) : null;
+
+    private string GetName(ColumnDefinition colDef)
+        => GetId(colDef.ColumnIdentifier);
 
     private PrimaryKey? GetPrimaryKey(ColumnDefinition colDef)
     {
@@ -64,15 +69,4 @@ public class Column : DbObject
 
         return unique is not null ? new UniqueConstraint(this, unique) : null;
     }
-
-    private CheckConstraint? GetCheck(ColumnDefinition colDef)
-    {
-        var check = colDef.Constraints.OfType<CheckConstraintDefinition>().FirstOrDefault();
-
-        return check is not null ? new CheckConstraint(check) : null;
-    }
-
-    private bool HasDefault(ColumnDefinition colDef) => colDef.DefaultConstraint is not null;
-
-    private bool HasIdentity(ColumnDefinition colDef) => colDef.IdentityOptions is not null;
 }

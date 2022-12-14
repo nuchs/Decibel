@@ -1,6 +1,6 @@
 ﻿namespace Tests;
 
-internal class PrimaryKeyTests : BaseMastTest
+public class PrimaryKeyTests : BaseMastTest
 {
     [Test]
     [TestCase("", false)]
@@ -28,12 +28,7 @@ internal class PrimaryKeyTests : BaseMastTest
         Assert.That(result.PrimaryKey?.Content, Is.EqualTo(expected));
     }
 
-    [Test]
-    public void MultiColumn()
-    {
-    }
-
-    [Test]
+      [Test]
     public void NoNameOnColumn()
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int primary key)";
