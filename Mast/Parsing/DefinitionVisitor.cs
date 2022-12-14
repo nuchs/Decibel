@@ -12,70 +12,27 @@ internal class DefinitionVisitor : TSqlFragmentVisitor
         this.db = db;
     }
 
-    public override void Visit(CreateTableStatement node)
+    public override void Visit(CreateTableStatement node) => Visit(db.TableList, new(node), node);
+
+    public override void Visit(CreateTypeTableStatement node) => Visit(db.TableTypeList, new(node), node);
+
+    public override void Visit(CreateTypeUddtStatement node) => Visit(db.ScalarTypeList, new(node), node);
+
+    public override void Visit(CreateProcedureStatement node) => Visit(db.ProcedureList, new(node), node);
+
+    public override void Visit(CreateFunctionStatement node) => Visit(db.FunctionList, new(node), node);
+
+    public override void Visit(CreateSchemaStatement node) => Visit(db.SchemaList, new(node), node);
+
+    public override void Visit(CreateTriggerStatement node) => Visit(db.TriggerList, new(node), node);
+
+    public override void Visit(CreateViewStatement node) => Visit(db.ViewList, new(node), node);
+
+    public override void Visit(CreateUserStatement node) => Visit(db.UserList, new(node), node);
+
+    private void Visit<T, U>(List<U> mastList, U mastItem, T node) where T : TSqlFragment
     {
-        Table table = new(node);
-
-        db.Tables.Add(table);
-
-        base.Visit(node);
-    }
-
-    public override void Visit(CreateTypeTableStatement node)
-    {
-        TableType type = new(node);
-
-        db.TableTypes.Add(type);
-
-        base.Visit(node);
-    }
-
-
-    public override void Visit(CreateTypeUddtStatement node)
-    {
-        ScalarType type = new(node);
-
-        db.ScalarTypes.Add(type);
-
-        base.Visit(node);
-    }
-
-    public override void Visit(CreateProcedureStatement node)
-    {
-        StoredProcedure proc = new(node);
-
-        db.Procedures.Add(proc);
-
-        base.Visit(node);
-    }
-
-    public override void Visit(CreateFunctionStatement node)
-    {
-        Function function = new(node);
-
-        db.Functions.Add(function);
-
-        base.Visit(node);
-    }
-
-    public override void Visit(CreateSchemaStatement node)
-    {
-        base.Visit(node);
-    }
-
-    public override void Visit(CreateTriggerStatement node)
-    {
-        base.Visit(node);
-    }
-
-    public override void Visit(CreateViewStatement node)
-    {
-        base.Visit(node);
-    }
-
-    public override void Visit(CreateUserStatement node)
-    {
-        // Are grants separate?
+        mastList.Add(mastItem);
         base.Visit(node);
     }
 }

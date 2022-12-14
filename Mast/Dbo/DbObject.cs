@@ -35,6 +35,6 @@ public class DbObject
         return string.Join(string.Empty, tokenValues).Trim();
     }
 
-    protected string GetId(Identifier identifier)
+    protected string GetId(Identifier? identifier)
         => identifier?.Value ?? string.Empty;
 }
