@@ -24,6 +24,7 @@
     <Folder Include="Guitar\" />
     <Folder Include="Lindt\" />
     <Folder Include="Decibel\" />
+    <Folder Include="Mast.Parsing\" />
     <Folder Include="Patchwerk\" />
   </ItemGroup>
 

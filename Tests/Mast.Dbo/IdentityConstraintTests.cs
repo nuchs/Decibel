@@ -1,4 +1,4 @@
-﻿namespace Tests.Mast;
+﻿namespace Tests.Mast.Dbo;
 
 public class IdentityConstraintTests : BaseMastTest
 {

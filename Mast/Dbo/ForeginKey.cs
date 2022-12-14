@@ -31,7 +31,7 @@ public class ForeginKey : DbObject
 
     public ChangeAction OnUpdate { get; }
 
-    private Column? GetColumn(IEnumerable<Column> columns, ForeignKeyConstraintDefinition constraint)
+    private Column GetColumn(IEnumerable<Column> columns, ForeignKeyConstraintDefinition constraint)
     {
         if (constraint.Columns.Count > 1)
         {

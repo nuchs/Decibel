@@ -1,12 +1,9 @@
 -------------------------------------------------------------------------------
 Mast
 -------------------------------------------------------------------------------
-trigger
-
-grants/denies to users
+grants/denies to users - too complicated for now
 
 references
-
 schema <- tables, scalars, table types, func, proc, view, trigger, user
 scalar <- tables, table types, func, proc, view, trigger
 tables <- tables (via fk), func, proc, view, trigger
