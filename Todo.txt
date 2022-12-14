@@ -1,14 +1,21 @@
 -------------------------------------------------------------------------------
 Mast
 -------------------------------------------------------------------------------
-schema
-view
 trigger
-user
 
 grants/denies to users
 
 references
+
+schema <- tables, scalars, table types, func, proc, view, trigger, user
+scalar <- tables, table types, func, proc, view, trigger
+tables <- tables (via fk), func, proc, view, trigger
+table type <- func, proc, trigger
+view <- func, proc, trigger
+func <- func, proc
+proc <- proc
+trigger <- ?
+user <- ?
 
 -------------------------------------------------------------------------------
 Patcher

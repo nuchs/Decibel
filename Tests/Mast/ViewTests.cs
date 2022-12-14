@@ -18,7 +18,7 @@ public class ViewTests : BaseMastTest
     [Test]
     public void Columns()
     {
-        var view = "CREATE View dbo.stub (col1, col2) AS select tab.a, tab.b";
+        var view = "CREATE View dbo.stub (col1, col2) AS select tab.a, tab2.b";
 
         parser.Parse(db, view);
         var result = db.Views.First();
