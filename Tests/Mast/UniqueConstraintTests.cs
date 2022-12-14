@@ -1,4 +1,4 @@
-﻿namespace Tests;
+﻿namespace Tests.Mast;
 
 public class UniqueConstraintTests : BaseMastTest
 {
@@ -26,12 +26,6 @@ public class UniqueConstraintTests : BaseMastTest
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Unique?.Content, Is.EqualTo(expected));
-    }
-
-    [Test]
-    [Ignore("Need tables")]
-    public void MultiColumn()
-    {
     }
 
     [Test]

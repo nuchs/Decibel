@@ -1,4 +1,4 @@
-﻿namespace Tests;
+﻿namespace Tests.Mast;
 
 public class IdentityConstraintTests : BaseMastTest
 {

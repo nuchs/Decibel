@@ -1,4 +1,4 @@
-﻿namespace Tests;
+﻿namespace Tests.Mast;
 
 public class PrimaryKeyTests : BaseMastTest
 {
@@ -28,7 +28,7 @@ public class PrimaryKeyTests : BaseMastTest
         Assert.That(result?.Content, Is.EqualTo(expected));
     }
 
-      [Test]
+    [Test]
     public void NoNameOnColumn()
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int primary key)";
@@ -111,6 +111,6 @@ public class PrimaryKeyTests : BaseMastTest
         parser.Parse(db, type);
         var result = db.TableTypes.First().PrimaryKey;
 
-        Assert.That(result?.Columns.Select(c =>c.Name), Is.EquivalentTo(new[] { "col1", "col2" }));
+        Assert.That(result?.Columns.Select(c => c.Name), Is.EquivalentTo(new[] { "col1", "col2" }));
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Mast.Dbo;
 
-namespace Tests;
+namespace Tests.Mast;
 
 public class ParameterTests : BaseMastTest
 {

@@ -13,7 +13,6 @@
     <ProjectReference Include="..\Log\Log.csproj" />
     <ProjectReference Include="..\Mast\Mast.csproj" />
     <ProjectReference Include="..\Patchwerk\Patchwerk.csproj" />
-    <ProjectReference Include="..\SampleDb\SampleDb.csproj" />
   </ItemGroup>
 
 </Project>

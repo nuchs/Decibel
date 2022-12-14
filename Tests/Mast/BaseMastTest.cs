@@ -1,7 +1,7 @@
 ﻿using Mast;
 using Mast.Dbo;
 
-namespace Tests;
+namespace Tests.Mast;
 
 public class BaseMastTest
 {

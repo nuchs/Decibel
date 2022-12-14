@@ -15,6 +15,7 @@ public class Column : DbObject
         Check = GetCheck(colDef);
         Default = GetDefault(colDef);
         Identity = GetIdentity(colDef);
+        ForeginKey = GetForeginKey(colDef);
     }
 
     public CheckConstraint? Check { get; }
@@ -22,6 +23,8 @@ public class Column : DbObject
     public ScalarType DataType { get; }
 
     public DefaultConstraint? Default { get; }
+
+    public ForeginKey? ForeginKey { get; }
 
     public IdentityConstraint? Identity { get; }
 
@@ -44,13 +47,20 @@ public class Column : DbObject
     {
         var check = colDef.Constraints.OfType<CheckConstraintDefinition>().FirstOrDefault();
 
-        return check is not null ? new CheckConstraint(check) : null;
+        return check is not null ? new(check) : null;
     }
 
-    private DefaultConstraint? GetDefault(ColumnDefinition colDef) 
+    private DefaultConstraint? GetDefault(ColumnDefinition colDef)
         => colDef.DefaultConstraint is not null ? new(colDef.DefaultConstraint) : null;
 
-    private IdentityConstraint? GetIdentity(ColumnDefinition colDef) 
+    private ForeginKey? GetForeginKey(ColumnDefinition colDef)
+    {
+        var fk = colDef.Constraints.OfType<ForeignKeyConstraintDefinition>().FirstOrDefault();
+
+        return fk is not null ? new(this, fk) : null;
+    }
+
+    private IdentityConstraint? GetIdentity(ColumnDefinition colDef)
         => colDef.IdentityOptions is not null ? new(colDef.IdentityOptions) : null;
 
     private string GetName(ColumnDefinition colDef)
@@ -60,13 +70,13 @@ public class Column : DbObject
     {
         var primaryConstraint = colDef.Constraints.OfType<UniqueConstraintDefinition>().Where(uq => uq.IsPrimaryKey).FirstOrDefault();
 
-        return primaryConstraint is not null ? new PrimaryKey(this, primaryConstraint) : null;
+        return primaryConstraint is not null ? new(this, primaryConstraint) : null;
     }
 
     private UniqueConstraint? GetUniqueness(ColumnDefinition colDef)
     {
         var unique = colDef.Constraints.OfType<UniqueConstraintDefinition>().Where(uq => !uq.IsPrimaryKey).FirstOrDefault();
 
-        return unique is not null ? new UniqueConstraint(this, unique) : null;
+        return unique is not null ? new(this, unique) : null;
     }
 }

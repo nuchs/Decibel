@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleDb", "SampleDb\SampleDb.csproj", "{37EAA697-3D98-47F8-92BB-EFF4770D977B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolnItems", "SolnItems", "{77024E46-E01C-4D99-AB61-644CDC3EC8AD}"
 	ProjectSection(SolutionItems) = preProject
 		Todo.txt = Todo.txt
@@ -14,15 +12,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lindt", "Lindt\Lindt.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{DBD88C55-0FD8-42B4-B6E9-528F662C264B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patchwerk", "Patchwerk\Patchwerk.csproj", "{1AF39C20-B339-4AA2-A7D0-0510A9A98A44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Patchwerk", "Patchwerk\Patchwerk.csproj", "{1AF39C20-B339-4AA2-A7D0-0510A9A98A44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guitar", "Guitar\Guitar.csproj", "{F35DC4B2-9279-4570-AAFA-87AB3D3294BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guitar", "Guitar\Guitar.csproj", "{F35DC4B2-9279-4570-AAFA-87AB3D3294BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mast", "Mast\Mast.csproj", "{1AF66558-C615-467C-BA1C-2664684F5E81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mast", "Mast\Mast.csproj", "{1AF66558-C615-467C-BA1C-2664684F5E81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decibel", "Decibel\Decibel.csproj", "{D8B01375-9BFE-4046-8D5A-C1DC2DD294B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Decibel", "Decibel\Decibel.csproj", "{D8B01375-9BFE-4046-8D5A-C1DC2DD294B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Log", "Log\Log.csproj", "{2AE33D45-0AC9-4BA9-993B-B224F1F89BD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Log", "Log\Log.csproj", "{2AE33D45-0AC9-4BA9-993B-B224F1F89BD1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,10 +28,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{37EAA697-3D98-47F8-92BB-EFF4770D977B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37EAA697-3D98-47F8-92BB-EFF4770D977B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37EAA697-3D98-47F8-92BB-EFF4770D977B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37EAA697-3D98-47F8-92BB-EFF4770D977B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{687CE196-1C09-4DAB-AAA4-B4EB86389FCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{687CE196-1C09-4DAB-AAA4-B4EB86389FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{687CE196-1C09-4DAB-AAA4-B4EB86389FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU

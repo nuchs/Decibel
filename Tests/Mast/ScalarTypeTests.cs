@@ -1,4 +1,4 @@
-﻿namespace Tests;
+﻿namespace Tests.Mast;
 
 public class ScalarTypeTests : BaseMastTest
 {
@@ -27,7 +27,7 @@ public class ScalarTypeTests : BaseMastTest
 
         Assert.That(result.Schema, Is.EqualTo(expected));
     }
- 
+
     [Test]
     public void Content()
     {

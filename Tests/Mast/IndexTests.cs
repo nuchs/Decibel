@@ -1,6 +1,6 @@
 ﻿using Mast.Dbo;
 
-namespace Tests;
+namespace Tests.Mast;
 
 public class IndexTests : BaseMastTest
 {
@@ -114,8 +114,8 @@ public class IndexTests : BaseMastTest
         var result = db.Tables.First().Indices.First();
 
         Assert.That(
-            result.Columns.Select(ic => ic.Column.Name), 
-            Is.EqualTo(new[] {"col1", "col2"}));
+            result.Columns.Select(ic => ic.Column.Name),
+            Is.EqualTo(new[] { "col1", "col2" }));
     }
 
     [Test]

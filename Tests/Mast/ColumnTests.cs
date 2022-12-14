@@ -1,4 +1,4 @@
-﻿namespace Tests;
+﻿namespace Tests.Mast;
 
 public class ColumnTests : BaseMastTest
 {
@@ -104,5 +104,18 @@ public class ColumnTests : BaseMastTest
         var result = db.Tables.First().Columns.First();
 
         Assert.That(result.Unique?.Content, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("", null)]
+    [TestCase("references dbo.stuble (col1)", "references dbo.stuble (col1)")]
+    public void ForeginKey(string constraint, string? expected)
+    {
+        var table = $"CREATE TABLE dbo.stub (stub int {constraint})";
+
+        parser.Parse(db, table);
+        var result = db.Tables.First().Columns.First();
+
+        Assert.That(result.ForeginKey?.Content, Is.EqualTo(expected));
     }
 }

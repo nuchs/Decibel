@@ -4,19 +4,26 @@ namespace Mast.Dbo;
 
 public class DbObject
 {
-    protected DbObject(TSqlFragment fragment)
-    {
-        Content = AssembleFragment(fragment);
-    }
+    private readonly List<DbObject> referees = new();
+
+    protected DbObject(TSqlFragment fragment) 
+        => Content = AssembleFragment(fragment);
 
     public string Content { get; }
 
     public string Name { get; protected set; } = string.Empty;
 
+    public IEnumerable<DbObject> ReferencedBy => referees;
+
     public override string ToString() => Content;
 
-    protected string AssembleFragment(TSqlFragment fragment) =>
-        AssembleFragment(fragment, fragment.FirstTokenIndex, fragment.LastTokenIndex + 1);
+    protected void AddReferee(DbObject referee) => referees.Add(referee);
+
+    protected string AssembleFragment(TSqlFragment fragment) 
+        => AssembleFragment(
+            fragment, 
+            fragment.FirstTokenIndex, 
+            fragment.LastTokenIndex + 1);
 
     protected string AssembleFragment(TSqlFragment fragment, int start, int end)
     {
@@ -28,6 +35,6 @@ public class DbObject
         return string.Join(string.Empty, tokenValues).Trim();
     }
 
-    protected string GetId(Identifier identifier) 
+    protected string GetId(Identifier identifier)
         => identifier?.Value ?? string.Empty;
 }

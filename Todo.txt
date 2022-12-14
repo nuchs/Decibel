@@ -1,28 +1,13 @@
-Index
+-------------------------------------------------------------------------------
+Mast
+-------------------------------------------------------------------------------
 foreign key
-primary key multi column
+schema
+view
+trigger
+user
 
--------------------------------------------------------------------------------
-Test data
--------------------------------------------------------------------------------
-
-Four tables
-2 entity, 
-1 join,
-1 unused
-
-Four stored procs
-2 using custom type read/write
-1 simple
-1 unused
-
-Two functions
-1 used, 
-1 unused
-
-Two types
-1 used
-1 unused
+references
 
 -------------------------------------------------------------------------------
 Patcher
