@@ -12,11 +12,11 @@ public class ScriptParser
     public void Parse(Database db, string content)
     {
         var tree = MakeAbstractSyntaxTree(content);
-        AddToDb(tree, db);
+        AddObjectsToDb(tree, db);
         BuildReferences(tree, db);
     }
 
-    private static void AddToDb(TSqlFragment tree, Database db)
+    private static void AddObjectsToDb(TSqlFragment tree, Database db)
         => VisitTree(tree, new DefinitionVisitor(db), "Failed to build db representation");
 
     private static void BuildReferences(TSqlFragment tree, Database db)

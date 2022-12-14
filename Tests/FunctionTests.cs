@@ -1,13 +1,7 @@
-﻿using Mast;
-using Mast.Dbo;
+﻿namespace Tests;
 
-namespace Tests;
-
-public class FunctionTests
+public class FunctionTests : BaseMastTest
 {
-    private Database db = new();
-    private ScriptParser parser = new();
-
     [Test]
     public void BareName()
     {
@@ -148,7 +142,4 @@ public class FunctionTests
 
         Assert.That(result.ReturnType, Is.EqualTo(expected));
     }
-
-    [SetUp]
-    public void Setup() => db = new();
 }

@@ -1,12 +1,31 @@
-﻿using Mast;
-using Mast.Dbo;
+﻿namespace Tests;
 
-namespace Tests;
-
-internal class ColumnTests
+public class ColumnTests : BaseMastTest
 {
-    private Database db = new();
-    private ScriptParser parser = new();
+    [Test]
+    [TestCase("", null)]
+    [TestCase("CHECK(stub > 0)", "CHECK(stub > 0)")]
+    public void CheckConstraints(string constraint, string? expected)
+    {
+        var table = $"CREATE TABLE dbo.stub (stub int {constraint})";
+
+        parser.Parse(db, table);
+        var result = db.Tables.First().Columns.First();
+
+        Assert.That(result.Check?.Content, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void Content()
+    {
+        var expected = "stub int default 2";
+        var type = $"CREATE TYPE dbo.stub AS TABLE ({expected})";
+
+        parser.Parse(db, type);
+        var result = db.TableTypes.First().Columns.First();
+
+        Assert.That(result.Content, Is.EqualTo(expected));
+    }
 
     [Test]
     [TestCase("int")]
@@ -22,52 +41,29 @@ internal class ColumnTests
     }
 
     [Test]
-    public void DefaultNameOnTableType()
+    [TestCase("", null)]
+    [TestCase("default 1", "default 1")]
+    public void Default(string defaultConstraint, string? expected)
     {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int default 1)";
-
-        parser.Parse(db, type);
-        var result = db.TableTypes.First().Columns.First();
-
-        Assert.That(result.DefaultName, Is.Null);
-    }
-
-    [Test]
-    [TestCase("", false)]
-    [TestCase("PRIMARY KEY", true)]
-    [TestCase("UNIQUE", true)]
-    public void UniqueConstraints(string constraint, bool expected)
-    {
-        var table = $"CREATE TABLE dbo.stub (stub int {constraint})";
+        var table = $"CREATE TABLE dbo.stub (stub int {defaultConstraint})";
 
         parser.Parse(db, table);
         var result = db.Tables.First().Columns.First();
 
-        Assert.That(result.IsUnique, Is.EqualTo(expected));
+        Assert.That(result.Default?.Content, Is.EqualTo(expected));
     }
 
     [Test]
-    public void DefaultNotPresent()
+    [TestCase("", null)]
+    [TestCase("identity", "identity")]
+    public void Identity(string identityConstraint, string? expected)
     {
-        var table = $"CREATE TABLE dbo.stub (stub int)";
-
-        parser.Parse(db, table);
-        var result = db.Tables.First().Columns.First();
-
-        Assert.That(result.Default, Is.Null);
-        Assert.That(result.DefaultName, Is.Null);
-    }
-
-    [Test]
-    public void DefaultValue()
-    {
-        var expected = "1";
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int default {expected})";
+        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int {identityConstraint})";
 
         parser.Parse(db, type);
         var result = db.TableTypes.First().Columns.First();
 
-        Assert.That(result.Default, Is.EqualTo(expected));
+        Assert.That(result.Identity?.Content, Is.EqualTo(expected));
     }
 
     [Test]
@@ -97,27 +93,15 @@ internal class ColumnTests
     }
 
     [Test]
-    public void IdentityNotPresent()
+    [TestCase("", null)]
+    [TestCase("UNIQUE", "UNIQUE")]
+    public void UniqueConstraints(string constraint, string? expected)
     {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int)";
+        var table = $"CREATE TABLE dbo.stub (stub int {constraint})";
 
-        parser.Parse(db, type);
-        var result = db.TableTypes.First().Columns.First();
+        parser.Parse(db, table);
+        var result = db.Tables.First().Columns.First();
 
-        Assert.That(result.Identity, Is.Null);
+        Assert.That(result.Unique?.Content, Is.EqualTo(expected));
     }
-
-    [Test]
-    public void Identity()
-    {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int identity)";
-
-        parser.Parse(db, type);
-        var result = db.TableTypes.First().Columns.First();
-
-        Assert.That(result.Identity, Is.Not.Null);
-    }
-
-    [SetUp]
-    public void Setup() => db = new();
 }

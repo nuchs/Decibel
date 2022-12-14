@@ -1,13 +1,7 @@
-using Mast;
-using Mast.Dbo;
-
 namespace Tests;
 
-public class TableTypeTests
+public class TableTypeTests : BaseMastTest
 {
-    private Database db = new();
-    private ScriptParser parser = new();
-
     [Test]
     public void BareName()
     {
@@ -57,6 +51,11 @@ public class TableTypeTests
     }
 
     [Test]
+    public void CompoundPrimaryKey()
+    {
+    }
+
+    [Test]
     public void Content()
     {
         var expected = """
@@ -70,6 +69,11 @@ public class TableTypeTests
         var result = db.TableTypes.First();
 
         Assert.That(result.Content, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void NumberChecks()
+    {
     }
 
     [Test]
@@ -92,27 +96,10 @@ public class TableTypeTests
     [Test]
     public void NumberIndexes()
     {
-
-    }
-
-    [Test]
-    public void NumberChecks()
-    {
-
     }
 
     [Test]
     public void PrimaryKey()
     {
-
     }
-
-    [Test]
-    public void CompoundPrimaryKey()
-    {
-
-    }
-
-    [SetUp]
-    public void Setup() => db = new();
 }

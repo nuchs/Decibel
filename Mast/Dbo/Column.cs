@@ -11,12 +11,12 @@ public class Column : DbObject
         DataType = new ScalarType(colDef.DataType);
         IsNullable = GetNullability(colDef);
         PrimaryKey = GetPrimaryKey(colDef);
-        IsUnique = GetUniqueness(colDef);
+        Unique = GetUniqueness(colDef);
+        Check = GetCheck(colDef);
 
         if (HasDefault(colDef))
         {
-            DefaultName = GetDefaultName(colDef);
-            Default = AssembleDefaultValue(colDef);
+            Default = new(colDef.DefaultConstraint);
         }
 
         if (HasIdentity(colDef))
@@ -27,20 +27,17 @@ public class Column : DbObject
 
     public ScalarType DataType { get; }
 
-    public string? Default { get; }
+    public DefaultConstraint? Default { get; }
 
-    public string? DefaultName { get; }
-
-    public Identity? Identity { get; }
+    public IdentityConstraint? Identity { get; }
 
     public bool IsNullable { get; }
 
     public PrimaryKey? PrimaryKey { get; }
 
-    public bool IsUnique { get; }
+    public UniqueConstraint? Unique { get; }
 
-    private static string? GetDefaultName(ColumnDefinition colDef)
-        => colDef.DefaultConstraint.ConstraintIdentifier?.Value;
+    public CheckConstraint? Check { get; } 
 
     private static string GetName(ColumnDefinition colDef)
         => colDef.ColumnIdentifier.Value;
@@ -54,12 +51,6 @@ public class Column : DbObject
         return !nullConstrints.Any() || nullConstrints.First();
     }
 
-    private string AssembleDefaultValue(ColumnDefinition colDef) 
-        => AssembleFragment(
-            colDef.DefaultConstraint, 
-            colDef.DefaultConstraint.FirstTokenIndex + 1, 
-            colDef.DefaultConstraint.LastTokenIndex + 1);
-
     private PrimaryKey? GetPrimaryKey(ColumnDefinition colDef)
     {
         var primaryConstraint = colDef.Constraints.OfType<UniqueConstraintDefinition>().Where(uq => uq.IsPrimaryKey).FirstOrDefault();
@@ -67,8 +58,19 @@ public class Column : DbObject
         return primaryConstraint is not null ? new PrimaryKey(this, primaryConstraint) : null;
     }
 
-    private bool GetUniqueness(ColumnDefinition colDef)
-        => colDef.Constraints.OfType<UniqueConstraintDefinition>().Any();
+    private UniqueConstraint? GetUniqueness(ColumnDefinition colDef)
+    {
+        var unique = colDef.Constraints.OfType<UniqueConstraintDefinition>().Where(uq => !uq.IsPrimaryKey).FirstOrDefault();
+
+        return unique is not null ? new UniqueConstraint(this, unique) : null;
+    }
+
+    private CheckConstraint? GetCheck(ColumnDefinition colDef)
+    {
+        var check = colDef.Constraints.OfType<CheckConstraintDefinition>().FirstOrDefault();
+
+        return check is not null ? new CheckConstraint(check) : null;
+    }
 
     private bool HasDefault(ColumnDefinition colDef) => colDef.DefaultConstraint is not null;
 

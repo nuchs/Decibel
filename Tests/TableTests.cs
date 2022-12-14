@@ -1,13 +1,7 @@
-using Mast;
-using Mast.Dbo;
-
 namespace Tests;
 
-public class TableTests
+public class TableTests : BaseMastTest
 {
-    private Database db = new();
-    private ScriptParser parser = new();
-
     [Test]
     public void BareName()
     {
@@ -55,7 +49,4 @@ public class TableTests
 
         Assert.That(result.Schema, Is.EqualTo(expected));
     }
-
-    [SetUp]
-    public void Setup() => db = new();
 }

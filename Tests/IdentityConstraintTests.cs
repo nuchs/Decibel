@@ -1,13 +1,7 @@
-﻿using Mast;
-using Mast.Dbo;
+﻿namespace Tests;
 
-namespace Tests;
-
-internal class IdentityTests
+internal class IdentityConstraintTests : BaseMastTest
 {
-    private Database db = new();
-    private ScriptParser parser = new();
-
     [Test]
     public void BareIdentityIncrement()
     {
@@ -28,6 +22,19 @@ internal class IdentityTests
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Identity?.Seed, Is.EqualTo(1));
+    }
+
+    [Test]
+    [TestCase("identity")]
+    [TestCase("identity(1,2)")]
+    public void Content(string expected)
+    {
+        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
+
+        parser.Parse(db, type);
+        var result = db.TableTypes.First().Columns.First();
+
+        Assert.That(result.Identity?.Content, Is.EqualTo(expected));
     }
 
     [Test]
@@ -58,20 +65,4 @@ internal class IdentityTests
 
         Assert.That(result.Identity?.Seed, Is.EqualTo(expected));
     }
-
-    [Test]
-    [TestCase("identity")]
-    [TestCase("identity(1,2)")]
-    public void Content(string expected)
-    {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
-
-        parser.Parse(db, type);
-        var result = db.TableTypes.First().Columns.First();
-
-        Assert.That(result.Identity?.Content, Is.EqualTo(expected));
-    }
-
-    [SetUp]
-    public void Setup() => db = new();
 }

@@ -1,13 +1,7 @@
-﻿using Mast;
-using Mast.Dbo;
+﻿namespace Tests;
 
-namespace Tests;
-
-internal class ScalarTypeTests
+internal class ScalarTypeTests : BaseMastTest
 {
-    private Database db = new();
-    private ScriptParser parser = new();
-
     [Test]
     public void BareName()
     {
@@ -94,9 +88,6 @@ internal class ScalarTypeTests
 
         Assert.That(result.Parameters, Is.EquivalentTo(new List<string> { expected }));
     }
-
-    [SetUp]
-    public void Setup() => db = new();
 
     [Test]
     public void UnparameterisedType()

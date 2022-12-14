@@ -1,12 +1,9 @@
-﻿using Mast;
-using Mast.Dbo;
+﻿using Mast.Dbo;
 
 namespace Tests;
 
-internal class ParameterTests
+internal class ParameterTests : BaseMastTest
 {
-    private Database db = new();
-    private ScriptParser parser = new();
     private Random rand = new();
 
     [Test]
@@ -87,7 +84,4 @@ internal class ParameterTests
 
         Assert.That(result.IsNullable, Is.EqualTo(nullable));
     }
-
-    [SetUp]
-    public void Setup() => db = new();
 }

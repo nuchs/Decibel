@@ -1,8 +1,6 @@
 Index
 foreign key
-primary key
 primary key multi column
-constraints
 
 -------------------------------------------------------------------------------
 Test data

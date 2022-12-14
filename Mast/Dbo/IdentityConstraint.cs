@@ -2,9 +2,9 @@
 
 namespace Mast.Dbo;
 
-public class Identity : DbObject
+public class IdentityConstraint : DbObject
 {
-	public Identity(IdentityOptions id)
+	public IdentityConstraint(IdentityOptions id)
 		: base(id)
 	{
         Seed = AssembleIdentitySeed(id);
