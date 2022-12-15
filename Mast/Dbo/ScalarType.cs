@@ -5,13 +5,6 @@ namespace Mast.Dbo;
 
 public sealed class ScalarType : DbObject
 {
-    public ScalarType(DataTypeReference dataTypeRef)
-        : base(dataTypeRef)
-    {
-        Identifier = AssembleIdentifier(dataTypeRef.Name);
-        Parameters = CollectParameters(dataTypeRef);
-    }
-
     public ScalarType(CreateTypeUddtStatement node)
         : base(node)
     {

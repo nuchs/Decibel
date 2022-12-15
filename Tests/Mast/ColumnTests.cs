@@ -1,4 +1,6 @@
-﻿namespace Tests.Mast;
+﻿using Mast.Dbo;
+
+namespace Tests.Mast;
 
 public class ColumnTests : BaseMastTest
 {
@@ -28,16 +30,18 @@ public class ColumnTests : BaseMastTest
     }
 
     [Test]
-    [TestCase("int")]
-    [TestCase("nvarchar(max)")]
-    public void DataType(string expected)
+    [TestCase("int", "", "int")]
+    [TestCase("nvarchar(max)", "", "nvarchar")]
+    [TestCase("MySchema.MyType", "MySchema", "MyType")]
+    public void DataType(string type, string schema, string name)
     {
-        var script = $"CREATE TYPE dbo.stub AS TABLE (stub {expected})";
+        FullyQualifiedName expected = new(schema, name);
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub {type})";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Columns.First();
 
-        Assert.That(result.DataType.ToString(), Is.EqualTo(expected));
+        Assert.That(result.DataType, Is.EqualTo(expected));
     }
 
     [Test]

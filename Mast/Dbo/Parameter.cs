@@ -9,12 +9,12 @@ public sealed class Parameter : DbFragment
     {
         Name = GetName(parameter);
         IsNullable = GetNullability(parameter);
-        DataType = new(parameter.DataType);
+        DataType = GetTypeId(parameter.DataType);
         Default = AssembleDefaultValue(parameter);
         Modifier = GetModifier(parameter);
     }
 
-    public ScalarType DataType { get; }
+    public FullyQualifiedName DataType { get; }
 
     public string Default { get; }
 
@@ -40,4 +40,7 @@ public sealed class Parameter : DbFragment
         };
 
     private string GetName(ProcedureParameter parameter) => GetId(parameter.VariableName);
+
+    private FullyQualifiedName GetTypeId(DataTypeReference dataType)
+        => new(GetId(dataType.Name.SchemaIdentifier), GetId(dataType.Name.BaseIdentifier));
 }

@@ -19,17 +19,18 @@ public class ParameterTests : BaseMastTest
     }
 
     [Test]
-    [TestCase("INT")]
-    [TestCase("dbo.INT")]
-    [TestCase("NVARCHAR(max)")]
-    public void DataType(string expected)
+    [TestCase("int", "", "int")]
+    [TestCase("nvarchar(max)", "", "nvarchar")]
+    [TestCase("MySchema.MyType", "MySchema", "MyType")]
+    public void DataType(string type, string schema, string name)
     {
-        var script = $"CREATE FUNCTION dbo.stub(@Stub {expected}) RETURNS TABLE AS RETURN SELECT 1";
+        FullyQualifiedName expected = new(schema, name);
+        var script = $"CREATE FUNCTION dbo.stub(@Stub {type}) RETURNS TABLE AS RETURN SELECT 1";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Functions.First().Parameters.First();
 
-        Assert.That(result.DataType.ToString(), Is.EqualTo(expected));
+        Assert.That(result.DataType, Is.EqualTo(expected));
     }
 
     [Test]

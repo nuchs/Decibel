@@ -8,7 +8,7 @@ public sealed class Column : DbFragment
         : base(colDef)
     {
         Name = GetName(colDef);
-        DataType = new(colDef.DataType);
+        DataType = GetTypeId(colDef.DataType);
         IsNullable = GetNullability(colDef);
         PrimaryKey = GetPrimaryKey(colDef);
         Unique = GetUniqueness(colDef);
@@ -20,7 +20,7 @@ public sealed class Column : DbFragment
 
     public CheckConstraint? Check { get; }
 
-    public ScalarType DataType { get; }
+    public FullyQualifiedName DataType { get; }
 
     public DefaultConstraint? Default { get; }
 
@@ -74,6 +74,9 @@ public sealed class Column : DbFragment
 
         return primaryConstraint is not null ? new(this, primaryConstraint) : null;
     }
+
+    private FullyQualifiedName GetTypeId(DataTypeReference dataType)
+        => new(GetId(dataType.Name.SchemaIdentifier), GetId(dataType.Name.BaseIdentifier));
 
     private UniqueConstraint? GetUniqueness(ColumnDefinition colDef)
     {
