@@ -7,7 +7,7 @@ public sealed class Function : DbObject
     public Function(CreateFunctionStatement node)
         : base(node)
     {
-        Name = GetName(node);
+        Identifier = new(GetSchema(node), GetName(node));
         Schema = GetSchema(node);
         Parameters = CollectParameters(node);
         ReturnType = AssembleReturnType(node);

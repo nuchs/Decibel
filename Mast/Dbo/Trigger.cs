@@ -1,4 +1,5 @@
 ﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+using System.Xml.Linq;
 
 namespace Mast.Dbo;
 
@@ -7,14 +8,14 @@ public sealed class Trigger : DbObject
     public Trigger(CreateTriggerStatement trigger)
         : base(trigger)
     {
-        Name = GetName(trigger);
+        Identifier = new(GetSchema(trigger), GetName(trigger)); ;
         Schema = GetSchema(trigger);
         When = GetRunOption(trigger);
         TriggerActions = CollectTriggerActions(trigger);
         Target = GetTarget(trigger);
     }
 
-    public string Schema { get; }
+    public string Schema { get; }  
 
     public string Target { get; }
 

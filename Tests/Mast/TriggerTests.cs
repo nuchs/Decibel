@@ -16,27 +16,19 @@ public class TriggerTests : BaseMastTest
     }
 
     [Test]
-    public void Name()
+    [TestCase("bear", "bear", "bear", "bear")]
+    [TestCase("bear", "[bracketed]", "bear", "bracketed")]
+    [TestCase("[bracketed]", "bear", "bracketed", "bear")]
+    [TestCase("[bracketed]", "[bracketed]", "bracketed", "bracketed")]
+    public void Identifier(string name, string schema, string bareName, string bareSchema)
     {
-        var expected = "fred";
-        var script = $"CREATE TRIGGER dbo.{expected} on dbo.tab after insert as select 1";
+        FullyQualifiedName expected = new(bareSchema, bareName);
+        var script = $"CREATE TRIGGER {schema}.{name} on dbo.tab after insert as select 1";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Triggers.First();
 
-        Assert.That(result.Name, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void Schema()
-    {
-        var expected = "fred";
-        var script = $"CREATE TRIGGER {expected}.stub on dbo.tab after insert as select 1";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Triggers.First();
-
-        Assert.That(result.Schema, Is.EqualTo(expected));
+        Assert.That(result.Identifier, Is.EqualTo(expected));
     }
 
     [Test]

@@ -1,4 +1,4 @@
-﻿using Mast;
+﻿using Mast.Dbo;
 
 namespace Tests.Mast;
 
@@ -56,6 +56,20 @@ public class UserTests : BaseMastTest
     }
 
     [Test]
+    [TestCase("bear", "bear")]
+    [TestCase("[bracketed]", "bracketed")]
+    public void Identifier(string name, string bareName)
+    {
+        FullyQualifiedName expected = new(string.Empty, bareName);
+        var script = $"CREATE USER {name}";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var result = db.Users.First();
+
+        Assert.That(result.Identifier, Is.EqualTo(expected));
+    }
+
+    [Test]
     [TestCase("", "")]
     [TestCase("FOR LOGIN pob", "pob")]
     public void Login(string login, string expected)
@@ -66,18 +80,6 @@ public class UserTests : BaseMastTest
         var result = db.Users.First();
 
         Assert.That(result.Login, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void Name()
-    {
-        var expected = "IgglePiggle";
-        var script = $"CREATE USER {expected}";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Users.First();
-
-        Assert.That(result.Name, Is.EqualTo(expected));
     }
 
     [Test]

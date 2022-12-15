@@ -9,7 +9,7 @@ public sealed class Table : DbObject
         : base(node)
     {
         Schema = GetSchema(node);
-        Name = GetName(node);
+        Identifier = new(GetSchema(node), GetName(node));
         Columns = CollectColumns(node);
         Indices = CollectIndices(node);
         Checks = GetChecks(node);
@@ -23,31 +23,31 @@ public sealed class Table : DbObject
         List<string> unresolved = new();
         List<DbObject> referents = new();
 
-        var schemas = db.Schemas.Where(s => s.Name == Schema);
-        if (!referents.Any())
-        {
-            unresolved.Add(Schema);
-        }
-        else
-        {
-            referents.AddRange(schemas);
-        }
+        //var schemas = db.Schemas.Where(s => s.Identifier.Name == Schema);
+        //if (!referents.Any())
+        //{
+        //    unresolved.Add(Schema);
+        //}
+        //else
+        //{
+        //    referents.AddRange(schemas);
+        //}
 
-        var dataTypes = Columns.Select(c => c.DataType );
-        foreach ( var dataType in dataTypes )
-        {
-            var referent = db.ScalarTypes.Where(st => st.Name == dataType.Name && st.Schema == dataType.Schema);
+        //var dataTypes = Columns.Select(c => c.DataType );
+        //foreach ( var dataType in dataTypes )
+        //{
+        //    var referent = db.ScalarTypes.Where(st => st.Identifier == dataType.Identifier && st.Schema == dataType.Schema);
 
-            if (referent.Any())
-            {
-                referents.Add(dataType); ;
-            }
-            else
-            {
-                unresolved.Add(dataType.Name);
-            }
+        //    if (referent.Any())
+        //    {
+        //        referents.Add(dataType); ;
+        //    }
+        //    else
+        //    {
+        //        unresolved.Add(dataType.Identifier);
+        //    }
 
-        }
+        //}
 
         return (referents.Distinct(), unresolved.Distinct());
     }

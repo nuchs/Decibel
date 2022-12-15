@@ -1,31 +1,31 @@
+using Mast.Dbo;
+
 namespace Tests.Mast;
 
 public class TableTypeTests : BaseMastTest
 {
     [Test]
-    [TestCase("bear", "bear")]
-    [TestCase("[bracketed]", "bracketed")]
-    public void Name(string name, string expected)
+    public void CheckCount()
     {
-        var script = $"CREATE TYPE dbo.{name} AS TABLE (StubColumn int)";
+        var script = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int, check (stub1 > 0), check(stub2 < 0))";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First();
 
-        Assert.That(result.Name, Is.EqualTo(expected));
+        Assert.That(result.Checks.Count(), Is.EqualTo(2));
     }
 
     [Test]
-    [TestCase("bear", "bear")]
-    [TestCase("[bracketed]", "bracketed")]
-    public void Schema(string schema, string expected)
+    [TestCase("", null)]
+    [TestCase(", check (stub1 > stub2)", "check (stub1 > stub2)")]
+    public void Checks(string constraint, string? expected)
     {
-        var script = $"CREATE TYPE {schema}.StubName AS TABLE (StubColumn int)";
+        var script = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int{constraint})";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First();
 
-        Assert.That(result.Schema, Is.EqualTo(expected));
+        Assert.That(result.Checks.FirstOrDefault()?.Content, Is.EqualTo(expected));
     }
 
     [Test]
@@ -42,6 +42,46 @@ public class TableTypeTests : BaseMastTest
         var result = db.TableTypes.First();
 
         Assert.That(result.Content, Is.EqualTo(script));
+    }
+
+    [Test]
+    [TestCase("bear", "bear", "bear", "bear")]
+    [TestCase("bear", "[bracketed]", "bear", "bracketed")]
+    [TestCase("[bracketed]", "bear", "bracketed", "bear")]
+    [TestCase("[bracketed]", "[bracketed]", "bracketed", "bracketed")]
+    public void Identifier(string name, string schema, string bareName, string bareSchema)
+    {
+        FullyQualifiedName expected = new(bareSchema, bareName);
+        var script = $"CREATE TYPE {schema}.{name} AS TABLE (StubColumn int)";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var result = db.TableTypes.First();
+
+        Assert.That(result.Identifier, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("", null)]
+    [TestCase(", index idx1 (stub1, stub2 desc)", "index idx1 (stub1, stub2 desc)")]
+    public void Indices(string indices, string? expected)
+    {
+        var script = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int{indices})";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var result = db.TableTypes.First();
+
+        Assert.That(result.Indices.FirstOrDefault()?.Content, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void IndicesCount()
+    {
+        var script = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int, index idx1(stub1), index idx2(stub2))";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var result = db.TableTypes.First();
+
+        Assert.That(result.Indices.Count(), Is.EqualTo(2));
     }
 
     [Test]
@@ -96,53 +136,5 @@ public class TableTypeTests : BaseMastTest
         var result = db.TableTypes.First();
 
         Assert.That(result.UniqueConstraints.Count(), Is.EqualTo(2));
-    }
-
-    [Test]
-    [TestCase("", null)]
-    [TestCase(", check (stub1 > stub2)", "check (stub1 > stub2)")]
-    public void Checks(string constraint, string? expected)
-    {
-        var script = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int{constraint})";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.TableTypes.First();
-
-        Assert.That(result.Checks.FirstOrDefault()?.Content, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void CheckCount()
-    {
-        var script = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int, check (stub1 > 0), check(stub2 < 0))";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.TableTypes.First();
-
-        Assert.That(result.Checks.Count(), Is.EqualTo(2));
-    }
-
-    [Test]
-    [TestCase("", null)]
-    [TestCase(", index idx1 (stub1, stub2 desc)", "index idx1 (stub1, stub2 desc)")]
-    public void Indices(string indices, string? expected)
-    {
-        var script = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int{indices})";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.TableTypes.First();
-
-        Assert.That(result.Indices.FirstOrDefault()?.Content, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void IndicesCount()
-    {
-        var script = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int, index idx1(stub1), index idx2(stub2))";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.TableTypes.First();
-
-        Assert.That(result.Indices.Count(), Is.EqualTo(2));
     }
 }

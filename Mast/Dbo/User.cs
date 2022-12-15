@@ -7,7 +7,7 @@ public sealed class User : DbObject
     public User(CreateUserStatement user)
         : base(user)
     {
-        Name = GetName(user);
+        Identifier = new(GetSchema(user), GetName(user));
         Login = GetLogin(user);
         Password = GetPassword(user);
         DefaultSchema = GetSchema(user);

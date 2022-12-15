@@ -7,7 +7,7 @@ public sealed class StoredProcedure : DbObject
     public StoredProcedure(CreateProcedureStatement node)
         : base(node)
     {
-        Name = GetName(node);
+        Identifier = new(GetSchema(node), GetName(node));
         Schema = GetSchema(node);
         Parameters = CollectParameters(node);
     }

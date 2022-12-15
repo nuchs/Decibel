@@ -1,4 +1,6 @@
-﻿namespace Tests.Mast;   
+﻿using Mast.Dbo;
+
+namespace Tests.Mast;   
 
 public class SchemaTests : BaseMastTest
 {
@@ -14,15 +16,17 @@ public class SchemaTests : BaseMastTest
     }
 
     [Test]
-    public void Name()
+    [TestCase("bear", "bear")]
+    [TestCase("[bracketed]", "bracketed")]
+    public void Identifier(string name, string bareName)
     {
-        var expected = "splat";
-        var script = $"CREATE SCHEMA {expected} AUTHORIZATION mrblobby";
+        FullyQualifiedName expected = new(string.Empty, bareName);
+        var script = $"CREATE SCHEMA {name} AUTHORIZATION mrblobby";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Schemas.First();
 
-        Assert.That(result.Name, Is.EqualTo(expected));
+        Assert.That(result.Identifier, Is.EqualTo(expected));
     }
 
     [Test]

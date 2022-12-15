@@ -8,7 +8,7 @@ public sealed class TableType : DbObject
         : base(node)
     {
         Schema = GetSchema(node);
-        Name = GetName(node);
+        Identifier = new(GetSchema(node), GetName(node));
         Columns = CollectColumns(node);
         Indices = CollectIndices(node);
         Checks = GetChecks(node);

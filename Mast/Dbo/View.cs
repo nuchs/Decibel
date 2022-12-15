@@ -7,7 +7,7 @@ public sealed class View : DbObject
     public View(CreateViewStatement view)
         : base(view)
     {
-        Name = GetName(view);
+        Identifier = new(GetSchema(view), GetName(view));
         Schema = GetSchema(view);
         Columns = CollectColumns(view);
         SchemaBinding = GetSchemaBinding(view);

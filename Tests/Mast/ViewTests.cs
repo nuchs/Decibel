@@ -1,4 +1,6 @@
-﻿namespace Tests.Mast;
+﻿using Mast.Dbo;
+
+namespace Tests.Mast;
 
 public class ViewTests : BaseMastTest
 {
@@ -38,27 +40,19 @@ public class ViewTests : BaseMastTest
     }
 
     [Test]
-    public void Name()
+    [TestCase("bear", "bear", "bear", "bear")]
+    [TestCase("bear", "[bracketed]", "bear", "bracketed")]
+    [TestCase("[bracketed]", "bear", "bracketed", "bear")]
+    [TestCase("[bracketed]", "[bracketed]", "bracketed", "bracketed")]
+    public void Identifier(string name, string schema, string bareName, string bareSchema)
     {
-        var expected = "bob";
-        var script = $"CREATE View dbo.{expected} (col) AS select tab.a";
+        FullyQualifiedName expected = new(bareSchema, bareName);
+        var script = $"CREATE View {schema}.{name} (col) AS select tab.a";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Views.First();
 
-        Assert.That(result.Name, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void Schema()
-    {
-        var expected = "dbo";
-        var script = $"CREATE View {expected}.stub (col) AS select tab.a";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Views.First();
-
-        Assert.That(result.Schema, Is.EqualTo(expected));
+        Assert.That(result.Identifier, Is.EqualTo(expected));
     }
 
     [Test]

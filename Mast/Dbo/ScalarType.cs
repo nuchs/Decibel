@@ -1,6 +1,7 @@
 ﻿using Mast.Parsing;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace Mast.Dbo;
 
@@ -9,7 +10,7 @@ public sealed class ScalarType : DbObject
     public ScalarType(DataTypeReference dataTypeRef)
         : base(dataTypeRef)
     {
-        Name = GetName(dataTypeRef.Name);
+        Identifier = new(GetSchema(dataTypeRef.Name), GetName(dataTypeRef.Name));
         Schema = GetSchema(dataTypeRef.Name);
         Parameters = CollectParameters(dataTypeRef);
     }
@@ -17,7 +18,7 @@ public sealed class ScalarType : DbObject
     public ScalarType(CreateTypeUddtStatement node)
         : base(node)
     {
-        Name = GetName(node.Name);
+        Identifier = new(GetSchema(node.Name), GetName(node.Name));
         Schema = GetSchema(node.Name);
         IsNullable = GetNullability(node);
         Parameters = CollectParameters(node.DataType);
@@ -37,7 +38,7 @@ public sealed class ScalarType : DbObject
     private protected override (IEnumerable<DbObject>, IEnumerable<string>) GetReferents(Database db)
     {
         List<string> unresolved = new();
-        var referents = db.Schemas.Where(s => s.Name == Schema);
+        var referents = db.Schemas.Where(s => s.Identifier.Name == Schema);
 
         if (!referents.Any())
         {

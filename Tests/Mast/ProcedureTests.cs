@@ -1,33 +1,9 @@
-﻿namespace Tests.Mast;
+﻿using Mast.Dbo;
+
+namespace Tests.Mast;
 
 public class ProcedureTests : BaseMastTest
 {
-    [Test]
-    [TestCase("bear", "bear")]
-    [TestCase("[bracketed]", "bracketed")]
-    public void Name(string name, string expected)
-    {
-        var script = $"CREATE PROCEDURE dbo.{name} AS SELECT 1";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Procedures.First();
-
-        Assert.That(result.Name, Is.EqualTo(expected));
-    }
-
-    [Test]
-    [TestCase("bear", "bear")]
-    [TestCase("[bracketed]", "bracketed")]
-    public void Schema(string schema, string expected)
-    {
-        var script = $"CREATE PROCEDURE {schema}.StubName AS SELECT 1";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Procedures.First();
-
-        Assert.That(result.Schema, Is.EqualTo(expected));
-    }
-
     [Test]
     public void Content()
     {
@@ -45,6 +21,22 @@ public class ProcedureTests : BaseMastTest
         var result = db.Procedures.First();
 
         Assert.That(result.Content, Is.EqualTo(script.Trim()));
+    }
+
+    [Test]
+    [TestCase("bear", "bear", "bear", "bear")]
+    [TestCase("bear", "[bracketed]", "bear", "bracketed")]
+    [TestCase("[bracketed]", "bear", "bracketed", "bear")]
+    [TestCase("[bracketed]", "[bracketed]", "bracketed", "bracketed")]
+    public void Identifier(string name, string schema, string bareName, string bareSchema)
+    {
+        FullyQualifiedName expected = new(bareSchema, bareName);
+        var script = $"CREATE PROCEDURE {schema}.{name} AS SELECT 1";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var result = db.Procedures.First();
+
+        Assert.That(result.Identifier, Is.EqualTo(expected));
     }
 
     [Test]

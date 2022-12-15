@@ -12,7 +12,7 @@ public class DbObject : DbFragment
     {
     }
 
-    public string Name { get; protected set; } = string.Empty;
+    public FullyQualifiedName Identifier { get; protected set; } = new(string.Empty, string.Empty);
 
     public IEnumerable<DbObject> ReferencedBy => referees;
 

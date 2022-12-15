@@ -1,35 +1,10 @@
-﻿using Mast.Parsing;
+﻿using Mast.Dbo;
+using Mast.Parsing;
 
 namespace Tests.Mast;
 
 public class ScalarTypeTests : BaseMastTest
 {
-    [Test]
-    [TestCase("bear", "bear")]
-    [TestCase("[bracketed]", "bracketed")]
-    public void Name(string name, string expected)
-    {
-        var script = $"CREATE TYPE dbo.{name} FROM INT";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.ScalarTypes.First();
-
-        Assert.That(result.Name, Is.EqualTo(expected));
-    }
-
-    [Test]
-    [TestCase("bear", "bear")]
-    [TestCase("[bracketed]", "bracketed")]
-    public void Schema(string schema, string expected)
-    {
-        var script = $"CREATE TYPE {schema}.StubName FROM INT";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.ScalarTypes.First();
-
-        Assert.That(result.Schema, Is.EqualTo(expected));
-    }
-
     [Test]
     public void Content()
     {
@@ -39,6 +14,22 @@ public class ScalarTypeTests : BaseMastTest
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Content, Is.EqualTo(script));
+    }
+
+    [Test]
+    [TestCase("bear", "bear", "bear", "bear")]
+    [TestCase("bear", "[bracketed]", "bear", "bracketed")]
+    [TestCase("[bracketed]", "bear", "bracketed", "bear")]
+    [TestCase("[bracketed]", "[bracketed]", "bracketed", "bracketed")]
+    public void Identifier(string name, string schema, string bareName, string bareSchema)
+    {
+        FullyQualifiedName expected = new(bareSchema, bareName);
+        var script = $"CREATE TYPE {schema}.{name} FROM INT";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var result = db.ScalarTypes.First();
+
+        Assert.That(result.Identifier, Is.EqualTo(expected));
     }
 
     [Test]
@@ -70,17 +61,6 @@ public class ScalarTypeTests : BaseMastTest
     }
 
     [Test]
-    public void UnparameterisedType()
-    {
-        var script = $"CREATE TYPE dbo.stub FROM INT";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.ScalarTypes.First();
-
-        Assert.That(result.Parameters, Is.Empty);
-    }
-
-    [Test]
     [TestCase("dbo")]
     [TestCase("[dbo]")]
     public void ReferenceSchema(string schemaName)
@@ -97,6 +77,30 @@ public class ScalarTypeTests : BaseMastTest
         var schema = db.Schemas.First();
 
         Assert.That(schema.ReferencedBy, Has.Member(scalar));
+    }
+
+    [Test]
+    [TestCase("bear", "bear")]
+    [TestCase("[bracketed]", "bracketed")]
+    public void Schema(string schema, string expected)
+    {
+        var script = $"CREATE TYPE {schema}.StubName FROM INT";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var result = db.ScalarTypes.First();
+
+        Assert.That(result.Schema, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void UnparameterisedType()
+    {
+        var script = $"CREATE TYPE dbo.stub FROM INT";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var result = db.ScalarTypes.First();
+
+        Assert.That(result.Parameters, Is.Empty);
     }
 
     [Test]
