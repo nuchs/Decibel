@@ -1,5 +1,4 @@
-﻿using Mast.Parsing;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -14,7 +13,6 @@ public sealed class Schema : DbObject
 
     public string Owner { get; }
 
-    internal override void CrossReference(Database db) => throw new NotImplementedException();
     private string GetName(CreateSchemaStatement schema)
         => GetId(schema.Name);
 

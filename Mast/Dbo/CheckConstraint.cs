@@ -1,5 +1,4 @@
-﻿using Mast.Parsing;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -10,5 +9,5 @@ public sealed class CheckConstraint : DbObject
     {
     }
 
-    internal override void CrossReference(Database db) => throw new NotImplementedException();
+    // TODO - where's the id
 }

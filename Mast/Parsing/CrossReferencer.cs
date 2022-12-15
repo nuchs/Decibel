@@ -11,13 +11,13 @@ internal sealed class CrossReferencer
     internal void Run()
     {
         AddReferencesFrom(db.ScalarTypes);
-        AddReferencesFrom(db.Tables);
-        AddReferencesFrom(db.TableTypes);
-        AddReferencesFrom(db.Views);
-        AddReferencesFrom(db.Functions);
-        AddReferencesFrom(db.Procedures);
-        AddReferencesFrom(db.Triggers);
-        AddReferencesFrom(db.Users);
+        //AddReferencesFrom(db.Tables);
+        //AddReferencesFrom(db.TableTypes);
+        //AddReferencesFrom(db.Views);
+        //AddReferencesFrom(db.Functions);
+        //AddReferencesFrom(db.Procedures);
+        //AddReferencesFrom(db.Triggers);
+        //AddReferencesFrom(db.Users);
     }
 
     private void AddReferencesFrom(IEnumerable<DbObject> objectList)

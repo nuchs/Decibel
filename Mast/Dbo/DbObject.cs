@@ -3,7 +3,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
-public abstract class DbObject
+public class DbObject
 {
     private readonly List<DbObject> referees = new();
 
@@ -18,9 +18,20 @@ public abstract class DbObject
 
     public override string ToString() => Content;
 
-    internal abstract void CrossReference(Database db);
+    internal void CrossReference(Database db)
+    {
+        var (referents, unresolvedRefs) = GetReferents(db);
 
-    private protected void AddReferee(DbObject referee) => referees.Add(referee);
+        foreach (var dbo in referents)
+        {
+            dbo.referees.Add(this);
+        }
+
+        foreach (var reference in unresolvedRefs)
+        {
+            db.UnresolvedReferencesList.Add(new(this, reference));
+        }
+    }
 
     private protected string AssembleFragment(TSqlFragment fragment)
         => AssembleFragment(
@@ -40,4 +51,9 @@ public abstract class DbObject
 
     private protected string GetId(Identifier? identifier)
         => identifier?.Value ?? string.Empty;
+
+    private protected virtual (IEnumerable<DbObject>, IEnumerable<string>) GetReferents(Database db)
+    {
+        return (Array.Empty<DbObject>(), Array.Empty<string>());
+    }
 }

@@ -44,8 +44,6 @@ public sealed class Column : DbObject
         return !nullConstrints.Any() || nullConstrints.First();
     }
 
-    internal override void CrossReference(Database db) => throw new NotImplementedException();
-
     private CheckConstraint? GetCheck(ColumnDefinition colDef)
     {
         var check = colDef.Constraints.OfType<CheckConstraintDefinition>().FirstOrDefault();

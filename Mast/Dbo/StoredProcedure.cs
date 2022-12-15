@@ -1,5 +1,4 @@
-﻿using Mast.Parsing;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -25,5 +24,4 @@ public sealed class StoredProcedure : DbObject
 
     private List<Parameter> CollectParameters(CreateProcedureStatement node)
         => node.Parameters.Select(p => new Parameter(p)).ToList();
-    internal override void CrossReference(Database db) => throw new NotImplementedException();
 }

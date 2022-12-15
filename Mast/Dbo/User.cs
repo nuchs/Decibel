@@ -1,5 +1,4 @@
-﻿using Mast.Parsing;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -26,7 +25,6 @@ public sealed class User : DbObject
 
     public string Sid { get; }
 
-    internal override void CrossReference(Database db) => throw new NotImplementedException();
     private string GetIdentifierOption(PrincipalOptionKind kind, IEnumerable<PrincipalOption> options)
         => options
             .Where(o => o.OptionKind == kind)

@@ -18,6 +18,40 @@ public sealed class Table : DbObject
         ForeignKeys = CollectForeignKeys(node);
     }
 
+    private protected override (IEnumerable<DbObject>, IEnumerable<string>) GetReferents(Database db)
+    {
+        List<string> unresolved = new();
+        List<DbObject> referents = new();
+
+        var schemas = db.Schemas.Where(s => s.Name == Schema);
+        if (!referents.Any())
+        {
+            unresolved.Add(Schema);
+        }
+        else
+        {
+            referents.AddRange(schemas);
+        }
+
+        var dataTypes = Columns.Select(c => c.DataType );
+        foreach ( var dataType in dataTypes )
+        {
+            var referent = db.ScalarTypes.Where(st => st.Name == dataType.Name && st.Schema == dataType.Schema);
+
+            if (referent.Any())
+            {
+                referents.Add(dataType); ;
+            }
+            else
+            {
+                unresolved.Add(dataType.Name);
+            }
+
+        }
+
+        return (referents.Distinct(), unresolved.Distinct());
+    }
+
     public IEnumerable<CheckConstraint> Checks { get; }
 
     public IEnumerable<Column> Columns { get; }
@@ -32,7 +66,6 @@ public sealed class Table : DbObject
 
     public IEnumerable<UniqueConstraint> UniqueConstraints { get; }
 
-    internal override void CrossReference(Database db) => throw new NotImplementedException();
     private IEnumerable<Column> CollectColumns(CreateTableStatement table)
         => table.Definition.ColumnDefinitions.Select(c => new Column(c));
 

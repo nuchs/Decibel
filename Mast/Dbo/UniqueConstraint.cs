@@ -1,5 +1,4 @@
-﻿using Mast.Parsing;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -19,7 +18,5 @@ public sealed class UniqueConstraint : DbObject
 
     public bool Clustered { get; }
 
-    public IEnumerable<Column> Columns  { get; }
-
-    internal override void CrossReference(Database db) => throw new NotImplementedException();
+    public IEnumerable<Column> Columns { get; }
 }

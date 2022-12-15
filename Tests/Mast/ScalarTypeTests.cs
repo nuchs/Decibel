@@ -1,4 +1,6 @@
-﻿namespace Tests.Mast;
+﻿using Mast.Parsing;
+
+namespace Tests.Mast;
 
 public class ScalarTypeTests : BaseMastTest
 {
@@ -76,5 +78,52 @@ public class ScalarTypeTests : BaseMastTest
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Parameters, Is.Empty);
+    }
+
+    [Test]
+    [TestCase("dbo")]
+    [TestCase("[dbo]")]
+    public void ReferenceSchema(string schemaName)
+    {
+        var script = $"""
+            CREATE SCHEMA {schemaName}
+            GO
+
+            CREATE TYPE {schemaName}.stub FROM INT
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var scalar = db.ScalarTypes.First();
+        var schema = db.Schemas.First();
+
+        Assert.That(schema.ReferencedBy, Has.Member(scalar));
+    }
+
+    [Test]
+    public void UnreferencedSchema()
+    {
+        var script = $"""
+            CREATE SCHEMA Liono
+            GO
+
+            CREATE TYPE Cheetahra.stub FROM INT
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var schema = db.Schemas.First();
+
+        Assert.That(schema.ReferencedBy, Is.Empty);
+    }
+
+    [Test]
+    public void UnresolvedSchemaReference()
+    {
+        var schema = "Liono";
+        var script = $"CREATE TYPE {schema}.stub FROM INT";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var expected = new Reference(db.ScalarTypes.First(), schema);
+
+        Assert.That(db.UnresolvedReferences, Has.Member(expected));
     }
 }

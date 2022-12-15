@@ -1,5 +1,4 @@
-﻿using Mast.Parsing;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -39,5 +38,4 @@ public sealed class Parameter : DbObject
             ParameterModifier.ReadOnly => ParameterMod.Readonly,
             _ => throw new InvalidDataException($"Unrecognised parameter modifier {parameter.Modifier}")
         };
-    internal override void CrossReference(Database db) => throw new NotImplementedException();
 }

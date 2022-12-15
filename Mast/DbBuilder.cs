@@ -16,7 +16,7 @@ public class DbBuilder
 
     public IDatabase Build()
     {
-        //referencer.Run();
+        referencer.Run();
         return db;
     }
 
