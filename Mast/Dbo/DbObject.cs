@@ -5,7 +5,7 @@ namespace Mast.Dbo;
 
 public class DbObject : DbFragment
 {
-    private readonly List<DbObject> referees = new();
+    private readonly HashSet<DbObject> referees = new();
 
     private protected DbObject(TSqlFragment fragment)
         : base(fragment)
@@ -31,8 +31,34 @@ public class DbObject : DbFragment
         }
     }
 
-    private protected virtual (IEnumerable<DbObject>, IEnumerable<string>) GetReferents(Database db)
+    protected (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) CorralateRefs(IEnumerable<DbObject> candidates, FullyQualifiedName target)
+        => CorralateRefs(candidates, new[] { target });
+
+    protected (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) CorralateRefs(IEnumerable<DbObject> candidates, IEnumerable<FullyQualifiedName> targets)
     {
-        return (Array.Empty<DbObject>(), Array.Empty<string>());
+        List<FullyQualifiedName> unresolved = new();
+        List<DbObject> referents = new();
+
+        foreach (var target in targets)
+        {
+            var referent = candidates.Where(c => c.Identifier == target);
+
+            if (referent.Any())
+            {
+                referents.AddRange(referent);
+            }
+            else
+            {
+                unresolved.Add(target);
+            }
+        }
+
+        return (referents, unresolved);
+    }
+
+    // TODO make abstract
+    private protected virtual (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db)
+    {
+        return (Array.Empty<DbObject>(), Array.Empty<FullyQualifiedName>());
     }
 }

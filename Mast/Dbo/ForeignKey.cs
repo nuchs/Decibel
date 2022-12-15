@@ -2,9 +2,9 @@
 
 namespace Mast.Dbo;
 
-public sealed class ForeginKey : DbFragment
+public sealed class ForeignKey : DbFragment
 {
-    public ForeginKey(
+    public ForeignKey(
         IEnumerable<Column> columns,
         ForeignKeyConstraintDefinition constraint)
         : base(constraint)
@@ -16,7 +16,7 @@ public sealed class ForeginKey : DbFragment
         OnUpdate = GetUpdateAction(constraint);
     }
 
-    public ForeginKey(Column column, ForeignKeyConstraintDefinition constraint)
+    public ForeignKey(Column column, ForeignKeyConstraintDefinition constraint)
         : this(new[] { column }, constraint)
     {
     }
@@ -25,7 +25,7 @@ public sealed class ForeginKey : DbFragment
 
     public string ForeignColumn { get; }
 
-    public string ForeignTable { get; }
+    public FullyQualifiedName ForeignTable { get; }
 
     public string Name { get; }
 
@@ -53,7 +53,7 @@ public sealed class ForeginKey : DbFragment
     private ChangeAction GetDeleteAction(ForeignKeyConstraintDefinition constraint)
         => MapAction(constraint.DeleteAction);
 
-    private (string table, string column) GetForeignReference(ForeignKeyConstraintDefinition constraint)
+    private (FullyQualifiedName table, string column) GetForeignReference(ForeignKeyConstraintDefinition constraint)
     {
         if (constraint.ReferencedTableColumns.Count > 1)
         {
@@ -61,7 +61,8 @@ public sealed class ForeginKey : DbFragment
         }
 
         return (
-            GetId(constraint.ReferenceTableName.BaseIdentifier),
+            new(GetId(constraint.ReferenceTableName.SchemaIdentifier), 
+                GetId(constraint.ReferenceTableName.BaseIdentifier)),
             GetId(constraint.ReferencedTableColumns.First()));
     }
 

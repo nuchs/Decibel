@@ -38,7 +38,7 @@ internal sealed class Database : IDatabase
 
     internal List<Trigger> TriggerList { get; } = new();
 
-    internal List<Reference> UnresolvedReferencesList { get; } = new();
+    internal HashSet<Reference> UnresolvedReferencesList { get; } = new();
 
     internal List<User> UserList { get; } = new();
 

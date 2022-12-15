@@ -169,4 +169,77 @@ public class TableTests : BaseMastTest
 
         Assert.That(result.UniqueConstraints.Count(), Is.EqualTo(2));
     }
+
+    [Test]
+    [TestCase("dbo")]
+    [TestCase("[dbo]")]
+    public void ReferenceSchema(string schemaName)
+    {
+        var script = $"""
+            CREATE SCHEMA {schemaName}
+            GO
+
+            CREATE table {schemaName}.stub (stub int)
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var table = db.Tables.First();
+        var schema = db.Schemas.First();
+
+        Assert.That(schema.ReferencedBy, Has.Member(table));
+    }
+
+    [Test]
+    public void ReferenceType()
+    {
+        var expected = new FullyQualifiedName("dbo", "MyType");
+        var script = $"""
+            CREATE TYPE my.type FROM INT
+            GO
+
+            CREATE table {expected} (stub my.type)
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var table = db.Tables.First();
+        var scalar = db.ScalarTypes.First();
+
+        Assert.That(scalar.ReferencedBy, Has.Member(table));
+    }
+
+    [Test]
+    public void ReferenceTable_RowFk()
+    {
+        var expected = new FullyQualifiedName("dbo", "MyTable");
+        var script = $"""
+            CREATE TABLE my.tab (col int)
+            GO
+
+            CREATE table {expected} (stub my.type references my.tab(col))
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var referee = db.Tables.First(t => t.Identifier == expected);
+        var referent = db.Tables.First(t => t.Identifier != expected);
+
+        Assert.That(referent.ReferencedBy, Has.Member(referee));
+    }
+
+    [Test]
+    public void ReferenceTable_TableFk()
+    {
+        var expected = new FullyQualifiedName("dbo", "MyTable");
+        var script = $"""
+            CREATE TABLE my.tab (col int)
+            GO
+
+            CREATE table {expected} (stub int, foreign key(stub) references my.tab(col))
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var referee = db.Tables.First(t => t.Identifier == expected);
+        var referent = db.Tables.First(t => t.Identifier != expected);
+
+        Assert.That(referent.ReferencedBy, Has.Member(referee));
+    }
 }

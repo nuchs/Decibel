@@ -22,18 +22,8 @@ public sealed class ScalarType : DbObject
             sqlRef.Parameters.Select(p => p.Value) :
             new List<string>();
 
-    private protected override (IEnumerable<DbObject>, IEnumerable<string>) GetReferents(Database db)
-    {
-        List<string> unresolved = new();
-        var referents = db.Schemas.Where(s => s.Identifier.Name == Identifier.Schema);
-
-        if (!referents.Any())
-        {
-            unresolved.Add(Identifier.Schema);
-        }
-
-        return (referents, unresolved); 
-    }
+    private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db) 
+        => CorralateRefs(db.Schemas, new FullyQualifiedName(string.Empty, Identifier.Schema));
 
     private FullyQualifiedName AssembleIdentifier(SchemaObjectName node)
         => new(GetId(node.SchemaIdentifier), GetId(node.BaseIdentifier));

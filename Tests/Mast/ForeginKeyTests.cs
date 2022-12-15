@@ -11,7 +11,7 @@ public class ForeignKeyTests : BaseMastTest
         var script = $"CREATE TABLE dbo.stub ({expected} int references fstub (fcol))";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Tables.First().Columns.First().ForeginKey;
+        var result = db.Tables.First().Columns.First().ForeignKey;
 
         Assert.That(result?.Column.Name, Is.EqualTo(expected));
     }
@@ -41,13 +41,13 @@ public class ForeignKeyTests : BaseMastTest
     }
 
     [Test]
-    public void ForeginColumn()
+    public void ForeignColumn()
     {
         var expected = "fcol";
         var script = $"CREATE TABLE dbo.stub (stub int references fstub ({expected}))";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Tables.First().Columns.First().ForeginKey;
+        var result = db.Tables.First().Columns.First().ForeignKey;
 
         Assert.That(result?.ForeignColumn, Is.EqualTo(expected));
     }
@@ -55,11 +55,11 @@ public class ForeignKeyTests : BaseMastTest
     [Test]
     public void ForeignTable()
     {
-        var expected = "fstub";
+        FullyQualifiedName expected = new("", "fstub");
         var script = $"CREATE TABLE dbo.stub (stub int references {expected} (fcol))";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Tables.First().Columns.First().ForeginKey;
+        var result = db.Tables.First().Columns.First().ForeignKey;
 
         Assert.That(result?.ForeignTable, Is.EqualTo(expected));
     }
@@ -87,7 +87,7 @@ public class ForeignKeyTests : BaseMastTest
         var script = $"CREATE TABLE dbo.stub (stub int references ftab (fcol) {action})";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Tables.First().Columns.First().ForeginKey;
+        var result = db.Tables.First().Columns.First().ForeignKey;
 
         Assert.That(result?.OnDelete, Is.EqualTo(expected));
     }
@@ -103,7 +103,7 @@ public class ForeignKeyTests : BaseMastTest
         var script = $"CREATE TABLE dbo.stub (stub int references ftab (fcol) {action})";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Tables.First().Columns.First().ForeginKey;
+        var result = db.Tables.First().Columns.First().ForeignKey;
 
         Assert.That(result?.OnUpdate, Is.EqualTo(expected));
     }

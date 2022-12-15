@@ -15,7 +15,7 @@ public sealed class Column : DbFragment
         Check = GetCheck(colDef);
         Default = GetDefault(colDef);
         Identity = GetIdentity(colDef);
-        ForeginKey = GetForeginKey(colDef);
+        ForeignKey = GetForeignKey(colDef);
     }
 
     public CheckConstraint? Check { get; }
@@ -24,7 +24,7 @@ public sealed class Column : DbFragment
 
     public DefaultConstraint? Default { get; }
 
-    public ForeginKey? ForeginKey { get; }
+    public ForeignKey? ForeignKey { get; }
 
     public IdentityConstraint? Identity { get; }
 
@@ -55,7 +55,7 @@ public sealed class Column : DbFragment
     private DefaultConstraint? GetDefault(ColumnDefinition colDef)
         => colDef.DefaultConstraint is not null ? new(colDef.DefaultConstraint) : null;
 
-    private ForeginKey? GetForeginKey(ColumnDefinition colDef)
+    private ForeignKey? GetForeignKey(ColumnDefinition colDef)
     {
         var fk = colDef.Constraints.OfType<ForeignKeyConstraintDefinition>().FirstOrDefault();
 

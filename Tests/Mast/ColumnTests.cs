@@ -113,13 +113,13 @@ public class ColumnTests : BaseMastTest
     [Test]
     [TestCase("", null)]
     [TestCase("references dbo.stuble (col1)", "references dbo.stuble (col1)")]
-    public void ForeginKey(string constraint, string? expected)
+    public void ForeignKey(string constraint, string? expected)
     {
         var script = $"CREATE TABLE dbo.stub (stub int {constraint})";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Tables.First().Columns.First();
 
-        Assert.That(result.ForeginKey?.Content, Is.EqualTo(expected));
+        Assert.That(result.ForeignKey?.Content, Is.EqualTo(expected));
     }
 }

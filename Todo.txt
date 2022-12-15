@@ -4,15 +4,15 @@ Mast
 grants/denies to users - too complicated for now
 
 references
-schema <- tables, scalars, table types, func, proc, view, trigger, user
-scalar <- tables, table types, func, proc, view, trigger
-tables <- tables, func, proc, view, trigger
-table type <- func, proc, trigger
-view <- func, proc, trigger
-func <- func, proc, trigger
-proc <- proc, trigger
-trigger <- ?
-user <- ?
+schema		<- scalar, table, table type, view, func, proc, trigger, user
+scalar		<- table, table type, view, func, proc, trigger
+table		<- table, view, func, proc, trigger
+table type	<- func, proc, trigger
+view		<- func, proc, trigger
+func		<- func, proc, trigger
+proc		<- proc, trigger
+trigger		<- ?
+user		<- ?
 
 -------------------------------------------------------------------------------
 Patcher

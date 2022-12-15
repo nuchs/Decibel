@@ -113,7 +113,7 @@ public class ScalarTypeTests : BaseMastTest
         var script = $"CREATE TYPE {schema}.stub FROM INT";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var expected = new Reference(db.ScalarTypes.First(), schema);
+        var expected = new Reference(db.ScalarTypes.First(), new(string.Empty, schema));
 
         Assert.That(db.UnresolvedReferences, Has.Member(expected));
     }

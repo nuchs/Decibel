@@ -21,7 +21,7 @@ public sealed class Table : DbObject
 
     public IEnumerable<Column> Columns { get; }
 
-    public IEnumerable<ForeginKey> ForeignKeys { get; }
+    public IEnumerable<ForeignKey> ForeignKeys { get; }
 
     public IEnumerable<Index> Indices { get; }
 
@@ -29,32 +29,16 @@ public sealed class Table : DbObject
 
     public IEnumerable<UniqueConstraint> UniqueConstraints { get; }
 
-    private protected override (IEnumerable<DbObject>, IEnumerable<string>) GetReferents(Database db)
+    private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db)
     {
-        List<string> unresolved = new();
-        List<DbObject> referents = new();
+        var tableFk = ForeignKeys.Select(f => f.ForeignTable);
+        var colFk = Columns.Where(c => c.ForeignKey is not null).Select(c => c.ForeignKey?.ForeignTable).OfType<FullyQualifiedName>();
 
-        //var schemas = db.Schemas.Where(s => s.Identifier.Name == Schema);
-        //if (!referents.Any())
-        //{
-        //    unresolved.Add(Schema);
-        //}
-        //else
-        //{
-        //    referents.AddRange(schemas);
-        //}
-
-        //var dataTypes = Columns.Select(c => c.DataType );
-        //foreach ( var dataType in dataTypes )
-        //{
-        //    var referent = db.ScalarTypes.Where(st => st.Identifier == dataType.Identifier && st.Schema == dataType.Schema);
-
-        // if (referent.Any()) { referents.Add(dataType); ; } else {
-        // unresolved.Add(dataType.Identifier); }
-
-        //}
-
-        return (referents.Distinct(), unresolved.Distinct());
+        var (tableHits, tableMisses) = CorralateRefs(db.Tables, tableFk.Concat(colFk));
+        var (schemaHits, schmeaMisses) = CorralateRefs(db.Schemas, new FullyQualifiedName(string.Empty, Identifier.Schema));
+        var (typeHits, typeMisses) = CorralateRefs(db.ScalarTypes, Columns.Select(c => c.DataType));
+        
+        return (schemaHits.Concat(typeHits).Concat(tableHits), schmeaMisses.Concat(typeMisses).Concat(tableMisses));
     }
 
     private FullyQualifiedName AssembleIdentifier(CreateTableStatement node)
@@ -67,12 +51,12 @@ public sealed class Table : DbObject
     private IEnumerable<Column> CollectColumns(CreateTableStatement table)
             => table.Definition.ColumnDefinitions.Select(c => new Column(c));
 
-    private IEnumerable<ForeginKey> CollectForeignKeys(CreateTableStatement table)
+    private IEnumerable<ForeignKey> CollectForeignKeys(CreateTableStatement table)
         => table
             .Definition
             .TableConstraints
             .OfType<ForeignKeyConstraintDefinition>()
-            .Select(fk => new ForeginKey(Columns, fk));
+            .Select(fk => new ForeignKey(Columns, fk));
 
     private IEnumerable<Index> CollectIndices(CreateTableStatement node)
         => node.Definition.Indexes.Select(i => new Index(Columns, i));

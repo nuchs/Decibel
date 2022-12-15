@@ -2,4 +2,4 @@
 
 namespace Mast.Parsing;
 
-public sealed record Reference(DbObject Referee, string Referent);
+public sealed record Reference(DbObject Referee, FullyQualifiedName Referent);
