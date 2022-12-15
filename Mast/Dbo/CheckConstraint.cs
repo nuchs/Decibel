@@ -2,12 +2,16 @@
 
 namespace Mast.Dbo;
 
-public sealed class CheckConstraint : DbObject
+public sealed class CheckConstraint : DbFragment
 {
-    public CheckConstraint(CheckConstraintDefinition constaint)
-        : base(constaint)
+    public CheckConstraint(CheckConstraintDefinition constraint)
+        : base(constraint)
     {
+        Name = GetName(constraint);
     }
 
-    // TODO - where's the id
+    public string Name { get; }
+
+    private string GetName(CheckConstraintDefinition constraint)
+        => GetId(constraint.ConstraintIdentifier);
 }

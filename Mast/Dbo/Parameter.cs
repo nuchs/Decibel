@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public sealed class Parameter : DbObject
+public sealed class Parameter : DbFragment
 {
     public Parameter(ProcedureParameter parameter)
         : base(parameter)
@@ -22,7 +22,7 @@ public sealed class Parameter : DbObject
 
     public ParameterMod Modifier { get; }
 
-    private string GetName(ProcedureParameter parameter) => GetId(parameter.VariableName);
+    public string Name { get; }
 
     private static bool? GetNullability(ProcedureParameter parameter)
         => parameter.Nullable is null ? null : parameter.Nullable.Nullable;
@@ -38,4 +38,6 @@ public sealed class Parameter : DbObject
             ParameterModifier.ReadOnly => ParameterMod.Readonly,
             _ => throw new InvalidDataException($"Unrecognised parameter modifier {parameter.Modifier}")
         };
+
+    private string GetName(ProcedureParameter parameter) => GetId(parameter.VariableName);
 }

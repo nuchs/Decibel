@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public sealed class ForeginKey : DbObject
+public sealed class ForeginKey : DbFragment
 {
     public ForeginKey(
         IEnumerable<Column> columns,
@@ -26,6 +26,8 @@ public sealed class ForeginKey : DbObject
     public string ForeignColumn { get; }
 
     public string ForeignTable { get; }
+
+    public string Name { get; }
 
     public ChangeAction OnDelete { get; }
 

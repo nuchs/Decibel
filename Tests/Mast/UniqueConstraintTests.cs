@@ -51,4 +51,16 @@ public class UniqueConstraintTests : BaseMastTest
         Assert.That(result.Unique?.Columns.Count(), Is.EqualTo(1));
         Assert.That(result.Unique?.Columns.First().Name, Is.EqualTo(expected));
     }
+
+    [Test]
+    public void Name()
+    {
+        var expected = "uq1";
+        var script = $"CREATE TABLE dbo.stub (stub int, constraint {expected} unique (stub))";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var result = db.Tables.First().UniqueConstraints.First(); ;
+
+        Assert.That(result?.Name, Is.EqualTo(expected));
+    }
 }

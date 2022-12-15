@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public sealed class DefaultConstraint : DbObject
+public sealed class DefaultConstraint : DbFragment
 {
     public DefaultConstraint(DefaultConstraintDefinition def)
         : base(def)
@@ -10,6 +10,8 @@ public sealed class DefaultConstraint : DbObject
         Name = GetName(def);
         Value = GetValue(def);
     }
+
+    public string Name { get; }
 
     public string Value { get; }
 

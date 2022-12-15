@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public sealed class Index : DbObject
+public sealed class Index : DbFragment
 {
     public Index(IEnumerable<Column> tableColumns, IndexDefinition index)
         : base(index)
@@ -15,6 +15,8 @@ public sealed class Index : DbObject
     public bool Clustered { get; }
 
     public IEnumerable<IndexColumn> Columns { get; }
+
+    public string Name { get; }
 
     private static bool GetClustered(IndexDefinition index)
         => index.IndexType.IndexTypeKind == IndexTypeKind.Clustered

@@ -1,9 +1,8 @@
-﻿using Mast.Parsing;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
-public sealed class Column : DbObject
+public sealed class Column : DbFragment
 {
     public Column(ColumnDefinition colDef)
         : base(colDef)
@@ -30,6 +29,8 @@ public sealed class Column : DbObject
     public IdentityConstraint? Identity { get; }
 
     public bool IsNullable { get; }
+
+    public string Name { get; }
 
     public PrimaryKey? PrimaryKey { get; }
 

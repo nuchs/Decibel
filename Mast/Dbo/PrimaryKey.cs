@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public sealed class PrimaryKey : DbObject
+public sealed class PrimaryKey : DbFragment
 {
     public PrimaryKey(Column column, UniqueConstraintDefinition constraint)
         : this(new[] { column }, constraint)
@@ -25,6 +25,8 @@ public sealed class PrimaryKey : DbObject
     public bool Clustered { get; }
 
     public IEnumerable<Column> Columns { get; }
+
+    public string Name { get; }
 
     private IEnumerable<Column> CollectPrimaryColumns(IEnumerable<Column> columns, UniqueConstraintDefinition constraint)
     {

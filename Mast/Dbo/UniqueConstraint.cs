@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public sealed class UniqueConstraint : DbObject
+public sealed class UniqueConstraint : DbFragment
 {
     public UniqueConstraint(Column column, UniqueConstraintDefinition constraint)
         : this(new[] { column }, constraint)
@@ -12,6 +12,7 @@ public sealed class UniqueConstraint : DbObject
     public UniqueConstraint(IEnumerable<Column> columns, UniqueConstraintDefinition constraint)
         : base(constraint)
     {
+        Name = GetName(constraint);
         Columns = columns;
         Clustered = constraint.Clustered ?? false;
     }
@@ -19,4 +20,9 @@ public sealed class UniqueConstraint : DbObject
     public bool Clustered { get; }
 
     public IEnumerable<Column> Columns { get; }
+
+    public string Name { get; }
+
+    private string GetName(UniqueConstraintDefinition constraint)
+        => GetId(constraint.ConstraintIdentifier);
 }
