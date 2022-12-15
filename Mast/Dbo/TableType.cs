@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class TableType : DbObject
+public sealed class TableType : DbObject
 {
     public TableType(CreateTypeTableStatement node)
         : base(node)

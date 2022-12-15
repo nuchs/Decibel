@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class CheckConstraint : DbObject
+public sealed class CheckConstraint : DbObject
 {
     public CheckConstraint(CheckConstraintDefinition constaint)
         : base(constaint)

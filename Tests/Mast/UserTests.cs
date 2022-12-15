@@ -1,4 +1,4 @@
-﻿namespace Tests.Mast.Dbo;
+﻿namespace Tests.Mast;
 
 public class UserTests : BaseMastTest
 {
@@ -7,7 +7,7 @@ public class UserTests : BaseMastTest
     {
         var expected = $"CREATE USER IgglePiggle FOR LOGIN NGIgPig WITH DEFAULT_SCHEMA = dbo";
 
-        parser.Parse(db, expected);
+        db.AddFromTsqlScript(expected);
         var result = db.Users.First();
 
         Assert.That(result.Content, Is.EqualTo(expected));
@@ -21,7 +21,7 @@ public class UserTests : BaseMastTest
     {
         var user = $"CREATE USER stub with password = '123' {sid}";
 
-        parser.Parse(db, user);
+        db.AddFromTsqlScript(user);
         var result = db.Users.First();
 
         Assert.That(result.DefaultLanguage, Is.EqualTo(expected));
@@ -34,7 +34,7 @@ public class UserTests : BaseMastTest
     {
         var user = $"CREATE USER stub {schema}";
 
-        parser.Parse(db, user);
+        db.AddFromTsqlScript(user);
         var result = db.Users.First();
 
         Assert.That(result.DefaultSchema, Is.EqualTo(expected));
@@ -47,7 +47,7 @@ public class UserTests : BaseMastTest
     {
         var user = $"CREATE USER stub with password = '123' {sid}";
 
-        parser.Parse(db, user);
+        db.AddFromTsqlScript(user);
         var result = db.Users.First();
 
         Assert.That(result.Sid, Is.EqualTo(expected));
@@ -60,7 +60,7 @@ public class UserTests : BaseMastTest
     {
         var user = $"CREATE USER stub {login}";
 
-        parser.Parse(db, user);
+        db.AddFromTsqlScript(user);
         var result = db.Users.First();
 
         Assert.That(result.Login, Is.EqualTo(expected));
@@ -72,7 +72,7 @@ public class UserTests : BaseMastTest
         var expected = "IgglePiggle";
         var user = $"CREATE USER {expected}";
 
-        parser.Parse(db, user);
+        db.AddFromTsqlScript(user);
         var result = db.Users.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -85,7 +85,7 @@ public class UserTests : BaseMastTest
     {
         var user = $"CREATE USER stub {password}";
 
-        parser.Parse(db, user);
+        db.AddFromTsqlScript(user);
         var result = db.Users.First();
 
         Assert.That(result.Password, Is.EqualTo(expected));

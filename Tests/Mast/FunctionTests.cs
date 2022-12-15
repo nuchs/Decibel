@@ -1,4 +1,4 @@
-﻿namespace Tests.Mast.Dbo;
+﻿namespace Tests.Mast;
 
 public class FunctionTests : BaseMastTest
 {
@@ -9,7 +9,7 @@ public class FunctionTests : BaseMastTest
     {
         var function = $"CREATE FUNCTION dbo.{name} () RETURNS TABLE AS RETURN SELECT 1";
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Functions.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -22,7 +22,7 @@ public class FunctionTests : BaseMastTest
     {
         var function = $"CREATE FUNCTION {schema}.StubName () RETURNS TABLE AS RETURN SELECT 1";
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Functions.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
@@ -42,7 +42,7 @@ public class FunctionTests : BaseMastTest
             END
             """;
 
-        parser.Parse(db, expected);
+        db.AddFromTsqlScript(expected);
         var result = db.Functions.First();
 
         Assert.That(result.Content, Is.EqualTo(expected.Trim()));
@@ -56,7 +56,7 @@ public class FunctionTests : BaseMastTest
     {
         var function = $"CREATE FUNCTION dbo.stub({paramList}) RETURNS TABLE AS RETURN SELECT 1";
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Functions.First();
 
         Assert.That(result.Parameters, Has.Exactly(expected).Items);
@@ -77,7 +77,7 @@ public class FunctionTests : BaseMastTest
             END
             """;
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Functions.First();
 
         Assert.That(result.ReturnType, Is.EqualTo(expected));
@@ -93,7 +93,7 @@ public class FunctionTests : BaseMastTest
             RETURN {expected}
             """;
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Functions.First();
 
         Assert.That(result.ReturnType, Is.EqualTo(expected));
@@ -115,7 +115,7 @@ public class FunctionTests : BaseMastTest
             END
             """;
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Functions.First();
 
         Assert.That(result.ReturnType, Is.EqualTo(expected));

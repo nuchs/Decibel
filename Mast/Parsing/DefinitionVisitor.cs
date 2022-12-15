@@ -1,16 +1,12 @@
-﻿using Mast.Dbo;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Parsing;
 
-internal class DefinitionVisitor : TSqlFragmentVisitor
+internal sealed class DefinitionVisitor : TSqlFragmentVisitor
 {
     private readonly Database db;
 
-    public DefinitionVisitor(Database db)
-    {
-        this.db = db;
-    }
+    public DefinitionVisitor(Database db) => this.db = db;
 
     public override void Visit(CreateTableStatement node) => Visit(db.TableList, new(node), node);
 

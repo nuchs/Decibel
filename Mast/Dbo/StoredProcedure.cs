@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class StoredProcedure : DbObject
+public sealed class StoredProcedure : DbObject
 {
     public StoredProcedure(CreateProcedureStatement node)
         : base(node)

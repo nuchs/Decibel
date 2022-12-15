@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class Schema : DbObject
+public sealed class Schema : DbObject
 {
     public Schema(CreateSchemaStatement schema)
         : base(schema)

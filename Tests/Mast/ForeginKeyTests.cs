@@ -1,6 +1,6 @@
 ﻿using Mast.Dbo;
 
-namespace Tests.Mast.Dbo;
+namespace Tests.Mast;
 
 public class ForeignKeyTests : BaseMastTest
 {
@@ -10,7 +10,7 @@ public class ForeignKeyTests : BaseMastTest
         var expected = "col1";
         var type = $"CREATE TABLE dbo.stub ({expected} int references fstub (fcol))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().Columns.First().ForeginKey;
 
         Assert.That(result?.Column.Name, Is.EqualTo(expected));
@@ -22,7 +22,7 @@ public class ForeignKeyTests : BaseMastTest
         var expected = "col1";
         var type = $"CREATE TABLE dbo.stub ({expected} int, foreign key ({expected}) references fstub (fcol))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().ForeignKeys.First();
 
         Assert.That(result?.Column.Name, Is.EqualTo(expected));
@@ -34,7 +34,7 @@ public class ForeignKeyTests : BaseMastTest
         var expected = "foreign key (stub) references fstub (fcol)";
         var type = $"CREATE TABLE dbo.stub (stub int, {expected})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().ForeignKeys.First();
 
         Assert.That(result?.Content, Is.EqualTo(expected));
@@ -46,7 +46,7 @@ public class ForeignKeyTests : BaseMastTest
         var expected = "fcol";
         var type = $"CREATE TABLE dbo.stub (stub int references fstub ({expected}))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().Columns.First().ForeginKey;
 
         Assert.That(result?.ForeignColumn, Is.EqualTo(expected));
@@ -58,7 +58,7 @@ public class ForeignKeyTests : BaseMastTest
         var expected = "fstub";
         var type = $"CREATE TABLE dbo.stub (stub int references {expected} (fcol))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().Columns.First().ForeginKey;
 
         Assert.That(result?.ForeignTable, Is.EqualTo(expected));
@@ -70,7 +70,7 @@ public class ForeignKeyTests : BaseMastTest
         var expected = "fk1";
         var type = $"CREATE TABLE dbo.stub (stub int, constraint {expected} foreign key (stub) references fstub (fcol))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().ForeignKeys.First();
 
         Assert.That(result?.Name, Is.EqualTo(expected));
@@ -86,7 +86,7 @@ public class ForeignKeyTests : BaseMastTest
     {
         var type = $"CREATE TABLE dbo.stub (stub int references ftab (fcol) {action})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().Columns.First().ForeginKey;
 
         Assert.That(result?.OnDelete, Is.EqualTo(expected));
@@ -102,7 +102,7 @@ public class ForeignKeyTests : BaseMastTest
     {
         var type = $"CREATE TABLE dbo.stub (stub int references ftab (fcol) {action})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().Columns.First().ForeginKey;
 
         Assert.That(result?.OnUpdate, Is.EqualTo(expected));

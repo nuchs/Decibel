@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class Trigger : DbObject
+public sealed class Trigger : DbObject
 {
     public Trigger(CreateTriggerStatement trigger)
         : base(trigger)

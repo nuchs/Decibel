@@ -1,13 +1,11 @@
 ﻿using Mast;
-using Mast.Dbo;
+using Mast.Parsing;
 
-namespace Tests.Mast.Dbo;
+namespace Tests.Mast;
 
 public class BaseMastTest
 {
     protected Database db { get; private set; } = new();
-
-    protected ScriptParser parser { get; } = new();
 
     [SetUp]
     public void Setup() => db = new();

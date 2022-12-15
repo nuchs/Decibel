@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class PrimaryKey : DbObject
+public sealed class PrimaryKey : DbObject
 {
     public PrimaryKey(Column column, UniqueConstraintDefinition constraint)
         : this(new[] { column }, constraint)

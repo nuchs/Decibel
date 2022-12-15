@@ -1,6 +1,6 @@
 ﻿using Mast.Dbo;
 
-namespace Tests.Mast.Dbo;
+namespace Tests.Mast;
 
 public class ParameterTests : BaseMastTest
 {
@@ -12,7 +12,7 @@ public class ParameterTests : BaseMastTest
         var expected = "@SomeParam int not null";
         var function = $"CREATE FUNCTION dbo.stub({expected}) RETURNS TABLE AS RETURN SELECT 1";
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Functions.First().Parameters.First();
 
         Assert.That(result.Content, Is.EqualTo(expected));
@@ -26,7 +26,7 @@ public class ParameterTests : BaseMastTest
     {
         var function = $"CREATE FUNCTION dbo.stub(@Stub {expected}) RETURNS TABLE AS RETURN SELECT 1";
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Functions.First().Parameters.First();
 
         Assert.That(result.DataType.ToString(), Is.EqualTo(expected));
@@ -38,7 +38,7 @@ public class ParameterTests : BaseMastTest
         var expected = rand.Next().ToString();
         var function = $"CREATE FUNCTION dbo.stub(@Stub int = {expected}) RETURNS TABLE AS RETURN SELECT 1";
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Functions.First().Parameters.First();
 
         Assert.That(result.Default, Is.EqualTo(expected));
@@ -53,7 +53,7 @@ public class ParameterTests : BaseMastTest
     {
         var function = $"CREATE Procedure dbo.stub @Stub int{mod} AS RETURN SELECT 1";
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Procedures.First().Parameters.First();
 
         Assert.That(result.Modifier, Is.EqualTo(expected));
@@ -65,7 +65,7 @@ public class ParameterTests : BaseMastTest
         var expected = "@Slartibartfast";
         var function = $"CREATE FUNCTION dbo.stub({expected} int) RETURNS TABLE AS RETURN SELECT 1";
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Functions.First().Parameters.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -79,7 +79,7 @@ public class ParameterTests : BaseMastTest
     {
         var function = $"CREATE FUNCTION dbo.stub(@stub int{nullSpecifier}) RETURNS TABLE AS RETURN SELECT 1";
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Functions.First().Parameters.First();
 
         Assert.That(result.IsNullable, Is.EqualTo(nullable));

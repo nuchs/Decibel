@@ -1,4 +1,4 @@
-﻿namespace Tests.Mast.Dbo;
+﻿namespace Tests.Mast;
 
 public class UniqueConstraintTests : BaseMastTest
 {
@@ -10,7 +10,7 @@ public class UniqueConstraintTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int unique {clustered})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Unique?.Clustered, Is.EqualTo(expected));
@@ -22,7 +22,7 @@ public class UniqueConstraintTests : BaseMastTest
         var expected = "unique clustered";
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Unique?.Content, Is.EqualTo(expected));
@@ -33,7 +33,7 @@ public class UniqueConstraintTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int unique)";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Unique?.Name, Is.EqualTo(string.Empty));
@@ -45,7 +45,7 @@ public class UniqueConstraintTests : BaseMastTest
         var expected = "col_p";
         var type = $"CREATE TYPE dbo.stub AS TABLE ({expected} int unique)";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Unique?.Columns.Count(), Is.EqualTo(1));

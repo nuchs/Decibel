@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class UniqueConstraint : DbObject
+public sealed class UniqueConstraint : DbObject
 {
     public UniqueConstraint(Column column, UniqueConstraintDefinition constraint)
         : this(new[] { column }, constraint)

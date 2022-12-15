@@ -1,4 +1,4 @@
-﻿namespace Tests.Mast.Dbo;
+﻿namespace Tests.Mast;
 
 public class IdentityConstraintTests : BaseMastTest
 {
@@ -7,7 +7,7 @@ public class IdentityConstraintTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int identity)";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Identity?.Increment, Is.EqualTo(1));
@@ -18,7 +18,7 @@ public class IdentityConstraintTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int identity)";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Identity?.Seed, Is.EqualTo(1));
@@ -31,7 +31,7 @@ public class IdentityConstraintTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Identity?.Content, Is.EqualTo(expected));
@@ -46,7 +46,7 @@ public class IdentityConstraintTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int identity(0, {expected}))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Identity?.Increment, Is.EqualTo(expected));
@@ -60,7 +60,7 @@ public class IdentityConstraintTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int identity({expected}, 1))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Identity?.Seed, Is.EqualTo(expected));

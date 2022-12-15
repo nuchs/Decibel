@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class Function : DbObject
+public sealed class Function : DbObject
 {
     public Function(CreateFunctionStatement node)
         : base(node)

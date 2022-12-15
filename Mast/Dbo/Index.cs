@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class Index : DbObject
+public sealed class Index : DbObject
 {
     public Index(IEnumerable<Column> tableColumns, IndexDefinition index)
         : base(index)

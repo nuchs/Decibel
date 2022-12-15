@@ -1,0 +1,5 @@
+﻿using Mast.Dbo;
+
+namespace Mast.Parsing;
+
+public sealed record Reference(DbObject Referee, string Referent);

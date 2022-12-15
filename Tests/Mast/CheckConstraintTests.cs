@@ -1,4 +1,4 @@
-﻿namespace Tests.Mast.Dbo;
+﻿namespace Tests.Mast;
 
 public class CheckConstraintTests : BaseMastTest
 {
@@ -8,7 +8,7 @@ public class CheckConstraintTests : BaseMastTest
         var expected = "Check(stub < 0)";
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Check?.Content, Is.EqualTo(expected));

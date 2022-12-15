@@ -1,28 +1,35 @@
 ﻿using Log;
-using Mast.Dbo;
-using Mast.Parsing;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace Mast;
+namespace Mast.Parsing;
 
-public class ScriptParser
+internal sealed class ScriptParser
 {
-    private static ILog Log = LoggerFactory.CreateLogger<ScriptParser>();
+    private static readonly ILog Log = LoggerFactory.CreateLogger<ScriptParser>();
+    private readonly Database db;
+    private readonly CrossReferencer crossReferencer;
 
-    public void Parse(Database db, string content)
+    public ScriptParser(Database db)
     {
-        var tree = MakeAbstractSyntaxTree(content);
-        AddObjectsToDb(tree, db);
-        BuildReferences(tree, db);
+        this.db = db;
+        crossReferencer= new(db);
     }
 
-    private static void AddObjectsToDb(TSqlFragment tree, Database db)
+    public void Parse(string content)
+    {
+        var tree = MakeAbstractSyntaxTree(content);
+        AddObjectsToDb(tree);
+        ExtractReferences(tree);
+        crossReferencer.Run();
+    }
+
+    private void AddObjectsToDb(TSqlFragment tree)
         => VisitTree(tree, new DefinitionVisitor(db), "Failed to build db representation");
 
-    private static void BuildReferences(TSqlFragment tree, Database db)
+    private void ExtractReferences(TSqlFragment tree)
         => VisitTree(tree, new ReferenceVisitor(db), "Failed to cross reference db objects");
 
-    private static TSqlFragment MakeAbstractSyntaxTree(string content)
+    private TSqlFragment MakeAbstractSyntaxTree(string content)
     {
         TSql150Parser parser = new(true, SqlEngineType.All);
         var tree = parser.Parse(new StringReader(content), out var errors);

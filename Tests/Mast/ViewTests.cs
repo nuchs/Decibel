@@ -1,4 +1,4 @@
-﻿namespace Tests.Mast.Dbo;
+﻿namespace Tests.Mast;
 
 public class ViewTests : BaseMastTest
 {
@@ -9,7 +9,7 @@ public class ViewTests : BaseMastTest
     {
         var view = $"CREATE View dbo.stub (col) AS select tab.a{check}";
 
-        parser.Parse(db, view);
+        db.AddFromTsqlScript(view);
         var result = db.Views.First();
 
         Assert.That(result.Check, Is.EqualTo(expected));
@@ -20,7 +20,7 @@ public class ViewTests : BaseMastTest
     {
         var view = "CREATE View dbo.stub (col1, col2) AS select tab.a, tab2.b";
 
-        parser.Parse(db, view);
+        db.AddFromTsqlScript(view);
         var result = db.Views.First();
 
         Assert.That(result.Columns, Is.EquivalentTo(new[] { "col1", "col2" }));
@@ -31,7 +31,7 @@ public class ViewTests : BaseMastTest
     {
         var expected = $"CREATE View dbo.stub (col1, col2) AS select tab.a, tab.b";
 
-        parser.Parse(db, expected);
+        db.AddFromTsqlScript(expected);
         var result = db.Views.First();
 
         Assert.That(result.Content, Is.EqualTo(expected));
@@ -43,7 +43,7 @@ public class ViewTests : BaseMastTest
         var expected = "bob";
         var view = $"CREATE View dbo.{expected} (col) AS select tab.a";
 
-        parser.Parse(db, view);
+        db.AddFromTsqlScript(view);
         var result = db.Views.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -55,7 +55,7 @@ public class ViewTests : BaseMastTest
         var expected = "dbo";
         var view = $"CREATE View {expected}.stub (col) AS select tab.a";
 
-        parser.Parse(db, view);
+        db.AddFromTsqlScript(view);
         var result = db.Views.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
@@ -68,7 +68,7 @@ public class ViewTests : BaseMastTest
     {
         var view = $"CREATE View dbo.stub (col) {binding} AS select tab.a";
 
-        parser.Parse(db, view);
+        db.AddFromTsqlScript(view);
         var result = db.Views.First();
 
         Assert.That(result.SchemaBinding, Is.EqualTo(expected));

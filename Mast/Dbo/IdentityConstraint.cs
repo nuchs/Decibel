@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class IdentityConstraint : DbObject
+public sealed class IdentityConstraint : DbObject
 {
     public IdentityConstraint(IdentityOptions id)
         : base(id)

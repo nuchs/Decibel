@@ -1,4 +1,4 @@
-﻿namespace Tests.Mast.Dbo;   
+﻿namespace Tests.Mast;   
 
 public class SchemaTests : BaseMastTest
 {
@@ -7,7 +7,7 @@ public class SchemaTests : BaseMastTest
     {
         var expected = $"CREATE SCHEMA splat AUTHORIZATION mrblobby";
 
-        parser.Parse(db, expected);
+        db.AddFromTsqlScript(expected);
         var result = db.Schemas.First();
 
         Assert.That(result.Content, Is.EqualTo(expected));
@@ -19,7 +19,7 @@ public class SchemaTests : BaseMastTest
         var expected = "splat";
         var schema = $"CREATE SCHEMA {expected} AUTHORIZATION mrblobby";
 
-        parser.Parse(db, schema);
+        db.AddFromTsqlScript(schema);
         var result = db.Schemas.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -31,7 +31,7 @@ public class SchemaTests : BaseMastTest
         var expected = "mrBlobby";
         var schema = $"CREATE SCHEMA splat AUTHORIZATION {expected}";
 
-        parser.Parse(db, schema);
+        db.AddFromTsqlScript(schema);
         var result = db.Schemas.First();
 
         Assert.That(result.Owner, Is.EqualTo(expected));

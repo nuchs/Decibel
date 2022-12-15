@@ -1,4 +1,4 @@
-﻿namespace Tests.Mast.Dbo;
+﻿namespace Tests.Mast;
 
 public class ScalarTypeTests : BaseMastTest
 {
@@ -9,7 +9,7 @@ public class ScalarTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.{name} FROM INT";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -22,7 +22,7 @@ public class ScalarTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE {schema}.StubName FROM INT";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
@@ -33,7 +33,7 @@ public class ScalarTypeTests : BaseMastTest
     {
         var expected = "CREATE TYPE dbo.stub FROM int";
 
-        parser.Parse(db, expected);
+        db.AddFromTsqlScript(expected);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Content, Is.EqualTo(expected));
@@ -47,7 +47,7 @@ public class ScalarTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub FROM INT{nullSpecifier}";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.IsNullable, Is.EqualTo(nullable));
@@ -61,7 +61,7 @@ public class ScalarTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub FROM NVARCHAR({expected})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Parameters, Is.EquivalentTo(new List<string> { expected }));
@@ -72,7 +72,7 @@ public class ScalarTypeTests : BaseMastTest
     {
         var function = $"CREATE TYPE dbo.stub FROM INT";
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Parameters, Is.Empty);

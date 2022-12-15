@@ -2,14 +2,14 @@
 
 namespace Mast.Dbo;
 
-public class Parameter : DbObject
+public sealed class Parameter : DbObject
 {
     public Parameter(ProcedureParameter parameter)
         : base(parameter)
     {
         Name = GetName(parameter);
         IsNullable = GetNullability(parameter);
-        DataType = new ScalarType(parameter.DataType);
+        DataType = new(parameter.DataType);
         Default = AssembleDefaultValue(parameter);
         Modifier = GetModifier(parameter);
     }

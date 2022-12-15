@@ -1,4 +1,4 @@
-﻿namespace Tests.Mast.Dbo;
+﻿namespace Tests.Mast;
 
 public class PrimaryKeyTests : BaseMastTest
 {
@@ -10,7 +10,7 @@ public class PrimaryKeyTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int primary key {clustered})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First().PrimaryKey;
 
         Assert.That(result?.Clustered, Is.EqualTo(expected));
@@ -22,7 +22,7 @@ public class PrimaryKeyTests : BaseMastTest
         var expected = "primary key clustered";
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First().PrimaryKey;
 
         Assert.That(result?.Content, Is.EqualTo(expected));
@@ -33,7 +33,7 @@ public class PrimaryKeyTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int primary key)";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First().PrimaryKey;
 
         Assert.That(result?.Name, Is.EqualTo(string.Empty));
@@ -45,7 +45,7 @@ public class PrimaryKeyTests : BaseMastTest
         var expected = "Slartibartfast";
         var type = $"CREATE TABLE dbo.stub (stub int, constraint {expected} primary key (stub))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().PrimaryKey;
 
         Assert.That(result?.Name, Is.EqualTo(expected));
@@ -57,7 +57,7 @@ public class PrimaryKeyTests : BaseMastTest
         var expected = "col_p";
         var type = $"CREATE TYPE dbo.stub AS TABLE ({expected} int primary key)";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First().PrimaryKey;
 
         Assert.That(result?.Columns.Count(), Is.EqualTo(1));
@@ -69,7 +69,7 @@ public class PrimaryKeyTests : BaseMastTest
         var expected = "col_p";
         var type = $"CREATE TYPE dbo.stub AS TABLE ({expected} int primary key)";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Columns.First().PrimaryKey;
 
         Assert.That(result?.Columns.First().Name, Is.EqualTo(expected));
@@ -90,7 +90,7 @@ public class PrimaryKeyTests : BaseMastTest
             )
             """;
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().PrimaryKey;
 
         Assert.That(result?.Columns.Count(), Is.EqualTo(3));
@@ -108,7 +108,7 @@ public class PrimaryKeyTests : BaseMastTest
             )
             """;
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().PrimaryKey;
 
         Assert.That(result?.Columns.Select(c => c.Name), Is.EquivalentTo(new[] { "col1", "col2" }));

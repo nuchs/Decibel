@@ -1,4 +1,4 @@
-﻿namespace Tests.Mast.Dbo;
+﻿namespace Tests.Mast;
 
 public class ProcedureTests : BaseMastTest
 {
@@ -9,7 +9,7 @@ public class ProcedureTests : BaseMastTest
     {
         var proc = $"CREATE PROCEDURE dbo.{name} AS SELECT 1";
 
-        parser.Parse(db, proc);
+        db.AddFromTsqlScript(proc);
         var result = db.Procedures.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -22,7 +22,7 @@ public class ProcedureTests : BaseMastTest
     {
         var proc = $"CREATE PROCEDURE {schema}.StubName AS SELECT 1";
 
-        parser.Parse(db, proc);
+        db.AddFromTsqlScript(proc);
         var result = db.Procedures.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
@@ -41,7 +41,7 @@ public class ProcedureTests : BaseMastTest
             END
             """;
 
-        parser.Parse(db, expected);
+        db.AddFromTsqlScript(expected);
         var result = db.Procedures.First();
 
         Assert.That(result.Content, Is.EqualTo(expected.Trim()));
@@ -62,7 +62,7 @@ public class ProcedureTests : BaseMastTest
             END
             """;
 
-        parser.Parse(db, function);
+        db.AddFromTsqlScript(function);
         var result = db.Procedures.First();
 
         Assert.That(result.Parameters, Has.Exactly(expected).Items);

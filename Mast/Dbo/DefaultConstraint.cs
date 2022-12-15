@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class DefaultConstraint : DbObject
+public sealed class DefaultConstraint : DbObject
 {
     public DefaultConstraint(DefaultConstraintDefinition def)
         : base(def)

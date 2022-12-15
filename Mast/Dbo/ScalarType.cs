@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class ScalarType : DbObject
+public sealed class ScalarType : DbObject
 {
     public ScalarType(DataTypeReference dataTypeRef)
         : base(dataTypeRef)

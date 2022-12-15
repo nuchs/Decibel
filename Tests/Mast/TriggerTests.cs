@@ -1,6 +1,6 @@
 ﻿using Mast.Dbo;
 
-namespace Tests.Mast.Dbo;
+namespace Tests.Mast;
 
 public class TriggerTests : BaseMastTest
 {
@@ -9,7 +9,7 @@ public class TriggerTests : BaseMastTest
     {
         var expected = $"CREATE TRIGGER dbo.trig on dbo.tab after insert, update as select 1";
 
-        parser.Parse(db, expected);
+        db.AddFromTsqlScript(expected);
         var result = db.Triggers.First();
 
         Assert.That(result.Content, Is.EqualTo(expected));
@@ -21,7 +21,7 @@ public class TriggerTests : BaseMastTest
         var expected = "fred";
         var trigger = $"CREATE TRIGGER dbo.{expected} on dbo.tab after insert as select 1";
 
-        parser.Parse(db, trigger);
+        db.AddFromTsqlScript(trigger);
         var result = db.Triggers.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -33,7 +33,7 @@ public class TriggerTests : BaseMastTest
         var expected = "fred";
         var trigger = $"CREATE TRIGGER {expected}.stub on dbo.tab after insert as select 1";
 
-        parser.Parse(db, trigger);
+        db.AddFromTsqlScript(trigger);
         var result = db.Triggers.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
@@ -45,7 +45,7 @@ public class TriggerTests : BaseMastTest
         var expected = "dbo.fred";
         var trigger = $"CREATE TRIGGER dbo.stub on {expected} after insert as select 1";
 
-        parser.Parse(db, trigger);
+        db.AddFromTsqlScript(trigger);
         var result = db.Triggers.First();
 
         Assert.That(result.Target, Is.EqualTo(expected));
@@ -59,7 +59,7 @@ public class TriggerTests : BaseMastTest
     {
         var trigger = $"CREATE TRIGGER dbo.stub on dbo.tab after {action} as select 1";
 
-        parser.Parse(db, trigger);
+        db.AddFromTsqlScript(trigger);
         var result = db.Triggers.First();
 
         Assert.That(result.TriggerActions.First(), Is.EqualTo(expected));
@@ -73,7 +73,7 @@ public class TriggerTests : BaseMastTest
     {
         var trigger = $"CREATE TRIGGER dbo.stub on dbo.tab {when} insert as select 1";
 
-        parser.Parse(db, trigger);
+        db.AddFromTsqlScript(trigger);
         var result = db.Triggers.First();
 
         Assert.That(result.When, Is.EqualTo(expected));

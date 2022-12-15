@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class ForeginKey : DbObject
+public sealed class ForeginKey : DbObject
 {
     public ForeginKey(
         IEnumerable<Column> columns,
@@ -11,7 +11,7 @@ public class ForeginKey : DbObject
     {
         Name = GetName(constraint);
         Column = GetColumn(columns, constraint);
-        (ForeignTable, ForeignColumn) = GetForeignRefernce(constraint);
+        (ForeignTable, ForeignColumn) = GetForeignReference(constraint);
         OnDelete = GetDeleteAction(constraint);
         OnUpdate = GetUpdateAction(constraint);
     }
@@ -49,9 +49,9 @@ public class ForeginKey : DbObject
     }
 
     private ChangeAction GetDeleteAction(ForeignKeyConstraintDefinition constraint)
-        => MapDeleteAction(constraint.DeleteAction);
+        => MapAction(constraint.DeleteAction);
 
-    private (string table, string column) GetForeignRefernce(ForeignKeyConstraintDefinition constraint)
+    private (string table, string column) GetForeignReference(ForeignKeyConstraintDefinition constraint)
     {
         if (constraint.ReferencedTableColumns.Count > 1)
         {
@@ -67,16 +67,16 @@ public class ForeginKey : DbObject
         => GetId(constraint.ConstraintIdentifier);
 
     private ChangeAction GetUpdateAction(ForeignKeyConstraintDefinition constraint)
-        => MapDeleteAction(constraint.UpdateAction);
+        => MapAction(constraint.UpdateAction);
 
-    private ChangeAction MapDeleteAction(DeleteUpdateAction deleteAction)
-            => deleteAction switch
-            {
-                DeleteUpdateAction.NotSpecified => ChangeAction.NotSet,
-                DeleteUpdateAction.NoAction => ChangeAction.NoAction,
-                DeleteUpdateAction.Cascade => ChangeAction.Cascade,
-                DeleteUpdateAction.SetDefault => ChangeAction.SetDefault,
-                DeleteUpdateAction.SetNull => ChangeAction.SetNull,
-                _ => throw new InvalidDataException($"Unrecognised delete action - {deleteAction}")
-            };
+    private ChangeAction MapAction(DeleteUpdateAction deleteAction)
+        => deleteAction switch
+        {
+            DeleteUpdateAction.NotSpecified => ChangeAction.NotSet,
+            DeleteUpdateAction.NoAction => ChangeAction.NoAction,
+            DeleteUpdateAction.Cascade => ChangeAction.Cascade,
+            DeleteUpdateAction.SetDefault => ChangeAction.SetDefault,
+            DeleteUpdateAction.SetNull => ChangeAction.SetNull,
+            _ => throw new InvalidDataException($"Unrecognised delete action - {deleteAction}")
+        };
 }

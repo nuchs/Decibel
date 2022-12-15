@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class User : DbObject
+public sealed class User : DbObject
 {
     public User(CreateUserStatement user)
         : base(user)

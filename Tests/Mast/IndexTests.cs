@@ -1,6 +1,6 @@
 ﻿using Mast.Dbo;
 
-namespace Tests.Mast.Dbo;
+namespace Tests.Mast;
 
 public class IndexTests : BaseMastTest
 {
@@ -10,7 +10,7 @@ public class IndexTests : BaseMastTest
         var expected = "index idx_1 (stub)";
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int, {expected})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Indices.First();
 
         Assert.That(result.Content, Is.EqualTo(expected));
@@ -23,7 +23,7 @@ public class IndexTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int, index {name} (stub))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Indices.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -37,7 +37,7 @@ public class IndexTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int, index idx{clustered}(stub))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Indices.First();
 
         Assert.That(result.Clustered, Is.EqualTo(expected));
@@ -51,7 +51,7 @@ public class IndexTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int, index idx(stub {sortOrder}))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Indices.First().Columns.First();
 
         Assert.That(result.SortOrder, Is.EqualTo(expected));
@@ -62,7 +62,7 @@ public class IndexTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.stub AS TABLE (stub int, index idx(stub))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Indices.First();
 
         Assert.That(result.Columns.Count(), Is.EqualTo(1));
@@ -74,7 +74,7 @@ public class IndexTests : BaseMastTest
         var expected = "stub";
         var type = $"CREATE TYPE dbo.stub AS TABLE ({expected} int, index idx(stub))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First().Indices.First();
 
         Assert.That(result.Columns.First().Column.Name, Is.EqualTo(expected));
@@ -92,7 +92,7 @@ public class IndexTests : BaseMastTest
             )
             """;
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().Indices.First();
 
         Assert.That(result.Columns.Count(), Is.EqualTo(2));
@@ -110,7 +110,7 @@ public class IndexTests : BaseMastTest
             )
             """;
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().Indices.First();
 
         Assert.That(
@@ -131,7 +131,7 @@ public class IndexTests : BaseMastTest
             )
             """;
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.Tables.First().Indices.First();
 
         Assert.That(

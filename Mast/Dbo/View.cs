@@ -2,7 +2,7 @@
 
 namespace Mast.Dbo;
 
-public class View : DbObject
+public sealed class View : DbObject
 {
     public View(CreateViewStatement view)
         : base(view)
@@ -26,7 +26,7 @@ public class View : DbObject
         => view.Columns.Select(c => c.Value);
 
     private bool GetCheckOption(CreateViewStatement view)
-                            => view.WithCheckOption;
+        => view.WithCheckOption;
 
     private string GetName(CreateViewStatement view)
         => GetId(view.SchemaObjectName.BaseIdentifier);
@@ -35,5 +35,5 @@ public class View : DbObject
         => GetId(view.SchemaObjectName.SchemaIdentifier);
 
     private bool GetSchemaBinding(CreateViewStatement view)
-                => view.ViewOptions.Any(o => o.OptionKind == ViewOptionKind.SchemaBinding);
+        => view.ViewOptions.Any(o => o.OptionKind == ViewOptionKind.SchemaBinding);
 }

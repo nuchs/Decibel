@@ -2,13 +2,13 @@
 
 namespace Mast.Dbo;
 
-public class Column : DbObject
+public sealed class Column : DbObject
 {
     public Column(ColumnDefinition colDef)
         : base(colDef)
     {
         Name = GetName(colDef);
-        DataType = new ScalarType(colDef.DataType);
+        DataType = new(colDef.DataType);
         IsNullable = GetNullability(colDef);
         PrimaryKey = GetPrimaryKey(colDef);
         Unique = GetUniqueness(colDef);

@@ -1,3 +1,3 @@
 ﻿namespace Mast.Dbo;
 
-public record IndexColumn(Direction SortOrder, Column Column);
+public sealed record IndexColumn(Direction SortOrder, Column Column);

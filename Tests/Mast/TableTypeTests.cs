@@ -1,4 +1,4 @@
-namespace Tests.Mast.Dbo;
+namespace Tests.Mast;
 
 public class TableTypeTests : BaseMastTest
 {
@@ -9,7 +9,7 @@ public class TableTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.{name} AS TABLE (StubColumn int)";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -22,7 +22,7 @@ public class TableTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE {schema}.StubName AS TABLE (StubColumn int)";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
@@ -38,7 +38,7 @@ public class TableTypeTests : BaseMastTest
             )
             """;
 
-        parser.Parse(db, expected);
+        db.AddFromTsqlScript(expected);
         var result = db.TableTypes.First();
 
         Assert.That(result.Content, Is.EqualTo(expected));
@@ -55,7 +55,7 @@ public class TableTypeTests : BaseMastTest
             )
             """;
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First();
 
         Assert.That(result.Columns, Has.Exactly(expected).Items);
@@ -68,7 +68,7 @@ public class TableTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.Stub AS TABLE (StubColumn int{constraint})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First();
 
         Assert.That(result.PrimaryKey?.Content, Is.EqualTo(expected));
@@ -81,7 +81,7 @@ public class TableTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int{constraint})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First();
 
         Assert.That(result.UniqueConstraints.FirstOrDefault()?.Content, Is.EqualTo(expected));
@@ -92,7 +92,7 @@ public class TableTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int, unique (stub1), unique (stub2))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First();
 
         Assert.That(result.UniqueConstraints.Count(), Is.EqualTo(2));
@@ -105,7 +105,7 @@ public class TableTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int{constraint})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First();
 
         Assert.That(result.Checks.FirstOrDefault()?.Content, Is.EqualTo(expected));
@@ -116,7 +116,7 @@ public class TableTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int, check (stub1 > 0), check(stub2 < 0))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First();
 
         Assert.That(result.Checks.Count(), Is.EqualTo(2));
@@ -129,7 +129,7 @@ public class TableTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int{indices})";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First();
 
         Assert.That(result.Indices.FirstOrDefault()?.Content, Is.EqualTo(expected));
@@ -140,7 +140,7 @@ public class TableTypeTests : BaseMastTest
     {
         var type = $"CREATE TYPE dbo.Stub AS TABLE (stub1 int, stub2 int, index idx1(stub1), index idx2(stub2))";
 
-        parser.Parse(db, type);
+        db.AddFromTsqlScript(type);
         var result = db.TableTypes.First();
 
         Assert.That(result.Indices.Count(), Is.EqualTo(2));
