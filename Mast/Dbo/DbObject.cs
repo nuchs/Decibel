@@ -3,20 +3,18 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
-public class DbObject
+public class DbObject : DbFragment
 {
     private readonly List<DbObject> referees = new();
 
     private protected DbObject(TSqlFragment fragment)
-        => Content = AssembleFragment(fragment);
-
-    public string Content { get; }
+        : base(fragment)
+    {
+    }
 
     public string Name { get; protected set; } = string.Empty;
 
     public IEnumerable<DbObject> ReferencedBy => referees;
-
-    public override string ToString() => Content;
 
     internal void CrossReference(Database db)
     {
@@ -32,25 +30,6 @@ public class DbObject
             db.UnresolvedReferencesList.Add(new(this, reference));
         }
     }
-
-    private protected string AssembleFragment(TSqlFragment fragment)
-        => AssembleFragment(
-            fragment,
-            fragment.FirstTokenIndex,
-            fragment.LastTokenIndex + 1);
-
-    private protected string AssembleFragment(TSqlFragment fragment, int start, int end)
-    {
-        var tokenValues = fragment
-            .ScriptTokenStream
-            .Take(start..end)
-            .Select(t => t.Text);
-
-        return string.Join(string.Empty, tokenValues).Trim();
-    }
-
-    private protected string GetId(Identifier? identifier)
-        => identifier?.Value ?? string.Empty;
 
     private protected virtual (IEnumerable<DbObject>, IEnumerable<string>) GetReferents(Database db)
     {
