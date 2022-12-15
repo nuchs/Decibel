@@ -7,9 +7,9 @@ public class ScalarTypeTests : BaseMastTest
     [TestCase("[bracketed]", "bracketed")]
     public void Name(string name, string expected)
     {
-        var type = $"CREATE TYPE dbo.{name} FROM INT";
+        var script = $"CREATE TYPE dbo.{name} FROM INT";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -20,9 +20,9 @@ public class ScalarTypeTests : BaseMastTest
     [TestCase("[bracketed]", "bracketed")]
     public void Schema(string schema, string expected)
     {
-        var type = $"CREATE TYPE {schema}.StubName FROM INT";
+        var script = $"CREATE TYPE {schema}.StubName FROM INT";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
@@ -31,12 +31,12 @@ public class ScalarTypeTests : BaseMastTest
     [Test]
     public void Content()
     {
-        var expected = "CREATE TYPE dbo.stub FROM int";
+        var script = "CREATE TYPE dbo.stub FROM int";
 
-        db.AddFromTsqlScript(expected);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.ScalarTypes.First();
 
-        Assert.That(result.Content, Is.EqualTo(expected));
+        Assert.That(result.Content, Is.EqualTo(script));
     }
 
     [Test]
@@ -45,9 +45,9 @@ public class ScalarTypeTests : BaseMastTest
     [TestCase(" NOT NULL", false)]
     public void Nullability(string nullSpecifier, bool nullable)
     {
-        var type = $"CREATE TYPE dbo.stub FROM INT{nullSpecifier}";
+        var script = $"CREATE TYPE dbo.stub FROM INT{nullSpecifier}";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.ScalarTypes.First();
 
         Assert.That(result.IsNullable, Is.EqualTo(nullable));
@@ -59,9 +59,9 @@ public class ScalarTypeTests : BaseMastTest
     [TestCase("max")]
     public void ParameterisedType(string expected)
     {
-        var type = $"CREATE TYPE dbo.stub FROM NVARCHAR({expected})";
+        var script = $"CREATE TYPE dbo.stub FROM NVARCHAR({expected})";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Parameters, Is.EquivalentTo(new List<string> { expected }));
@@ -70,9 +70,9 @@ public class ScalarTypeTests : BaseMastTest
     [Test]
     public void UnparameterisedType()
     {
-        var function = $"CREATE TYPE dbo.stub FROM INT";
+        var script = $"CREATE TYPE dbo.stub FROM INT";
 
-        db.AddFromTsqlScript(function);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.ScalarTypes.First();
 
         Assert.That(result.Parameters, Is.Empty);

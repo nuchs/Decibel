@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -31,6 +32,7 @@ public sealed class Table : DbObject
 
     public IEnumerable<UniqueConstraint> UniqueConstraints { get; }
 
+    internal override void CrossReference(Database db) => throw new NotImplementedException();
     private IEnumerable<Column> CollectColumns(CreateTableStatement table)
         => table.Definition.ColumnDefinitions.Select(c => new Column(c));
 

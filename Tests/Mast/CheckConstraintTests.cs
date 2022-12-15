@@ -6,9 +6,9 @@ public class CheckConstraintTests : BaseMastTest
     public void ColumnContent()
     {
         var expected = "Check(stub < 0)";
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Check?.Content, Is.EqualTo(expected));

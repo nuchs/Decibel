@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -30,7 +31,7 @@ public sealed class TableType : DbObject
 
     private static IEnumerable<Column> CollectColumns(CreateTypeTableStatement node)
         => node.Definition.ColumnDefinitions.Select(c => new Column(c));
-
+    internal override void CrossReference(Database db) => throw new NotImplementedException();
     private IEnumerable<Index> CollectIndices(CreateTypeTableStatement node)
         => node.Definition.Indexes.Select(i => new Index(Columns, i));
 

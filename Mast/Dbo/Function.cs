@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -30,4 +31,5 @@ public sealed class Function : DbObject
 
     private List<Parameter> CollectParameters(CreateFunctionStatement node)
         => node.Parameters.Select(p => new Parameter(p)).ToList();
+    internal override void CrossReference(Database db) => throw new NotImplementedException();
 }

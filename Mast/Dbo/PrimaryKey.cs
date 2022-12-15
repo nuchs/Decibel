@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -25,6 +26,8 @@ public sealed class PrimaryKey : DbObject
     public bool Clustered { get; }
 
     public IEnumerable<Column> Columns { get; }
+
+    internal override void CrossReference(Database db) => throw new NotImplementedException();
 
     private IEnumerable<Column> CollectPrimaryColumns(IEnumerable<Column> columns, UniqueConstraintDefinition constraint)
     {

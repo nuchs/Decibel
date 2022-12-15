@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -31,7 +32,7 @@ public sealed class ScalarType : DbObject
         => dataTypeRef is SqlDataTypeReference sqlRef ?
             sqlRef.Parameters.Select(p => p.Value) :
             new List<string>();
-
+    internal override void CrossReference(Database db) => throw new NotImplementedException();
     private string GetName(SchemaObjectName fullyQualifiedName)
         => GetId(fullyQualifiedName.BaseIdentifier);
 

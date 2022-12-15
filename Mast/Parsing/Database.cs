@@ -1,17 +1,9 @@
 ﻿using Mast.Dbo;
-using Mast.Parsing;
 
-namespace Mast;
+namespace Mast.Parsing;
 
-public class Database
+internal sealed class Database : IDatabase
 {
-    private readonly ScriptParser parser;
-
-    public Database()
-    {
-        parser = new(this);
-    }
-
     public IEnumerable<Function> Functions => FunctionList;
 
     public IEnumerable<StoredProcedure> Procedures => ProcedureList;
@@ -51,7 +43,4 @@ public class Database
     internal List<User> UserList { get; } = new();
 
     internal List<View> ViewList { get; } = new();
-
-    public void AddFromTsqlScript(string script)
-        => parser.Parse(script);
 }

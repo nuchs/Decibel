@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -42,6 +43,8 @@ public sealed class Column : DbObject
 
         return !nullConstrints.Any() || nullConstrints.First();
     }
+
+    internal override void CrossReference(Database db) => throw new NotImplementedException();
 
     private CheckConstraint? GetCheck(ColumnDefinition colDef)
     {

@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -30,6 +31,8 @@ public sealed class ForeginKey : DbObject
     public ChangeAction OnDelete { get; }
 
     public ChangeAction OnUpdate { get; }
+
+    internal override void CrossReference(Database db) => throw new NotImplementedException();
 
     private Column GetColumn(IEnumerable<Column> columns, ForeignKeyConstraintDefinition constraint)
     {

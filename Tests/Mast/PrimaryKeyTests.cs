@@ -8,9 +8,9 @@ public class PrimaryKeyTests : BaseMastTest
     [TestCase("CLUSTERED", true)]
     public void Clustered(string clustered, bool expected)
     {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int primary key {clustered})";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int primary key {clustered})";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Columns.First().PrimaryKey;
 
         Assert.That(result?.Clustered, Is.EqualTo(expected));
@@ -20,9 +20,9 @@ public class PrimaryKeyTests : BaseMastTest
     public void Content()
     {
         var expected = "primary key clustered";
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Columns.First().PrimaryKey;
 
         Assert.That(result?.Content, Is.EqualTo(expected));
@@ -31,9 +31,9 @@ public class PrimaryKeyTests : BaseMastTest
     [Test]
     public void NoNameOnColumn()
     {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int primary key)";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int primary key)";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Columns.First().PrimaryKey;
 
         Assert.That(result?.Name, Is.EqualTo(string.Empty));
@@ -43,9 +43,9 @@ public class PrimaryKeyTests : BaseMastTest
     public void Name()
     {
         var expected = "Slartibartfast";
-        var type = $"CREATE TABLE dbo.stub (stub int, constraint {expected} primary key (stub))";
+        var script = $"CREATE TABLE dbo.stub (stub int, constraint {expected} primary key (stub))";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Tables.First().PrimaryKey;
 
         Assert.That(result?.Name, Is.EqualTo(expected));
@@ -55,9 +55,9 @@ public class PrimaryKeyTests : BaseMastTest
     public void SingleColumnCount()
     {
         var expected = "col_p";
-        var type = $"CREATE TYPE dbo.stub AS TABLE ({expected} int primary key)";
+        var script = $"CREATE TYPE dbo.stub AS TABLE ({expected} int primary key)";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Columns.First().PrimaryKey;
 
         Assert.That(result?.Columns.Count(), Is.EqualTo(1));
@@ -67,9 +67,9 @@ public class PrimaryKeyTests : BaseMastTest
     public void SingleColumn()
     {
         var expected = "col_p";
-        var type = $"CREATE TYPE dbo.stub AS TABLE ({expected} int primary key)";
+        var script = $"CREATE TYPE dbo.stub AS TABLE ({expected} int primary key)";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Columns.First().PrimaryKey;
 
         Assert.That(result?.Columns.First().Name, Is.EqualTo(expected));
@@ -78,7 +78,7 @@ public class PrimaryKeyTests : BaseMastTest
     [Test]
     public void CompoundCount()
     {
-        var type = $"""
+        var script = $"""
             CREATE TYPE dbo.stub AS TABLE
             (
                 col1  int, 
@@ -90,7 +90,7 @@ public class PrimaryKeyTests : BaseMastTest
             )
             """;
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().PrimaryKey;
 
         Assert.That(result?.Columns.Count(), Is.EqualTo(3));
@@ -99,7 +99,7 @@ public class PrimaryKeyTests : BaseMastTest
     [Test]
     public void CompoundColumns()
     {
-        var type = $"""
+        var script = $"""
             CREATE TYPE dbo.stub AS TABLE
             (
                 col1  int, 
@@ -108,7 +108,7 @@ public class PrimaryKeyTests : BaseMastTest
             )
             """;
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().PrimaryKey;
 
         Assert.That(result?.Columns.Select(c => c.Name), Is.EquivalentTo(new[] { "col1", "col2" }));

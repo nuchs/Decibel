@@ -8,9 +8,9 @@ public class UniqueConstraintTests : BaseMastTest
     [TestCase("CLUSTERED", true)]
     public void Clustered(string clustered, bool expected)
     {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int unique {clustered})";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int unique {clustered})";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Unique?.Clustered, Is.EqualTo(expected));
@@ -20,9 +20,9 @@ public class UniqueConstraintTests : BaseMastTest
     public void Content()
     {
         var expected = "unique clustered";
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int {expected})";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Unique?.Content, Is.EqualTo(expected));
@@ -31,9 +31,9 @@ public class UniqueConstraintTests : BaseMastTest
     [Test]
     public void NoNameOnColumn()
     {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int unique)";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int unique)";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Unique?.Name, Is.EqualTo(string.Empty));
@@ -43,9 +43,9 @@ public class UniqueConstraintTests : BaseMastTest
     public void SingleColumn()
     {
         var expected = "col_p";
-        var type = $"CREATE TYPE dbo.stub AS TABLE ({expected} int unique)";
+        var script = $"CREATE TYPE dbo.stub AS TABLE ({expected} int unique)";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Columns.First();
 
         Assert.That(result.Unique?.Columns.Count(), Is.EqualTo(1));

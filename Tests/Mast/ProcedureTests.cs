@@ -7,9 +7,9 @@ public class ProcedureTests : BaseMastTest
     [TestCase("[bracketed]", "bracketed")]
     public void Name(string name, string expected)
     {
-        var proc = $"CREATE PROCEDURE dbo.{name} AS SELECT 1";
+        var script = $"CREATE PROCEDURE dbo.{name} AS SELECT 1";
 
-        db.AddFromTsqlScript(proc);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Procedures.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -20,9 +20,9 @@ public class ProcedureTests : BaseMastTest
     [TestCase("[bracketed]", "bracketed")]
     public void Schema(string schema, string expected)
     {
-        var proc = $"CREATE PROCEDURE {schema}.StubName AS SELECT 1";
+        var script = $"CREATE PROCEDURE {schema}.StubName AS SELECT 1";
 
-        db.AddFromTsqlScript(proc);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Procedures.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
@@ -31,7 +31,7 @@ public class ProcedureTests : BaseMastTest
     [Test]
     public void Content()
     {
-        var expected = """
+        var script = """
             CREATE PROCEDURE dbo.stub
             AS
             BEGIN
@@ -41,10 +41,10 @@ public class ProcedureTests : BaseMastTest
             END
             """;
 
-        db.AddFromTsqlScript(expected);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Procedures.First();
 
-        Assert.That(result.Content, Is.EqualTo(expected.Trim()));
+        Assert.That(result.Content, Is.EqualTo(script.Trim()));
     }
 
     [Test]
@@ -53,7 +53,7 @@ public class ProcedureTests : BaseMastTest
     [TestCase("@a int, @b int, @c int", 3)]
     public void ParameterCount(string paramList, int expected)
     {
-        var function = $"""
+        var script = $"""
             CREATE PROCEDURE dbo.stub
             {paramList}
             AS
@@ -62,7 +62,7 @@ public class ProcedureTests : BaseMastTest
             END
             """;
 
-        db.AddFromTsqlScript(function);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Procedures.First();
 
         Assert.That(result.Parameters, Has.Exactly(expected).Items);

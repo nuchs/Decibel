@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -51,4 +52,5 @@ public sealed class Trigger : DbObject
 
     private string GetTarget(CreateTriggerStatement trigger)
         => $"{GetId(trigger.TriggerObject.Name.SchemaIdentifier)}.{GetId(trigger.TriggerObject.Name.BaseIdentifier)}";
+    internal override void CrossReference(Database db) => throw new NotImplementedException();
 }

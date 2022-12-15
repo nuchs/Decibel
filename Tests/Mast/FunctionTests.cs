@@ -7,9 +7,9 @@ public class FunctionTests : BaseMastTest
     [TestCase("[bracketed]", "bracketed")]
     public void Name(string name, string expected)
     {
-        var function = $"CREATE FUNCTION dbo.{name} () RETURNS TABLE AS RETURN SELECT 1";
+        var script = $"CREATE FUNCTION dbo.{name} () RETURNS TABLE AS RETURN SELECT 1";
 
-        db.AddFromTsqlScript(function);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Functions.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -20,9 +20,9 @@ public class FunctionTests : BaseMastTest
     [TestCase("[bracketed]", "bracketed")]
     public void Schema(string schema, string expected)
     {
-        var function = $"CREATE FUNCTION {schema}.StubName () RETURNS TABLE AS RETURN SELECT 1";
+        var script = $"CREATE FUNCTION {schema}.StubName () RETURNS TABLE AS RETURN SELECT 1";
 
-        db.AddFromTsqlScript(function);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Functions.First();
 
         Assert.That(result.Schema, Is.EqualTo(expected));
@@ -31,7 +31,7 @@ public class FunctionTests : BaseMastTest
     [Test]
     public void Content()
     {
-        var expected = """
+        var script = """
             CREATE FUNCTION dbo.stub()
             RETURNS INT
             AS
@@ -42,10 +42,10 @@ public class FunctionTests : BaseMastTest
             END
             """;
 
-        db.AddFromTsqlScript(expected);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Functions.First();
 
-        Assert.That(result.Content, Is.EqualTo(expected.Trim()));
+        Assert.That(result.Content, Is.EqualTo(script.Trim()));
     }
 
     [Test]
@@ -54,9 +54,9 @@ public class FunctionTests : BaseMastTest
     [TestCase("@a int, @b int, @c int", 3)]
     public void ParameterCount(string paramList, int expected)
     {
-        var function = $"CREATE FUNCTION dbo.stub({paramList}) RETURNS TABLE AS RETURN SELECT 1";
+        var script = $"CREATE FUNCTION dbo.stub({paramList}) RETURNS TABLE AS RETURN SELECT 1";
 
-        db.AddFromTsqlScript(function);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Functions.First();
 
         Assert.That(result.Parameters, Has.Exactly(expected).Items);
@@ -68,7 +68,7 @@ public class FunctionTests : BaseMastTest
     [TestCase("nchar(10)", "'bacon'")]
     public void ReturnScalerType(string expected, string returnValue)
     {
-        var function = $"""
+        var script = $"""
             CREATE FUNCTION dbo.stub ()
             RETURNS {expected}
             AS
@@ -77,7 +77,7 @@ public class FunctionTests : BaseMastTest
             END
             """;
 
-        db.AddFromTsqlScript(function);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Functions.First();
 
         Assert.That(result.ReturnType, Is.EqualTo(expected));
@@ -87,13 +87,13 @@ public class FunctionTests : BaseMastTest
     public void ReturnTableType()
     {
         var expected = "SELECT 1";
-        var function = $"""
+        var script = $"""
             CREATE FUNCTION dbo.stub ()
             RETURNS TABLE
             RETURN {expected}
             """;
 
-        db.AddFromTsqlScript(function);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Functions.First();
 
         Assert.That(result.ReturnType, Is.EqualTo(expected));
@@ -103,7 +103,7 @@ public class FunctionTests : BaseMastTest
     public void ReturnTableTypeInMultiStatementFunction()
     {
         var expected = "@retVal TABLE ( Id int )";
-        var function = $"""
+        var script = $"""
             CREATE FUNCTION dbo.stub ()
             RETURNS {expected}
             AS
@@ -115,7 +115,7 @@ public class FunctionTests : BaseMastTest
             END
             """;
 
-        db.AddFromTsqlScript(function);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Functions.First();
 
         Assert.That(result.ReturnType, Is.EqualTo(expected));

@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -22,6 +23,7 @@ public sealed class View : DbObject
 
     public bool SchemaBinding { get; }
 
+    internal override void CrossReference(Database db) => throw new NotImplementedException();
     private IEnumerable<string> CollectColumns(CreateViewStatement view)
         => view.Columns.Select(c => c.Value);
 

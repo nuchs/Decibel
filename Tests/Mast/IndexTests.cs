@@ -8,9 +8,9 @@ public class IndexTests : BaseMastTest
     public void Content()
     {
         var expected = "index idx_1 (stub)";
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int, {expected})";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int, {expected})";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Indices.First();
 
         Assert.That(result.Content, Is.EqualTo(expected));
@@ -21,9 +21,9 @@ public class IndexTests : BaseMastTest
     [TestCase("[idx]", "idx")]
     public void Name(string name, string expected)
     {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int, index {name} (stub))";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int, index {name} (stub))";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Indices.First();
 
         Assert.That(result.Name, Is.EqualTo(expected));
@@ -35,9 +35,9 @@ public class IndexTests : BaseMastTest
     [TestCase(" CLUSTERED ", true)]
     public void Clustered(string clustered, bool expected)
     {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int, index idx{clustered}(stub))";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int, index idx{clustered}(stub))";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Indices.First();
 
         Assert.That(result.Clustered, Is.EqualTo(expected));
@@ -49,9 +49,9 @@ public class IndexTests : BaseMastTest
     [TestCase("desc", Direction.Desc)]
     public void SortOrder(string sortOrder, Direction expected)
     {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int, index idx(stub {sortOrder}))";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int, index idx(stub {sortOrder}))";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Indices.First().Columns.First();
 
         Assert.That(result.SortOrder, Is.EqualTo(expected));
@@ -60,9 +60,9 @@ public class IndexTests : BaseMastTest
     [Test]
     public void SingleColumnCount()
     {
-        var type = $"CREATE TYPE dbo.stub AS TABLE (stub int, index idx(stub))";
+        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int, index idx(stub))";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Indices.First();
 
         Assert.That(result.Columns.Count(), Is.EqualTo(1));
@@ -72,9 +72,9 @@ public class IndexTests : BaseMastTest
     public void SingleColumn()
     {
         var expected = "stub";
-        var type = $"CREATE TYPE dbo.stub AS TABLE ({expected} int, index idx(stub))";
+        var script = $"CREATE TYPE dbo.stub AS TABLE ({expected} int, index idx(stub))";
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.TableTypes.First().Indices.First();
 
         Assert.That(result.Columns.First().Column.Name, Is.EqualTo(expected));
@@ -83,7 +83,7 @@ public class IndexTests : BaseMastTest
     [Test]
     public void CompoundColumnCount()
     {
-        var type = """
+        var script = """
             CREATE TABLE dbo.stub
             (
                 stub1 int, 
@@ -92,7 +92,7 @@ public class IndexTests : BaseMastTest
             )
             """;
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Tables.First().Indices.First();
 
         Assert.That(result.Columns.Count(), Is.EqualTo(2));
@@ -101,7 +101,7 @@ public class IndexTests : BaseMastTest
     [Test]
     public void CompoundColumn()
     {
-        var type = $"""
+        var script = $"""
             CREATE TABLE dbo.stub
             (
                 col1 int, 
@@ -110,7 +110,7 @@ public class IndexTests : BaseMastTest
             )
             """;
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Tables.First().Indices.First();
 
         Assert.That(
@@ -121,7 +121,7 @@ public class IndexTests : BaseMastTest
     [Test]
     public void MultipleSortOrder()
     {
-        var type = $"""
+        var script = $"""
             CREATE TABLE dbo.stub
             (
                 stub1 int, 
@@ -131,7 +131,7 @@ public class IndexTests : BaseMastTest
             )
             """;
 
-        db.AddFromTsqlScript(type);
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Tables.First().Indices.First();
 
         Assert.That(

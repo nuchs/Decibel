@@ -7,27 +7,21 @@ internal sealed class ScriptParser
 {
     private static readonly ILog Log = LoggerFactory.CreateLogger<ScriptParser>();
     private readonly Database db;
-    private readonly CrossReferencer crossReferencer;
 
-    public ScriptParser(Database db)
-    {
-        this.db = db;
-        crossReferencer= new(db);
-    }
+    public ScriptParser(Database db) => this.db = db;
 
     public void Parse(string content)
     {
         var tree = MakeAbstractSyntaxTree(content);
         AddObjectsToDb(tree);
         ExtractReferences(tree);
-        crossReferencer.Run();
     }
 
     private void AddObjectsToDb(TSqlFragment tree)
         => VisitTree(tree, new DefinitionVisitor(db), "Failed to build db representation");
 
     private void ExtractReferences(TSqlFragment tree)
-        => VisitTree(tree, new ReferenceVisitor(db), "Failed to cross reference db objects");
+        => VisitTree(tree, new ReferenceVisitor(db), "Failed to extract references");
 
     private TSqlFragment MakeAbstractSyntaxTree(string content)
     {

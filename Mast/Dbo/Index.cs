@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -19,6 +20,7 @@ public sealed class Index : DbObject
     private static bool GetClustered(IndexDefinition index)
         => index.IndexType.IndexTypeKind == IndexTypeKind.Clustered
         || index.IndexType.IndexTypeKind == IndexTypeKind.ClusteredColumnStore;
+    internal override void CrossReference(Database db) => throw new NotImplementedException();
 
     private IEnumerable<IndexColumn> CollectColumns(IndexDefinition index, IEnumerable<Column> tableColumns)
     {
