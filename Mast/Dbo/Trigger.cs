@@ -1,5 +1,4 @@
 ﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
-using System.Xml.Linq;
 
 namespace Mast.Dbo;
 
@@ -8,14 +7,11 @@ public sealed class Trigger : DbObject
     public Trigger(CreateTriggerStatement trigger)
         : base(trigger)
     {
-        Identifier = new(GetSchema(trigger), GetName(trigger)); ;
-        Schema = GetSchema(trigger);
+        Identifier = AssembleIdentifier(trigger);
         When = GetRunOption(trigger);
         TriggerActions = CollectTriggerActions(trigger);
         Target = GetTarget(trigger);
     }
-
-    public string Schema { get; }  
 
     public string Target { get; }
 
@@ -23,20 +19,11 @@ public sealed class Trigger : DbObject
 
     public RunWhen When { get; }
 
+    private FullyQualifiedName AssembleIdentifier(CreateTriggerStatement node)
+        => new(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));
+
     private IEnumerable<TriggeredBy> CollectTriggerActions(CreateTriggerStatement trigger)
-        => trigger.TriggerActions.Select(ta => MapTriggerAction(ta.TriggerActionType));
-
-    private TriggeredBy MapTriggerAction(TriggerActionType action)
-        => action switch
-        {
-            TriggerActionType.Insert => TriggeredBy.Insert,
-            TriggerActionType.Update => TriggeredBy.Update,
-            TriggerActionType.Delete => TriggeredBy.Delete,
-            _ => throw new NotSupportedException($"{action} is not a supported trigger type")
-        };
-
-    private string GetName(CreateTriggerStatement trigger)
-        => GetId(trigger.Name.BaseIdentifier);
+            => trigger.TriggerActions.Select(ta => MapTriggerAction(ta.TriggerActionType));
 
     private RunWhen GetRunOption(CreateTriggerStatement trigger)
         => trigger.TriggerType switch
@@ -47,9 +34,15 @@ public sealed class Trigger : DbObject
             _ => throw new InvalidDataException($"Unrecognised trigger type {trigger.TriggerType}")
         };
 
-    private string GetSchema(CreateTriggerStatement trigger)
-        => GetId(trigger.Name.SchemaIdentifier);
-
     private string GetTarget(CreateTriggerStatement trigger)
         => $"{GetId(trigger.TriggerObject.Name.SchemaIdentifier)}.{GetId(trigger.TriggerObject.Name.BaseIdentifier)}";
+
+    private TriggeredBy MapTriggerAction(TriggerActionType action)
+        => action switch
+        {
+            TriggerActionType.Insert => TriggeredBy.Insert,
+            TriggerActionType.Update => TriggeredBy.Update,
+            TriggerActionType.Delete => TriggeredBy.Delete,
+            _ => throw new NotSupportedException($"{action} is not a supported trigger type")
+        };
 }

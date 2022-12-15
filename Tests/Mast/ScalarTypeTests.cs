@@ -80,19 +80,6 @@ public class ScalarTypeTests : BaseMastTest
     }
 
     [Test]
-    [TestCase("bear", "bear")]
-    [TestCase("[bracketed]", "bracketed")]
-    public void Schema(string schema, string expected)
-    {
-        var script = $"CREATE TYPE {schema}.StubName FROM INT";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.ScalarTypes.First();
-
-        Assert.That(result.Schema, Is.EqualTo(expected));
-    }
-
-    [Test]
     public void UnparameterisedType()
     {
         var script = $"CREATE TYPE dbo.stub FROM INT";

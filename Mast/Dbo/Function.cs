@@ -7,8 +7,7 @@ public sealed class Function : DbObject
     public Function(CreateFunctionStatement node)
         : base(node)
     {
-        Identifier = new(GetSchema(node), GetName(node));
-        Schema = GetSchema(node);
+        Identifier = AssembleIdentifier(node);
         Parameters = CollectParameters(node);
         ReturnType = AssembleReturnType(node);
     }
@@ -17,13 +16,8 @@ public sealed class Function : DbObject
 
     public string ReturnType { get; }
 
-    public string Schema { get; }
-
-    private string GetName(CreateFunctionStatement node)
-        => GetId(node.Name.BaseIdentifier);
-
-    private string GetSchema(CreateFunctionStatement node)
-        => GetId(node.Name.SchemaIdentifier);
+    private FullyQualifiedName AssembleIdentifier(CreateFunctionStatement node)
+        => new(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));
 
     private string AssembleReturnType(CreateFunctionStatement node)
         => AssembleFragment(node.ReturnType);

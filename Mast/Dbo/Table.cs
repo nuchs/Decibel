@@ -8,8 +8,7 @@ public sealed class Table : DbObject
     public Table(CreateTableStatement node)
         : base(node)
     {
-        Schema = GetSchema(node);
-        Identifier = new(GetSchema(node), GetName(node));
+        Identifier = AssembleIdentifier(node);
         Columns = CollectColumns(node);
         Indices = CollectIndices(node);
         Checks = GetChecks(node);
@@ -17,6 +16,18 @@ public sealed class Table : DbObject
         PrimaryKey = GetPrimary(node);
         ForeignKeys = CollectForeignKeys(node);
     }
+
+    public IEnumerable<CheckConstraint> Checks { get; }
+
+    public IEnumerable<Column> Columns { get; }
+
+    public IEnumerable<ForeginKey> ForeignKeys { get; }
+
+    public IEnumerable<Index> Indices { get; }
+
+    public PrimaryKey? PrimaryKey { get; }
+
+    public IEnumerable<UniqueConstraint> UniqueConstraints { get; }
 
     private protected override (IEnumerable<DbObject>, IEnumerable<string>) GetReferents(Database db)
     {
@@ -38,36 +49,23 @@ public sealed class Table : DbObject
         //{
         //    var referent = db.ScalarTypes.Where(st => st.Identifier == dataType.Identifier && st.Schema == dataType.Schema);
 
-        //    if (referent.Any())
-        //    {
-        //        referents.Add(dataType); ;
-        //    }
-        //    else
-        //    {
-        //        unresolved.Add(dataType.Identifier);
-        //    }
+        // if (referent.Any()) { referents.Add(dataType); ; } else {
+        // unresolved.Add(dataType.Identifier); }
 
         //}
 
         return (referents.Distinct(), unresolved.Distinct());
     }
 
-    public IEnumerable<CheckConstraint> Checks { get; }
+    private FullyQualifiedName AssembleIdentifier(CreateTableStatement node)
+    {
+        var nameParts = node.SchemaObjectName.Identifiers.Skip(1).Select(id => id.Value);
 
-    public IEnumerable<Column> Columns { get; }
-
-    public IEnumerable<ForeginKey> ForeignKeys { get; }
-
-    public IEnumerable<Index> Indices { get; }
-
-    public PrimaryKey? PrimaryKey { get; }
-
-    public string Schema { get; }
-
-    public IEnumerable<UniqueConstraint> UniqueConstraints { get; }
+        return new(GetId(node.SchemaObjectName.SchemaIdentifier), string.Join('.', nameParts));
+    }
 
     private IEnumerable<Column> CollectColumns(CreateTableStatement table)
-        => table.Definition.ColumnDefinitions.Select(c => new Column(c));
+            => table.Definition.ColumnDefinitions.Select(c => new Column(c));
 
     private IEnumerable<ForeginKey> CollectForeignKeys(CreateTableStatement table)
         => table
@@ -85,13 +83,6 @@ public sealed class Table : DbObject
           .TableConstraints
           .OfType<CheckConstraintDefinition>()
           .Select(c => new CheckConstraint(c));
-
-    private string GetName(CreateTableStatement table)
-    {
-        var identifiers = table.SchemaObjectName.Identifiers.Skip(1).Select(id => id.Value);
-
-        return string.Join('.', identifiers);
-    }
 
     private PrimaryKey? GetPrimary(CreateTableStatement table)
     {
@@ -111,9 +102,6 @@ public sealed class Table : DbObject
 
         return null;
     }
-
-    private string GetSchema(CreateTableStatement table)
-        => GetId(table.SchemaObjectName.SchemaIdentifier);
 
     private IEnumerable<UniqueConstraint> GetUniqueConstraints(CreateTableStatement table)
         => table

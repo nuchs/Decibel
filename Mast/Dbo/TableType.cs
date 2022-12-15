@@ -7,8 +7,7 @@ public sealed class TableType : DbObject
     public TableType(CreateTypeTableStatement node)
         : base(node)
     {
-        Schema = GetSchema(node);
-        Identifier = new(GetSchema(node), GetName(node));
+        Identifier = AssembleIdentifier(node);
         Columns = CollectColumns(node);
         Indices = CollectIndices(node);
         Checks = GetChecks(node);
@@ -24,11 +23,12 @@ public sealed class TableType : DbObject
 
     public PrimaryKey? PrimaryKey { get; }
 
-    public string Schema { get; }
-
     public IEnumerable<UniqueConstraint> UniqueConstraints { get; }
 
-    private static IEnumerable<Column> CollectColumns(CreateTypeTableStatement node)
+    private FullyQualifiedName AssembleIdentifier(CreateTypeTableStatement node)
+        => new(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));
+
+    private IEnumerable<Column> CollectColumns(CreateTypeTableStatement node)
         => node.Definition.ColumnDefinitions.Select(c => new Column(c));
 
     private IEnumerable<Index> CollectIndices(CreateTypeTableStatement node)
@@ -40,9 +40,6 @@ public sealed class TableType : DbObject
             .TableConstraints
             .OfType<CheckConstraintDefinition>()
             .Select(c => new CheckConstraint(c));
-
-    private string GetName(CreateTypeTableStatement node)
-            => GetId(node.Name.BaseIdentifier);
 
     private PrimaryKey? GetPrimary(CreateTypeTableStatement node)
     {
@@ -62,9 +59,6 @@ public sealed class TableType : DbObject
 
         return null;
     }
-
-    private string GetSchema(CreateTypeTableStatement node)
-        => GetId(node.Name.SchemaIdentifier);
 
     private IEnumerable<UniqueConstraint> GetUniqueConstraints(CreateTypeTableStatement table)
        => table

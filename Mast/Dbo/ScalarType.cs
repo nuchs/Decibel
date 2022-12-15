@@ -1,7 +1,5 @@
 ﻿using Mast.Parsing;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
-using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace Mast.Dbo;
 
@@ -10,16 +8,14 @@ public sealed class ScalarType : DbObject
     public ScalarType(DataTypeReference dataTypeRef)
         : base(dataTypeRef)
     {
-        Identifier = new(GetSchema(dataTypeRef.Name), GetName(dataTypeRef.Name));
-        Schema = GetSchema(dataTypeRef.Name);
+        Identifier = AssembleIdentifier(dataTypeRef.Name);
         Parameters = CollectParameters(dataTypeRef);
     }
 
     public ScalarType(CreateTypeUddtStatement node)
         : base(node)
     {
-        Identifier = new(GetSchema(node.Name), GetName(node.Name));
-        Schema = GetSchema(node.Name);
+        Identifier = AssembleIdentifier(node.Name);
         IsNullable = GetNullability(node);
         Parameters = CollectParameters(node.DataType);
     }
@@ -27,8 +23,6 @@ public sealed class ScalarType : DbObject
     public bool? IsNullable { get; }
 
     public IEnumerable<string> Parameters { get; }
-
-    public string Schema { get; }
 
     private static IEnumerable<string> CollectParameters(DataTypeReference dataTypeRef)
         => dataTypeRef is SqlDataTypeReference sqlRef ?
@@ -38,22 +32,19 @@ public sealed class ScalarType : DbObject
     private protected override (IEnumerable<DbObject>, IEnumerable<string>) GetReferents(Database db)
     {
         List<string> unresolved = new();
-        var referents = db.Schemas.Where(s => s.Identifier.Name == Schema);
+        var referents = db.Schemas.Where(s => s.Identifier.Name == Identifier.Schema);
 
         if (!referents.Any())
         {
-            unresolved.Add(Schema);
+            unresolved.Add(Identifier.Schema);
         }
 
-        return (referents, unresolved);
+        return (referents, unresolved); 
     }
 
-    private string GetName(SchemaObjectName fullyQualifiedName)
-        => GetId(fullyQualifiedName.BaseIdentifier);
+    private FullyQualifiedName AssembleIdentifier(SchemaObjectName node)
+        => new(GetId(node.SchemaIdentifier), GetId(node.BaseIdentifier));
 
     private bool GetNullability(CreateTypeUddtStatement node)
         => node.NullableConstraint is null || node.NullableConstraint.Nullable;
-
-    private string GetSchema(SchemaObjectName fullyQualifiedName)
-        => GetId(fullyQualifiedName.SchemaIdentifier);
 }

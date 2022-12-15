@@ -7,8 +7,7 @@ public sealed class View : DbObject
     public View(CreateViewStatement view)
         : base(view)
     {
-        Identifier = new(GetSchema(view), GetName(view));
-        Schema = GetSchema(view);
+        Identifier = AssembleIdentifier(view);
         Columns = CollectColumns(view);
         SchemaBinding = GetSchemaBinding(view);
         Check = GetCheckOption(view);
@@ -18,21 +17,16 @@ public sealed class View : DbObject
 
     public IEnumerable<string> Columns { get; }
 
-    public string Schema { get; }
-
     public bool SchemaBinding { get; }
 
+    private FullyQualifiedName AssembleIdentifier(CreateViewStatement node)
+        => new(GetId(node.SchemaObjectName.SchemaIdentifier), GetId(node.SchemaObjectName.BaseIdentifier));
+
     private IEnumerable<string> CollectColumns(CreateViewStatement view)
-        => view.Columns.Select(c => c.Value);
+            => view.Columns.Select(c => c.Value);
 
     private bool GetCheckOption(CreateViewStatement view)
         => view.WithCheckOption;
-
-    private string GetName(CreateViewStatement view)
-        => GetId(view.SchemaObjectName.BaseIdentifier);
-
-    private string GetSchema(CreateViewStatement view)
-        => GetId(view.SchemaObjectName.SchemaIdentifier);
 
     private bool GetSchemaBinding(CreateViewStatement view)
         => view.ViewOptions.Any(o => o.OptionKind == ViewOptionKind.SchemaBinding);
