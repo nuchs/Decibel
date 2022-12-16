@@ -17,9 +17,4 @@ internal sealed class ReferenceVisitor : TSqlFragmentVisitor
     {
         base.Visit(node);
     }
-
-    public override void Visit(CreateTriggerStatement node)
-    {
-        base.Visit(node);
-    }
 }

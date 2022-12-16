@@ -12,6 +12,25 @@ public sealed class View : DbObject
         Columns = CollectColumns(view);
         SchemaBinding = GetSchemaBinding(view);
         Check = GetCheckOption(view);
+        BaseTables = CollectTables(view);
+    }
+
+    private IEnumerable<FullyQualifiedName> CollectTables(CreateViewStatement view)
+    {
+        IEnumerable<FullyQualifiedName>? result = null;
+
+        if (view.SelectStatement.QueryExpression is QuerySpecification query)
+        {
+            result = query.FromClause?
+                .TableReferences?
+                .OfType<NamedTableReference>()
+                .Select(t => new FullyQualifiedName(
+                    GetId(t.SchemaObject.DatabaseIdentifier), 
+                    GetId(t.SchemaObject.SchemaIdentifier), 
+                    GetId(t.SchemaObject.BaseIdentifier)));
+        }
+        
+        return result ?? Array.Empty<FullyQualifiedName>();
     }
 
     public bool Check { get; }
@@ -20,11 +39,14 @@ public sealed class View : DbObject
 
     public bool SchemaBinding { get; }
 
+    public IEnumerable<FullyQualifiedName> BaseTables { get; }
+
     private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db)
     {
         var (schemaHits, schmeaMisses) = CorralateRefs(db.Schemas, FullyQualifiedName.FromSchema(Identifier.Schema));
+        var (tableHits, tableMisses) = CorralateRefs(db.Tables, BaseTables);
 
-        return (schemaHits, schmeaMisses);
+        return (schemaHits.Concat(tableHits), schmeaMisses.Concat(tableMisses));
     }
 
     private FullyQualifiedName AssembleIdentifier(CreateViewStatement node)

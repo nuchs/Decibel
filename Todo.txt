@@ -7,9 +7,9 @@ references
 schema		<- scalar, table, table type, view, func, proc, trigger, user
 scalar		<- table, table type, func, proc, trigger
 table		<- table, view, func, proc, trigger
+func		<- func, proc, trigger, view
 table type	<- func, proc, trigger
 view		<- func, proc, trigger
-func		<- func, proc, trigger
 proc		<- proc, trigger
 trigger		<- ?
 user		<- ?

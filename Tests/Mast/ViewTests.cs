@@ -20,12 +20,26 @@ public class ViewTests : BaseMastTest
     [Test]
     public void Columns()
     {
-        var script = "CREATE View dbo.stub (col1, col2) AS select tab.a, tab2.b";
+        var script = "CREATE View dbo.stub (col1, col2) AS select t1.a, t2.b from tab1 t1, tab2 t2";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
         var result = db.Views.First();
 
         Assert.That(result.Columns, Is.EquivalentTo(new[] { "col1", "col2" }));
+    }
+
+    [Test]
+    public void BaseTables()
+    {
+        var tab1 = FullyQualifiedName.FromSchemaName("dbo", "tom");
+        var tab2 = FullyQualifiedName.FromName("dick");
+        var tab3 = new FullyQualifiedName("db", "dbo", "Harry");
+        var script = $"CREATE View dbo.stub (c1, c2, c3) AS select t1.a, t2.b, t3.c from {tab1} t1, {tab2} t2, {tab3}";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var result = db.Views.First();
+
+        Assert.That(result.BaseTables, Is.EquivalentTo(new[] { tab1, tab2, tab3 }));
     }
 
     [Test]
@@ -85,5 +99,22 @@ public class ViewTests : BaseMastTest
         var schema = db.Schemas.First();
 
         Assert.That(schema.ReferencedBy, Has.Member(view));
+    }
+
+    [Test]
+    public void ReferenceTable ()
+    {
+        var script = $"""
+            CREATE TABLE dbo.jim (col int)
+            GO
+
+            CREATE view dbo.stub (stub) as select col from dbo.jim
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var view = db.Views.First();
+        var table = db.Tables.First();
+
+        Assert.That(table.ReferencedBy, Has.Member(view));
     }
 }
