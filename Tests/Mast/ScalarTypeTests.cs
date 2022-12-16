@@ -23,7 +23,7 @@ public class ScalarTypeTests : BaseMastTest
     [TestCase("[bracketed]", "[bracketed]", "bracketed", "bracketed")]
     public void Identifier(string name, string schema, string bareName, string bareSchema)
     {
-        FullyQualifiedName expected = new(bareSchema, bareName);
+        var expected = FullyQualifiedName.FromSchemaName(bareSchema, bareName);
         var script = $"CREATE TYPE {schema}.{name} FROM INT";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
@@ -113,7 +113,7 @@ public class ScalarTypeTests : BaseMastTest
         var script = $"CREATE TYPE {schema}.stub FROM INT";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var expected = new Reference(db.ScalarTypes.First(), new(string.Empty, schema));
+        var expected = new Reference(db.ScalarTypes.First(), FullyQualifiedName.FromSchema(schema));
 
         Assert.That(db.UnresolvedReferences, Has.Member(expected));
     }

@@ -24,7 +24,7 @@ public class ParameterTests : BaseMastTest
     [TestCase("MySchema.MyType", "MySchema", "MyType")]
     public void DataType(string type, string schema, string name)
     {
-        FullyQualifiedName expected = new(schema, name);
+        var expected = FullyQualifiedName.FromSchemaName(schema, name);
         var script = $"CREATE FUNCTION dbo.stub(@Stub {type}) RETURNS TABLE AS RETURN SELECT 1";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();

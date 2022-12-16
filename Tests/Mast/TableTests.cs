@@ -83,7 +83,7 @@ public class TableTests : BaseMastTest
     [TestCase("[bracketed]", "[bracketed]", "bracketed", "bracketed")]
     public void Identifier(string name, string schema, string bareName, string bareSchema)
     {
-        FullyQualifiedName expected = new(bareSchema, bareName);
+        var expected = FullyQualifiedName.FromSchemaName(bareSchema, bareName);
         var script = $"CREATE TABLE {schema}.{name} (StubColumn int)";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
@@ -192,7 +192,7 @@ public class TableTests : BaseMastTest
     [Test]
     public void ReferenceType()
     {
-        var expected = new FullyQualifiedName("dbo", "MyType");
+        var expected = FullyQualifiedName.FromSchemaName("dbo", "MyType");
         var script = $"""
             CREATE TYPE my.type FROM INT
             GO
@@ -210,7 +210,7 @@ public class TableTests : BaseMastTest
     [Test]
     public void ReferenceTable_RowFk()
     {
-        var expected = new FullyQualifiedName("dbo", "MyTable");
+        var expected = FullyQualifiedName.FromSchemaName("dbo", "MyTable");
         var script = $"""
             CREATE TABLE my.tab (col int)
             GO
@@ -228,7 +228,7 @@ public class TableTests : BaseMastTest
     [Test]
     public void ReferenceTable_TableFk()
     {
-        var expected = new FullyQualifiedName("dbo", "MyTable");
+        var expected = FullyQualifiedName.FromSchemaName("dbo", "MyTable");
         var script = $"""
             CREATE TABLE my.tab (col int)
             GO

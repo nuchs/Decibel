@@ -35,7 +35,7 @@ public class ColumnTests : BaseMastTest
     [TestCase("MySchema.MyType", "MySchema", "MyType")]
     public void DataType(string type, string schema, string name)
     {
-        FullyQualifiedName expected = new(schema, name);
+        var expected = FullyQualifiedName.FromSchemaName(schema, name);
         var script = $"CREATE TYPE dbo.stub AS TABLE (stub {type})";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();

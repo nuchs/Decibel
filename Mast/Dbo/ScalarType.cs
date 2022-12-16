@@ -23,10 +23,10 @@ public sealed class ScalarType : DbObject
             new List<string>();
 
     private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db) 
-        => CorralateRefs(db.Schemas, new FullyQualifiedName(string.Empty, Identifier.Schema));
+        => CorralateRefs(db.Schemas, FullyQualifiedName.FromSchema(Identifier.Schema));
 
     private FullyQualifiedName AssembleIdentifier(SchemaObjectName node)
-        => new(GetId(node.SchemaIdentifier), GetId(node.BaseIdentifier));
+        => FullyQualifiedName.FromSchemaName(GetId(node.SchemaIdentifier), GetId(node.BaseIdentifier));
 
     private bool GetNullability(CreateTypeUddtStatement node)
         => node.NullableConstraint is null || node.NullableConstraint.Nullable;

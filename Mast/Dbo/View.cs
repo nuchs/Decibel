@@ -20,7 +20,7 @@ public sealed class View : DbObject
     public bool SchemaBinding { get; }
 
     private FullyQualifiedName AssembleIdentifier(CreateViewStatement node)
-        => new(GetId(node.SchemaObjectName.SchemaIdentifier), GetId(node.SchemaObjectName.BaseIdentifier));
+        => FullyQualifiedName.FromSchemaName(GetId(node.SchemaObjectName.SchemaIdentifier), GetId(node.SchemaObjectName.BaseIdentifier));
 
     private IEnumerable<string> CollectColumns(CreateViewStatement view)
             => view.Columns.Select(c => c.Value);

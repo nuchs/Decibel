@@ -61,7 +61,8 @@ public sealed class ForeignKey : DbFragment
         }
 
         return (
-            new(GetId(constraint.ReferenceTableName.SchemaIdentifier), 
+            FullyQualifiedName.FromSchemaName(
+                GetId(constraint.ReferenceTableName.SchemaIdentifier), 
                 GetId(constraint.ReferenceTableName.BaseIdentifier)),
             GetId(constraint.ReferencedTableColumns.First()));
     }

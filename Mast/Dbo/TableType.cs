@@ -26,7 +26,7 @@ public sealed class TableType : DbObject
     public IEnumerable<UniqueConstraint> UniqueConstraints { get; }
 
     private FullyQualifiedName AssembleIdentifier(CreateTypeTableStatement node)
-        => new(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));
+        => FullyQualifiedName.FromSchemaName(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));
 
     private IEnumerable<Column> CollectColumns(CreateTypeTableStatement node)
         => node.Definition.ColumnDefinitions.Select(c => new Column(c));

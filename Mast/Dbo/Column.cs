@@ -76,7 +76,7 @@ public sealed class Column : DbFragment
     }
 
     private FullyQualifiedName GetTypeId(DataTypeReference dataType)
-        => new(GetId(dataType.Name.SchemaIdentifier), GetId(dataType.Name.BaseIdentifier));
+        => FullyQualifiedName.FromSchemaName(GetId(dataType.Name.SchemaIdentifier), GetId(dataType.Name.BaseIdentifier));
 
     private UniqueConstraint? GetUniqueness(ColumnDefinition colDef)
     {

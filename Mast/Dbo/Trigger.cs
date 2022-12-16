@@ -20,7 +20,7 @@ public sealed class Trigger : DbObject
     public RunWhen When { get; }
 
     private FullyQualifiedName AssembleIdentifier(CreateTriggerStatement node)
-        => new(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));
+        => FullyQualifiedName.FromSchemaName(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));
 
     private IEnumerable<TriggeredBy> CollectTriggerActions(CreateTriggerStatement trigger)
             => trigger.TriggerActions.Select(ta => MapTriggerAction(ta.TriggerActionType));

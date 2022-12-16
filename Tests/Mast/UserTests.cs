@@ -60,7 +60,7 @@ public class UserTests : BaseMastTest
     [TestCase("[bracketed]", "bracketed")]
     public void Identifier(string name, string bareName)
     {
-        FullyQualifiedName expected = new(string.Empty, bareName);
+        var expected = FullyQualifiedName.FromName(bareName);
         var script = $"CREATE USER {name}";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();

@@ -30,7 +30,7 @@ public class ProcedureTests : BaseMastTest
     [TestCase("[bracketed]", "[bracketed]", "bracketed", "bracketed")]
     public void Identifier(string name, string schema, string bareName, string bareSchema)
     {
-        FullyQualifiedName expected = new(bareSchema, bareName);
+        var expected = FullyQualifiedName.FromSchemaName(bareSchema, bareName);
         var script = $"CREATE PROCEDURE {schema}.{name} AS SELECT 1";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();

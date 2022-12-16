@@ -20,7 +20,7 @@ public class SchemaTests : BaseMastTest
     [TestCase("[bracketed]", "bracketed")]
     public void Identifier(string name, string bareName)
     {
-        FullyQualifiedName expected = new(string.Empty, bareName);
+        var expected = FullyQualifiedName.FromSchema(bareName);
         var script = $"CREATE SCHEMA {name} AUTHORIZATION mrblobby";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();

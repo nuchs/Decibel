@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -7,7 +8,7 @@ public sealed class User : DbObject
     public User(CreateUserStatement user)
         : base(user)
     {
-        Identifier = new(GetSchema(user), GetName(user));
+        Identifier = FullyQualifiedName.FromName(GetName(user));
         Login = GetLogin(user);
         Password = GetPassword(user);
         DefaultSchema = GetSchema(user);
@@ -24,6 +25,9 @@ public sealed class User : DbObject
     public string Password { get; }
 
     public string Sid { get; }
+
+    private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db)
+        => CorralateRefs(db.Schemas, FullyQualifiedName.FromSchema(DefaultSchema));
 
     private string GetIdentifierOption(PrincipalOptionKind kind, IEnumerable<PrincipalOption> options)
         => options

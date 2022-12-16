@@ -17,7 +17,7 @@ public sealed class Function : DbObject
     public string ReturnType { get; }
 
     private FullyQualifiedName AssembleIdentifier(CreateFunctionStatement node)
-        => new(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));
+        => FullyQualifiedName.FromSchemaName(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));
 
     private string AssembleReturnType(CreateFunctionStatement node)
         => AssembleFragment(node.ReturnType);

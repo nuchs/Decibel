@@ -31,7 +31,7 @@ public class FunctionTests : BaseMastTest
     [TestCase("[bracketed]", "[bracketed]", "bracketed", "bracketed")]
     public void Identifier(string name, string schema, string bareName, string bareSchema)
     {
-        FullyQualifiedName expected = new(bareSchema, bareName);
+        var expected = FullyQualifiedName.FromSchemaName(bareSchema, bareName);
         var script = $"CREATE FUNCTION {schema}.{name} () RETURNS TABLE AS RETURN SELECT 1";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();

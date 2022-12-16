@@ -14,7 +14,7 @@ public sealed class StoredProcedure : DbObject
     public List<Parameter> Parameters { get; }
 
     private FullyQualifiedName AssembleIdentifier(CreateProcedureStatement node)
-        => new(GetId(node.ProcedureReference.Name.SchemaIdentifier), GetId(node.ProcedureReference.Name.BaseIdentifier));
+        => FullyQualifiedName.FromSchemaName(GetId(node.ProcedureReference.Name.SchemaIdentifier), GetId(node.ProcedureReference.Name.BaseIdentifier));
 
     private List<Parameter> CollectParameters(CreateProcedureStatement node)
         => node.Parameters.Select(p => new Parameter(p)).ToList();

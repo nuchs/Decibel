@@ -1,4 +1,5 @@
 ﻿using Mast.Dbo;
+using Microsoft.SqlServer.Dac.Model;
 
 namespace Tests.Mast;
 
@@ -55,7 +56,7 @@ public class ForeignKeyTests : BaseMastTest
     [Test]
     public void ForeignTable()
     {
-        FullyQualifiedName expected = new("", "fstub");
+        var expected = FullyQualifiedName.FromName("fstub");
         var script = $"CREATE TABLE dbo.stub (stub int references {expected} (fcol))";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();

@@ -42,5 +42,5 @@ public sealed class Parameter : DbFragment
     private string GetName(ProcedureParameter parameter) => GetId(parameter.VariableName);
 
     private FullyQualifiedName GetTypeId(DataTypeReference dataType)
-        => new(GetId(dataType.Name.SchemaIdentifier), GetId(dataType.Name.BaseIdentifier));
+        => FullyQualifiedName.FromSchemaName(GetId(dataType.Name.SchemaIdentifier), GetId(dataType.Name.BaseIdentifier));
 }

@@ -35,7 +35,7 @@ public sealed class Table : DbObject
         var colFk = Columns.Where(c => c.ForeignKey is not null).Select(c => c.ForeignKey?.ForeignTable).OfType<FullyQualifiedName>();
 
         var (tableHits, tableMisses) = CorralateRefs(db.Tables, tableFk.Concat(colFk));
-        var (schemaHits, schmeaMisses) = CorralateRefs(db.Schemas, new FullyQualifiedName(string.Empty, Identifier.Schema));
+        var (schemaHits, schmeaMisses) = CorralateRefs(db.Schemas, FullyQualifiedName.FromSchema(Identifier.Schema));
         var (typeHits, typeMisses) = CorralateRefs(db.ScalarTypes, Columns.Select(c => c.DataType));
         
         return (schemaHits.Concat(typeHits).Concat(tableHits), schmeaMisses.Concat(typeMisses).Concat(tableMisses));
@@ -45,7 +45,7 @@ public sealed class Table : DbObject
     {
         var nameParts = node.SchemaObjectName.Identifiers.Skip(1).Select(id => id.Value);
 
-        return new(GetId(node.SchemaObjectName.SchemaIdentifier), string.Join('.', nameParts));
+        return FullyQualifiedName.FromSchemaName(GetId(node.SchemaObjectName.SchemaIdentifier), string.Join('.', nameParts));
     }
 
     private IEnumerable<Column> CollectColumns(CreateTableStatement table)

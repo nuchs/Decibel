@@ -51,7 +51,7 @@ public class TableTypeTests : BaseMastTest
     [TestCase("[bracketed]", "[bracketed]", "bracketed", "bracketed")]
     public void Identifier(string name, string schema, string bareName, string bareSchema)
     {
-        FullyQualifiedName expected = new(bareSchema, bareName);
+        var expected = FullyQualifiedName.FromSchemaName(bareSchema, bareName);
         var script = $"CREATE TYPE {schema}.{name} AS TABLE (StubColumn int)";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
