@@ -59,4 +59,59 @@ public class ProcedureTests : BaseMastTest
 
         Assert.That(result.Parameters, Has.Exactly(expected).Items);
     }
+
+    [Test]
+    [TestCase("dbo")]
+    [TestCase("[dbo]")]
+    public void ReferenceSchema(string schemaName)
+    {
+        var script = $"""
+            CREATE SCHEMA {schemaName}
+            GO
+
+            CREATE procedure {schemaName}.stub AS SELECT 1
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var proc = db.Procedures.First();
+        var schema = db.Schemas.First();
+
+        Assert.That(schema.ReferencedBy, Has.Member(proc));
+    }
+
+    [Test]
+    public void ReferenceScalar()
+    {
+        var type = "my.type";
+        var script = $"""
+            CREATE TYPE {type} FROM INT
+            GO
+
+            CREATE procedure dbo.stub @a {type} AS SELECT 1
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var proc = db.Procedures.First();
+        var scalar = db.ScalarTypes.First();
+
+        Assert.That(scalar.ReferencedBy, Has.Member(proc));
+    }
+
+    [Test]
+    public void ReferenceTableType()
+    {
+        var type = "my.type";
+        var script = $"""
+            CREATE TYPE {type} as TABLE(col int)
+            GO
+
+            CREATE procedure dbo.stub @a {type} READONLY AS SELECT 1
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var proc = db.Procedures.First();
+        var tt = db.TableTypes.First();
+
+        Assert.That(tt.ReferencedBy, Has.Member(proc));
+    }
 }

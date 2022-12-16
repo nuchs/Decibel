@@ -137,4 +137,41 @@ public class TableTypeTests : BaseMastTest
 
         Assert.That(result.UniqueConstraints.Count(), Is.EqualTo(2));
     }
+
+    [Test]
+    [TestCase("dbo")]
+    [TestCase("[dbo]")]
+    public void ReferenceSchema(string schemaName)
+    {
+        var script = $"""
+            CREATE SCHEMA {schemaName}
+            GO
+
+            CREATE TYPE {schemaName}.stub AS TABLE (stub int)
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var type = db.TableTypes.First();
+        var schema = db.Schemas.First();
+
+        Assert.That(schema.ReferencedBy, Has.Member(type));
+    }
+
+    [Test]
+    public void ReferenceType()
+    {
+        var expected = FullyQualifiedName.FromSchemaName("dbo", "MyType");
+        var script = $"""
+            CREATE TYPE my.type FROM INT
+            GO
+
+            CREATE TYPE {expected} AS TABLE (stub my.type)
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var type = db.TableTypes.First();
+        var scalar = db.ScalarTypes.First();
+
+        Assert.That(scalar.ReferencedBy, Has.Member(type));
+    }
 }

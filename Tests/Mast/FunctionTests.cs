@@ -112,4 +112,59 @@ public class FunctionTests : BaseMastTest
 
         Assert.That(result.ReturnType, Is.EqualTo(expected));
     }
+
+    [Test]
+    [TestCase("dbo")]
+    [TestCase("[dbo]")]
+    public void ReferenceSchema(string schemaName)
+    {
+        var script = $"""
+            CREATE SCHEMA {schemaName}
+            GO
+
+            CREATE FUNCTION {schemaName}.stub () RETURNS TABLE AS RETURN SELECT 1
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var func = db.Functions.First();
+        var schema = db.Schemas.First();
+
+        Assert.That(schema.ReferencedBy, Has.Member(func));
+    }
+
+    [Test]
+    public void ReferenceScalar()
+    {
+        var type = "my.type";
+        var script = $"""
+            CREATE TYPE {type} FROM INT
+            GO
+
+            CREATE function dbo.stub(@a {type}) RETURNS TABLE AS RETURN SELECT 1
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var func = db.Functions.First();
+        var scalar = db.ScalarTypes.First();
+
+        Assert.That(scalar.ReferencedBy, Has.Member(func));
+    }
+
+    [Test]
+    public void ReferenceTableType()
+    {
+        var type = "my.type";
+        var script = $"""
+            CREATE TYPE {type} as TABLE(col int)
+            GO
+
+            CREATE function dbo.stub(@a {type} READONLY) RETURNS TABLE AS RETURN SELECT 1
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var func = db.Functions.First();
+        var tt = db.TableTypes.First();
+
+        Assert.That(tt.ReferencedBy, Has.Member(func));
+    }
 }

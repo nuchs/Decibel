@@ -67,4 +67,23 @@ public class ViewTests : BaseMastTest
 
         Assert.That(result.SchemaBinding, Is.EqualTo(expected));
     }
+
+    [Test]
+    [TestCase("dbo")]
+    [TestCase("[dbo]")]
+    public void ReferenceSchema(string schemaName)
+    {
+        var script = $"""
+            CREATE SCHEMA {schemaName}
+            GO
+
+            CREATE view {schemaName}.stub (stub) as select dbo2.tab.a
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var view = db.Views.First();
+        var schema = db.Schemas.First();
+
+        Assert.That(schema.ReferencedBy, Has.Member(view));
+    }
 }

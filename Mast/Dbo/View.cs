@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -18,6 +19,13 @@ public sealed class View : DbObject
     public IEnumerable<string> Columns { get; }
 
     public bool SchemaBinding { get; }
+
+    private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db)
+    {
+        var (schemaHits, schmeaMisses) = CorralateRefs(db.Schemas, FullyQualifiedName.FromSchema(Identifier.Schema));
+
+        return (schemaHits, schmeaMisses);
+    }
 
     private FullyQualifiedName AssembleIdentifier(CreateViewStatement node)
         => FullyQualifiedName.FromSchemaName(GetId(node.SchemaObjectName.SchemaIdentifier), GetId(node.SchemaObjectName.BaseIdentifier));
