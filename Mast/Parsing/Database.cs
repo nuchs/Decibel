@@ -4,43 +4,78 @@ namespace Mast.Parsing;
 
 internal sealed class Database : IDatabase
 {
-    public IEnumerable<Function> Functions => FunctionList;
+    private readonly List<Function> functionList = new();
+    private readonly Dictionary<FullyQualifiedName, DbObject> nameMap = new();
+    private readonly List<StoredProcedure> procedureList = new();
+    private readonly List<ScalarType> scalarTypeList = new();
+    private readonly List<Schema> schemaList = new();
+    private readonly List<Table> tableList = new();
+    private readonly List<TableType> tableTypeList = new();
+    private readonly List<Trigger> triggerList = new();
+    private readonly List<User> userList = new();
+    private readonly HashSet<Reference> unresolvedReferencesSet = new();
+    private readonly List<View> viewList = new();
 
-    public IEnumerable<StoredProcedure> Procedures => ProcedureList;
+    public IEnumerable<Function> Functions => functionList;
+    public IEnumerable<StoredProcedure> Procedures => procedureList;
+    public IEnumerable<ScalarType> ScalarTypes => scalarTypeList;
+    public IEnumerable<Schema> Schemas => schemaList;
+    public IEnumerable<Table> Tables => tableList;
+    public IEnumerable<TableType> TableTypes => tableTypeList;
+    public IEnumerable<Trigger> Triggers => triggerList;
+    public IEnumerable<Reference> UnresolvedReferences => unresolvedReferencesSet;
+    public IEnumerable<User> Users => userList;
+    public IEnumerable<View> Views => viewList;
 
-    public IEnumerable<ScalarType> ScalarTypes => ScalarTypeList;
+    internal IReadOnlyDictionary<FullyQualifiedName, DbObject> NameMap => nameMap;
 
-    public IEnumerable<Schema> Schemas => SchemaList;
+    internal void AddObject(DbObject dbObject)
+    {
+        nameMap.Add(dbObject.Identifier, dbObject);
 
-    public IEnumerable<Table> Tables => TableList;
+        switch (dbObject)
+        {
+            case Function obj:
+                functionList.Add(obj);
+                break;
 
-    public IEnumerable<TableType> TableTypes => TableTypeList;
+            case StoredProcedure obj:
+                procedureList.Add(obj);
+                break;
 
-    public IEnumerable<Trigger> Triggers => TriggerList;
+            case ScalarType obj:
+                scalarTypeList.Add(obj);
+                break;
 
-    public IEnumerable<Reference> UnresolvedReferences => UnresolvedReferencesList;
+            case Schema obj:
+                schemaList.Add(obj);
+                break;
 
-    public IEnumerable<User> Users => UserList;
+            case Table obj:
+                tableList.Add(obj);
+                break;
 
-    public IEnumerable<View> Views => ViewList;
+            case TableType obj:
+                tableTypeList.Add(obj);
+                break;
 
-    internal List<Function> FunctionList { get; } = new();
+            case Trigger obj:
+                triggerList.Add(obj);
+                break;
 
-    internal List<StoredProcedure> ProcedureList { get; } = new();
+            case User obj:
+                userList.Add(obj);
+                break;
 
-    internal List<ScalarType> ScalarTypeList { get; } = new();
+            case View obj:
+                viewList.Add(obj);
+                break;
 
-    internal List<Schema> SchemaList { get; } = new();
+            default:
+                throw new InvalidDataException($"Unrecognised type of DbObject : {dbObject.GetType()}");
+        }
+    }
 
-    internal List<Table> TableList { get; } = new();
-
-    internal List<TableType> TableTypeList { get; } = new();
-
-    internal List<Trigger> TriggerList { get; } = new();
-
-    internal HashSet<Reference> UnresolvedReferencesList { get; } = new();
-
-    internal List<User> UserList { get; } = new();
-
-    internal List<View> ViewList { get; } = new();
+    internal void AddUnresolvedRefs(DbObject referee, IEnumerable<FullyQualifiedName> unresolvedRefs) 
+        => unresolvedReferencesSet.UnionWith(unresolvedRefs.Select(u => new Reference(referee, u)));
 }

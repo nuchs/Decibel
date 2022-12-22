@@ -3,14 +3,14 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
-public class DbObject : DbFragment
+public abstract class DbObject : DbFragment
 {
     private readonly HashSet<DbObject> referees = new();
+    private readonly TSqlFragment fragment;
 
-    private protected DbObject(TSqlFragment fragment)
+    protected DbObject(TSqlFragment fragment)
         : base(fragment)
-    {
-    }
+        => this.fragment = fragment;
 
     public FullyQualifiedName Identifier { get; protected set; } = FullyQualifiedName.None;
 
@@ -18,23 +18,68 @@ public class DbObject : DbFragment
 
     internal void CrossReference(Database db)
     {
-        var (referents, unresolvedRefs) = GetReferents(db);
+        HashSet<TSqlTokenType> idTokens = new() { TSqlTokenType.Database, TSqlTokenType.Schema, TSqlTokenType.Dot, TSqlTokenType.Identifier, TSqlTokenType.QuotedIdentifier };
+        List<string> idParts = new();
+        List<FullyQualifiedName> unresolved = new();
 
-        foreach (var dbo in referents)
+        foreach (var token in fragment.ScriptTokenStream.Skip(fragment.FirstTokenIndex).Take(fragment.FragmentLength))
         {
-            dbo.referees.Add(this);
+            if (idTokens.Contains(token.TokenType))
+            {
+                if (token.TokenType != TSqlTokenType.Dot)
+                {
+                    idParts.Add(token.Text);
+                }
+            }
+            else if (idParts.Count > 0)
+            {
+                var candidate = idParts.Count > 1 ?
+                    FullyQualifiedName.FromSchemaName(idParts[0], idParts[1]) :
+                    FullyQualifiedName.FromName(idParts[0]);
+
+                if (candidate.Schema != string.Empty)
+                {
+                    var schemaName = FullyQualifiedName.FromSchema(candidate.Schema);
+
+                    if (schemaName != Identifier)
+                    {
+                        if (db.NameMap.TryGetValue(schemaName, out var schema))
+                        {
+
+                        schema.referees.Add(this);
+                        }
+                        else
+                        {
+                            unresolved.Add(schemaName);
+                        }
+                    }
+                }
+
+
+                if (candidate != Identifier )
+                {
+                    if (db.NameMap.TryGetValue(candidate, out var referent))
+                    {
+
+                    referent.referees.Add(this);
+                    }
+                    else
+                    {
+                        unresolved.Add(candidate);
+                    }
+                }
+
+                idParts = new();
+            }
         }
 
-        foreach (var reference in unresolvedRefs)
-        {
-            db.UnresolvedReferencesList.Add(new(this, reference));
-        }
+        db.AddUnresolvedRefs(this, unresolved);
     }
 
-    protected (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) CorralateRefs(IEnumerable<DbObject> candidates, FullyQualifiedName target)
+    private protected (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) CorralateRefs(IEnumerable<DbObject> candidates, FullyQualifiedName target)
         => CorralateRefs(candidates, new[] { target });
 
-    protected (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) CorralateRefs(IEnumerable<DbObject> candidates, IEnumerable<FullyQualifiedName> targets)
+    private protected (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) CorralateRefs(IEnumerable<DbObject> candidates, IEnumerable<FullyQualifiedName> targets)
     {
         List<FullyQualifiedName> unresolved = new();
         List<DbObject> referents = new();
@@ -56,9 +101,5 @@ public class DbObject : DbFragment
         return (referents, unresolved);
     }
 
-    // TODO make abstract
-    private protected virtual (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db)
-    {
-        return (Array.Empty<DbObject>(), Array.Empty<FullyQualifiedName>());
-    }
+    private protected abstract (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db);
 }

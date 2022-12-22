@@ -14,14 +14,20 @@ internal sealed class ScriptParser
     {
         var tree = MakeAbstractSyntaxTree(content);
         AddObjectsToDb(tree);
-        ExtractReferences(tree);
     }
 
     private void AddObjectsToDb(TSqlFragment tree)
-        => VisitTree(tree, new DefinitionVisitor(db), "Failed to build db representation");
-
-    private void ExtractReferences(TSqlFragment tree)
-        => VisitTree(tree, new ReferenceVisitor(db), "Failed to extract references");
+    {
+        try
+        {
+            tree.Accept(new DefinitionVisitor(db));
+        }
+        catch (Exception e)
+        {
+            Log.Error($"\"Failed to build db representation\"\n{e}");
+            throw;
+        }
+    }
 
     private TSqlFragment MakeAbstractSyntaxTree(string content)
     {
@@ -41,18 +47,5 @@ internal sealed class ScriptParser
         }
 
         return tree;
-    }
-
-    private static void VisitTree(TSqlFragment tree, TSqlFragmentVisitor visitor, string errMsg)
-    {
-        try
-        {
-            tree.Accept(visitor);
-        }
-        catch (Exception e)
-        {
-            Log.Error($"{errMsg}\n{e}");
-            throw;
-        }
     }
 }

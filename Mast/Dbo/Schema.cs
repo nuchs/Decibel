@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Parsing;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -18,4 +19,7 @@ public sealed class Schema : DbObject
 
     private string GetOwner(CreateSchemaStatement schema)
         => GetId(schema.Owner);
+
+    private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db)
+        => (new DbObject[0], new FullyQualifiedName[0]);
 }

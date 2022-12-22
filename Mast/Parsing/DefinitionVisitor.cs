@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Dbo;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Parsing;
 
@@ -8,27 +9,28 @@ internal sealed class DefinitionVisitor : TSqlFragmentVisitor
 
     public DefinitionVisitor(Database db) => this.db = db;
 
-    public override void Visit(CreateTableStatement node) => Visit(db.TableList, new(node), node);
+    public override void Visit(CreateTableStatement node) => Visit(new Table(node), node);
 
-    public override void Visit(CreateTypeTableStatement node) => Visit(db.TableTypeList, new(node), node);
+    public override void Visit(CreateTypeTableStatement node) => Visit(new TableType(node), node);
 
-    public override void Visit(CreateTypeUddtStatement node) => Visit(db.ScalarTypeList, new(node), node);
+    public override void Visit(CreateTypeUddtStatement node) => Visit(new ScalarType(node), node);
 
-    public override void Visit(CreateProcedureStatement node) => Visit(db.ProcedureList, new(node), node);
+    public override void Visit(CreateProcedureStatement node) => Visit(new StoredProcedure(node), node);
 
-    public override void Visit(CreateFunctionStatement node) => Visit(db.FunctionList, new(node), node);
+    public override void Visit(CreateFunctionStatement node) => Visit(new Function(node), node);
 
-    public override void Visit(CreateSchemaStatement node) => Visit(db.SchemaList, new(node), node);
+    public override void Visit(CreateSchemaStatement node) => Visit(new Schema(node), node);
 
-    public override void Visit(CreateTriggerStatement node) => Visit(db.TriggerList, new(node), node);
+    public override void Visit(CreateTriggerStatement node) => Visit(new Trigger(node), node);
 
-    public override void Visit(CreateViewStatement node) => Visit(db.ViewList, new(node), node);
+    public override void Visit(CreateViewStatement node) => Visit(new View(node), node);
 
-    public override void Visit(CreateUserStatement node) => Visit(db.UserList, new(node), node);
+    public override void Visit(CreateUserStatement node) => Visit(new User(node), node);
 
-    private void Visit<T, U>(List<U> mastList, U mastItem, T node) where T : TSqlFragment
+    private void Visit<T>(DbObject mastItem, T node)
+        where T : TSqlFragment
     {
-        mastList.Add(mastItem);
+        db.AddObject(mastItem);
         base.Visit(node);
     }
 }

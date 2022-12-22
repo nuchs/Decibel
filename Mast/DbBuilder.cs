@@ -5,18 +5,20 @@ namespace Mast;
 public class DbBuilder
 {
     private readonly ScriptParser parser;
-    private readonly CrossReferencer referencer;
     private readonly Database db = new();
 
     public DbBuilder()
     {
         parser = new(db);
-        referencer = new(db);
     }
 
     public IDatabase Build()
     {
-        referencer.Run();
+        foreach (var item in db.NameMap.Values)
+        {
+            item.CrossReference(db);
+        }
+
         return db;
     }
 

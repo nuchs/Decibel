@@ -105,16 +105,4 @@ public class ScalarTypeTests : BaseMastTest
 
         Assert.That(schema.ReferencedBy, Is.Empty);
     }
-
-    [Test]
-    public void UnresolvedSchemaReference()
-    {
-        var schema = "Liono";
-        var script = $"CREATE TYPE {schema}.stub FROM INT";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var expected = new Reference(db.ScalarTypes.First(), FullyQualifiedName.FromSchema(schema));
-
-        Assert.That(db.UnresolvedReferences, Has.Member(expected));
-    }
 }

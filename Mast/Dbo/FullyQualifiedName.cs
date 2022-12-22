@@ -1,10 +1,33 @@
-﻿using System.Text;
+﻿namespace Mast.Dbo;
 
-namespace Mast.Dbo;
-
-public sealed record FullyQualifiedName(string Db, string Schema, string Name)
+public sealed class FullyQualifiedName
 {
+    public FullyQualifiedName(string db, string schema, string name)
+    {
+        Db = db.Trim(new char[] { '[', ']' });
+        Schema = schema.Trim(new char[] { '[', ']' });
+        Name = name.Trim(new char[] { '[', ']' });
+    }
+
     public static FullyQualifiedName None { get; } = new(string.Empty, string.Empty, string.Empty);
+
+    public CaseInsensitiveString Db { get; }
+    public CaseInsensitiveString Name { get; }
+    public CaseInsensitiveString Schema { get; }
+
+    public override int GetHashCode() => HashCode.Combine(Db, Schema, Name);
+
+    public override bool Equals(object? obj) => 
+        obj is FullyQualifiedName other && 
+        Db.Equals(other.Db) && 
+        Schema.Equals(other.Schema) && 
+        Name.Equals(other.Name);
+
+    public static bool operator ==(FullyQualifiedName left, FullyQualifiedName right)
+      => left.Equals(right);
+
+    public static bool operator !=(FullyQualifiedName left, FullyQualifiedName right)
+        => !(left == right);
 
     public static FullyQualifiedName FromDb(string db) => new(db, string.Empty, string.Empty);
 
