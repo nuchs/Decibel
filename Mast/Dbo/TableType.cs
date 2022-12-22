@@ -26,14 +26,6 @@ public sealed class TableType : DbObject
 
     public IEnumerable<UniqueConstraint> UniqueConstraints { get; }
 
-    private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db)
-    {
-        var (schemaHits, schmeaMisses) = CorralateRefs(db.Schemas, FullyQualifiedName.FromSchema(Identifier.Schema));
-        var (typeHits, typeMisses) = CorralateRefs(db.ScalarTypes, Columns.Select(c => c.DataType));
-
-        return (schemaHits.Concat(typeHits), schmeaMisses.Concat(typeMisses));
-    }
-
     private FullyQualifiedName AssembleIdentifier(CreateTypeTableStatement node)
         => FullyQualifiedName.FromSchemaName(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));
 

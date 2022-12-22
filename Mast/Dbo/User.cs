@@ -26,9 +26,6 @@ public sealed class User : DbObject
 
     public string Sid { get; }
 
-    private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db)
-        => CorralateRefs(db.Schemas, FullyQualifiedName.FromSchema(DefaultSchema));
-
     private string GetIdentifierOption(PrincipalOptionKind kind, IEnumerable<PrincipalOption> options)
         => options
             .Where(o => o.OptionKind == kind)

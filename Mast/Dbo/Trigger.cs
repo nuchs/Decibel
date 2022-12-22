@@ -20,9 +20,6 @@ public sealed class Trigger : DbObject
 
     public RunWhen When { get; }
 
-    private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db) 
-        => CorralateRefs(db.Schemas, FullyQualifiedName.FromSchema(Identifier.Schema));
-
     private FullyQualifiedName AssembleIdentifier(CreateTriggerStatement node)
         => FullyQualifiedName.FromSchemaName(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));
 

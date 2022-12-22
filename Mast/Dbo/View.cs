@@ -41,14 +41,6 @@ public sealed class View : DbObject
 
     public IEnumerable<FullyQualifiedName> BaseTables { get; }
 
-    private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db)
-    {
-        var (schemaHits, schmeaMisses) = CorralateRefs(db.Schemas, FullyQualifiedName.FromSchema(Identifier.Schema));
-        var (tableHits, tableMisses) = CorralateRefs(db.Tables, BaseTables);
-
-        return (schemaHits.Concat(tableHits), schmeaMisses.Concat(tableMisses));
-    }
-
     private FullyQualifiedName AssembleIdentifier(CreateViewStatement node)
         => FullyQualifiedName.FromSchemaName(GetId(node.SchemaObjectName.SchemaIdentifier), GetId(node.SchemaObjectName.BaseIdentifier));
 

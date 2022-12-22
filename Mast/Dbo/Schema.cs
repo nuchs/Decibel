@@ -19,7 +19,4 @@ public sealed class Schema : DbObject
 
     private string GetOwner(CreateSchemaStatement schema)
         => GetId(schema.Owner);
-
-    private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db)
-        => (new DbObject[0], new FullyQualifiedName[0]);
 }

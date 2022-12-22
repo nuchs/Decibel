@@ -3,12 +3,12 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
-public abstract class DbObject : DbFragment
+public class DbObject : DbFragment
 {
-    private readonly HashSet<DbObject> referees = new();
     private readonly TSqlFragment fragment;
+    private readonly HashSet<DbObject> referees = new();
 
-    protected DbObject(TSqlFragment fragment)
+    private protected DbObject(TSqlFragment fragment)
         : base(fragment)
         => this.fragment = fragment;
 
@@ -18,56 +18,23 @@ public abstract class DbObject : DbFragment
 
     internal void CrossReference(Database db)
     {
-        HashSet<TSqlTokenType> idTokens = new() { TSqlTokenType.Database, TSqlTokenType.Schema, TSqlTokenType.Dot, TSqlTokenType.Identifier, TSqlTokenType.QuotedIdentifier };
-        List<string> idParts = new();
+        FqnBuilder idParts = new();
         List<FullyQualifiedName> unresolved = new();
 
         foreach (var token in fragment.ScriptTokenStream.Skip(fragment.FirstTokenIndex).Take(fragment.FragmentLength))
         {
-            if (idTokens.Contains(token.TokenType))
+            idParts.AddToken(token);
+
+            if (idParts.IsReady)
             {
-                if (token.TokenType != TSqlTokenType.Dot)
+                var candidate = idParts.Id;
+
+                if (!string.IsNullOrWhiteSpace(candidate.Schema))
                 {
-                    idParts.Add(token.Text);
-                }
-            }
-            else if (idParts.Count > 0)
-            {
-                var candidate = idParts.Count > 1 ?
-                    FullyQualifiedName.FromSchemaName(idParts[0], idParts[1]) :
-                    FullyQualifiedName.FromName(idParts[0]);
-
-                if (candidate.Schema != string.Empty)
-                {
-                    var schemaName = FullyQualifiedName.FromSchema(candidate.Schema);
-
-                    if (schemaName != Identifier)
-                    {
-                        if (db.NameMap.TryGetValue(schemaName, out var schema))
-                        {
-
-                        schema.referees.Add(this);
-                        }
-                        else
-                        {
-                            unresolved.Add(schemaName);
-                        }
-                    }
+                    ResolveReference(db, FullyQualifiedName.FromSchema(candidate.Schema), unresolved);
                 }
 
-
-                if (candidate != Identifier )
-                {
-                    if (db.NameMap.TryGetValue(candidate, out var referent))
-                    {
-
-                    referent.referees.Add(this);
-                    }
-                    else
-                    {
-                        unresolved.Add(candidate);
-                    }
-                }
+                ResolveReference(db, candidate, unresolved);
 
                 idParts = new();
             }
@@ -76,30 +43,18 @@ public abstract class DbObject : DbFragment
         db.AddUnresolvedRefs(this, unresolved);
     }
 
-    private protected (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) CorralateRefs(IEnumerable<DbObject> candidates, FullyQualifiedName target)
-        => CorralateRefs(candidates, new[] { target });
-
-    private protected (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) CorralateRefs(IEnumerable<DbObject> candidates, IEnumerable<FullyQualifiedName> targets)
+    private void ResolveReference(Database db, FullyQualifiedName candidate, List<FullyQualifiedName> unresolved)
     {
-        List<FullyQualifiedName> unresolved = new();
-        List<DbObject> referents = new();
-
-        foreach (var target in targets)
+        if (candidate != Identifier)
         {
-            var referent = candidates.Where(c => c.Identifier == target);
-
-            if (referent.Any())
+            if (db.NameMap.TryGetValue(candidate, out var referent))
             {
-                referents.AddRange(referent);
+                referent.referees.Add(this);
             }
             else
             {
-                unresolved.Add(target);
+                unresolved.Add(candidate);
             }
         }
-
-        return (referents, unresolved);
     }
-
-    private protected abstract (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db);
 }

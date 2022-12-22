@@ -22,9 +22,6 @@ public sealed class ScalarType : DbObject
             sqlRef.Parameters.Select(p => p.Value) :
             new List<string>();
 
-    private protected override (IEnumerable<DbObject>, IEnumerable<FullyQualifiedName>) GetReferents(Database db) 
-        => CorralateRefs(db.Schemas, FullyQualifiedName.FromSchema(Identifier.Schema));
-
     private FullyQualifiedName AssembleIdentifier(SchemaObjectName node)
         => FullyQualifiedName.FromSchemaName(GetId(node.SchemaIdentifier), GetId(node.BaseIdentifier));
 
