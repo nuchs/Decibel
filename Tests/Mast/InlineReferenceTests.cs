@@ -71,4 +71,43 @@ internal class InlineReferenceTests : BaseMastTest
 
         Assert.That(db.UnresolvedReferences, Has.Member(expected));
     }
+
+    [Test]
+    [TestCase("bit")]
+    [TestCase("tinyint")]
+    [TestCase("smallint")]
+    [TestCase("int")]
+    [TestCase("bigint")]
+    [TestCase("decimal")]
+    [TestCase("numeric")]
+    [TestCase("money")]
+    [TestCase("smallmoney")]
+    [TestCase("float")]
+    [TestCase("real")]
+    [TestCase("date")]
+    [TestCase("time")]
+    [TestCase("datetime")]
+    [TestCase("datetime2")]
+    [TestCase("datetimeoffset")]
+    [TestCase("smalldatetime")]
+    [TestCase("char")]
+    [TestCase("varchar")]
+    [TestCase("text")]
+    [TestCase("binary")]
+    [TestCase("varbinary")]
+    [TestCase("image")]
+    [TestCase("hierarchyid")]
+    [TestCase("sql_varient")]
+    [TestCase("geometry")]
+    [TestCase("rowversion")]
+    [TestCase("uniqueidentifier")]
+    [TestCase("xml")]
+    public void NoReferenceBuiltIns(string type)
+    {
+        var script = $"CREATE TYPE myType from {type}";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+
+        Assert.That(db.UnresolvedReferences, Is.Empty);
+    }
 }

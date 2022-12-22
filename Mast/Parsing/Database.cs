@@ -15,6 +15,39 @@ internal sealed class Database : IDatabase
     private readonly List<User> userList = new();
     private readonly HashSet<Reference> unresolvedReferencesSet = new();
     private readonly List<View> viewList = new();
+    private readonly HashSet<FullyQualifiedName> blacklist = new()
+    {
+        FullyQualifiedName.FromName("TYPE"),
+        FullyQualifiedName.FromName("bit"),
+        FullyQualifiedName.FromName("tinyint"),
+        FullyQualifiedName.FromName("smallint"),
+        FullyQualifiedName.FromName("int"),
+        FullyQualifiedName.FromName("bigint"),
+        FullyQualifiedName.FromName("decimal"),
+        FullyQualifiedName.FromName("numeric"),
+        FullyQualifiedName.FromName("money"),
+        FullyQualifiedName.FromName("smallmoney"),
+        FullyQualifiedName.FromName("float"),
+        FullyQualifiedName.FromName("real"),
+        FullyQualifiedName.FromName("date"),
+        FullyQualifiedName.FromName("time"),
+        FullyQualifiedName.FromName("datetime"),
+        FullyQualifiedName.FromName("datetime2"),
+        FullyQualifiedName.FromName("datetimeoffset"),
+        FullyQualifiedName.FromName("smalldatetime"),
+        FullyQualifiedName.FromName("char"),
+        FullyQualifiedName.FromName("varchar"),
+        FullyQualifiedName.FromName("text"),
+        FullyQualifiedName.FromName("binary"),
+        FullyQualifiedName.FromName("varbinary"),
+        FullyQualifiedName.FromName("image"),
+        FullyQualifiedName.FromName("hierarchyid"),
+        FullyQualifiedName.FromName("sql_varient"),
+        FullyQualifiedName.FromName("geometry"),
+        FullyQualifiedName.FromName("rowversion"),
+        FullyQualifiedName.FromName("uniqueidentifier"),
+        FullyQualifiedName.FromName("xml"),
+    };
 
     public IEnumerable<Function> Functions => functionList;
     public IEnumerable<StoredProcedure> Procedures => procedureList;
@@ -76,6 +109,9 @@ internal sealed class Database : IDatabase
         }
     }
 
-    internal void AddUnresolvedRefs(DbObject referee, IEnumerable<FullyQualifiedName> unresolvedRefs) 
-        => unresolvedReferencesSet.UnionWith(unresolvedRefs.Select(u => new Reference(referee, u)));
+    internal void AddUnresolvedRefs(DbObject referee, IEnumerable<FullyQualifiedName> unresolvedRefs)
+        => unresolvedReferencesSet.UnionWith(
+            unresolvedRefs
+            .Where(u => !blacklist.Contains(u))
+            .Select(u => new Reference(referee, u))); 
 }
