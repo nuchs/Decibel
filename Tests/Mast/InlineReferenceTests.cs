@@ -102,7 +102,7 @@ internal class InlineReferenceTests : BaseMastTest
     [TestCase("rowversion")]
     [TestCase("uniqueidentifier")]
     [TestCase("xml")]
-    public void NoReferenceBuiltIns(string type)
+    public void NoReferenceToBuiltIns(string type)
     {
         var script = $"CREATE TYPE myType from {type}";
 

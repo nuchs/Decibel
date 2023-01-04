@@ -135,7 +135,7 @@ public class FunctionTests : BaseMastTest
     [Test]
     public void ReferenceScalar()
     {
-        var type = "my.type";
+        var type = "my.typer";
         var script = $"""
             CREATE TYPE {type} FROM INT
             GO
@@ -153,7 +153,7 @@ public class FunctionTests : BaseMastTest
     [Test]
     public void ReferenceTableType()
     {
-        var type = "my.type";
+        var type = "my.typer";
         var script = $"""
             CREATE TYPE {type} as TABLE(col int)
             GO

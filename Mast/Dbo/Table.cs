@@ -31,9 +31,9 @@ public sealed class Table : DbObject
 
     private FullyQualifiedName AssembleIdentifier(CreateTableStatement node)
     {
-        var nameParts = node.SchemaObjectName.Identifiers.Skip(1).Select(id => id.Value);
-
-        return FullyQualifiedName.FromSchemaName(GetId(node.SchemaObjectName.SchemaIdentifier), string.Join('.', nameParts));
+        return FullyQualifiedName.FromSchemaName(
+            GetId(node.SchemaObjectName.SchemaIdentifier),
+            GetId(node.SchemaObjectName.BaseIdentifier));
     }
 
     private IEnumerable<Column> CollectColumns(CreateTableStatement table)

@@ -22,6 +22,6 @@ internal class Log : ILog
 
     private void Write(string msg, string method, int line, [CallerMemberName] string level = "")
     {
-        Console.WriteLine($"{DateTime.Now.ToShortTimeString()} | {level} | {type}.{method}.{line} | {msg}");
+        Console.WriteLine($"{DateTime.Now.ToShortTimeString()} | {level} | {type}.{method} {line} | {msg}");
     }
 }

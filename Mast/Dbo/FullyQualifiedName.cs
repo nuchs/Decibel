@@ -4,9 +4,9 @@ public sealed class FullyQualifiedName
 {
     public FullyQualifiedName(string db, string schema, string name)
     {
-        Db = db.Trim(new char[] { '[', ']' });
-        Schema = schema.Trim(new char[] { '[', ']' });
-        Name = name.Trim(new char[] { '[', ']' });
+        Db = db.Trim(new char[] { '[', ']' }).ToLowerInvariant();
+        Schema = schema.Trim(new char[] { '[', ']' }).ToLowerInvariant();
+        Name = name.Trim(new char[] { '[', ']' }).ToLowerInvariant();
     }
 
     public static FullyQualifiedName None { get; } = new(string.Empty, string.Empty, string.Empty);
@@ -30,6 +30,8 @@ public sealed class FullyQualifiedName
 
     public static bool operator ==(FullyQualifiedName left, FullyQualifiedName right)
       => left.Equals(right);
+
+    public FullyQualifiedName ShiftRight() => new(string.Empty, Db, Schema);
 
     public override bool Equals(object? obj) =>
         obj is FullyQualifiedName other &&

@@ -24,7 +24,10 @@ internal sealed class FqnBuilder
         {
             case TSqlTokenType.Identifier:
             case TSqlTokenType.QuotedIdentifier:
-                parts.Add(token.Text.Trim('[', ']'));
+                if (!IdentifierBlackList.Contains(token.Text))
+                {
+                    parts.Add(token.Text); 
+                }
                 break;
 
             case TSqlTokenType.Schema:
@@ -47,14 +50,14 @@ internal sealed class FqnBuilder
         }
     }
 
-    private void Build()
+    internal void Build()
     {
         if (isDb)
         {
             Id = parts.Count switch
             {
                 1 => FullyQualifiedName.FromDb(parts[0]),
-                _ => throw new InvalidDataException($"Database names should consist of 1 part, got {parts.Count}")
+                _ => FullyQualifiedName.None
             };
         }
         else if (isSchema)
@@ -63,7 +66,7 @@ internal sealed class FqnBuilder
             {
                 1 => FullyQualifiedName.FromSchema(parts[0]),
                 2 => FullyQualifiedName.FromDbSchema(parts[0], parts[1]),
-                _ => throw new InvalidDataException($"Schema names should consist of 1-2 parts, got {parts.Count}")
+                _ => FullyQualifiedName.None
             };
         }
         else
@@ -73,7 +76,7 @@ internal sealed class FqnBuilder
                 1 => FullyQualifiedName.FromName(parts[0]),
                 2 => FullyQualifiedName.FromSchemaName(parts[0], parts[1]),
                 3 => new(parts[0], parts[1], parts[2]),
-                _ => throw new InvalidDataException($"Object names should consist of 1-3 parts, got {parts.Count}")
+                _ => FullyQualifiedName.None
             };
         }
     }

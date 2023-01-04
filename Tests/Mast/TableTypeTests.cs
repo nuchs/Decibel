@@ -162,10 +162,10 @@ public class TableTypeTests : BaseMastTest
     {
         var expected = FullyQualifiedName.FromSchemaName("dbo", "MyType");
         var script = $"""
-            CREATE TYPE my.type FROM INT
+            CREATE TYPE my.typer FROM INT
             GO
 
-            CREATE TYPE {expected} AS TABLE (stub my.type)
+            CREATE TYPE {expected} AS TABLE (stub my.typer)
             """;
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();

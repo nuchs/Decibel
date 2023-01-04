@@ -17,12 +17,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Guitar\Guitar.csproj" />
+    <ProjectReference Include="..\Lindt\Lindt.csproj" />
     <ProjectReference Include="..\Mast\Mast.csproj" />
+    <ProjectReference Include="..\Patchwerk\Patchwerk.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Guitar\" />
-    <Folder Include="Lindt\" />
     <Folder Include="Decibel\" />
     <Folder Include="Patchwerk\" />
   </ItemGroup>

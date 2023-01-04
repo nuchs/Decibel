@@ -5,56 +5,53 @@ namespace Mast.Dbo;
 
 public class DbObject : DbFragment
 {
-    private readonly TSqlFragment fragment;
-    private readonly HashSet<DbObject> referees = new();
+    private readonly IEnumerable<TSqlParserToken> tokenStream;
 
-    private protected DbObject(TSqlFragment fragment)
+    protected DbObject(TSqlFragment fragment)
         : base(fragment)
-        => this.fragment = fragment;
+    {
+        tokenStream = fragment.ScriptTokenStream
+            .Skip(fragment.FirstTokenIndex)
+            .Take(fragment.LastTokenIndex - fragment.FirstTokenIndex + 1);
+    }
 
     public FullyQualifiedName Identifier { get; protected set; } = FullyQualifiedName.None;
 
-    public IEnumerable<DbObject> ReferencedBy => referees;
+    public IEnumerable<DbObject> ReferencedBy => Referees;
+
+    internal HashSet<DbObject> Referees { get; } = new();
 
     internal void CrossReference(Database db)
     {
         FqnBuilder idParts = new();
-        List<FullyQualifiedName> unresolved = new();
 
-        foreach (var token in fragment.ScriptTokenStream.Skip(fragment.FirstTokenIndex).Take(fragment.FragmentLength))
+        foreach (var token in tokenStream)
         {
             idParts.AddToken(token);
-
-            if (idParts.IsReady)
-            {
-                var candidate = idParts.Id;
-
-                if (!string.IsNullOrWhiteSpace(candidate.Schema))
-                {
-                    ResolveReference(db, FullyQualifiedName.FromSchema(candidate.Schema), unresolved);
-                }
-
-                ResolveReference(db, candidate, unresolved);
-
-                idParts = new();
-            }
+            idParts = ProcessIdStream(db, idParts);
         }
 
-        db.AddUnresolvedRefs(this, unresolved);
+        // Handle case where last token is final part of an identifier
+        idParts.Build();
+        ProcessIdStream(db, idParts);
     }
 
-    private void ResolveReference(Database db, FullyQualifiedName candidate, List<FullyQualifiedName> unresolved)
+    private FqnBuilder ProcessIdStream(Database db, FqnBuilder idParts)
     {
-        if (candidate != Identifier)
+        if (idParts.IsReady)
         {
-            if (db.NameMap.TryGetValue(candidate, out var referent))
+            var candidate = idParts.Id;
+
+            if (!string.IsNullOrWhiteSpace(candidate.Schema))
             {
-                referent.referees.Add(this);
+                db.ResolveReference(this, FullyQualifiedName.FromSchema(candidate.Schema));
             }
-            else
-            {
-                unresolved.Add(candidate);
-            }
+
+            db.ResolveReference(this, candidate);
+
+            idParts = new();
         }
+
+        return idParts;
     }
 }
