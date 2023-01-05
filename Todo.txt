@@ -62,3 +62,5 @@ Linter rules
 - dropping referenced table column
 - changing referemced table column
 - has tabs rather than spaces
+
+How to handle syntax errors? (Maybe this happens in the parser)

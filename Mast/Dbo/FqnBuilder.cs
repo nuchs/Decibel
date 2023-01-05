@@ -42,6 +42,17 @@ internal sealed class FqnBuilder
             case TSqlTokenType.Dot:
                 break;
 
+            case TSqlTokenType.Variable:
+                if (parts.Any())
+                {
+                    throw new InvalidOperationException($"Cannot add variable token ({token.Text}) to partial identifier ({string.Join('.', parts)})");
+                }
+                else
+                {
+                    parts.Add(token.Text);
+                }
+                break;
+
             default:
                 if (parts.Count > 0)
                 {

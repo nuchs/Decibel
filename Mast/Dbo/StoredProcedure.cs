@@ -1,5 +1,4 @@
-﻿using Mast.Parsing;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -13,6 +12,9 @@ public sealed class StoredProcedure : DbObject
     }
 
     public List<Parameter> Parameters { get; }
+
+    internal override IEnumerable<FullyQualifiedName> Constituents
+        => base.Constituents.Concat(Parameters.Select(p => FullyQualifiedName.FromName(p.Name)));
 
     private FullyQualifiedName AssembleIdentifier(CreateProcedureStatement node)
         => FullyQualifiedName.FromSchemaName(GetId(node.ProcedureReference.Name.SchemaIdentifier), GetId(node.ProcedureReference.Name.BaseIdentifier));

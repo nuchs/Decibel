@@ -47,7 +47,8 @@ internal class TableSource
     {
         TSqlTokenType.Identifier,
         TSqlTokenType.QuotedIdentifier,
-        TSqlTokenType.Dot
+        TSqlTokenType.Dot,
+        TSqlTokenType.Variable,
     };
 
     internal TableSource(IEnumerable<TSqlParserToken> tokenStream)

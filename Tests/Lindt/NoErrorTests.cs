@@ -114,7 +114,7 @@ public class NoErrorTests
         var script = """
             CREATE TABLE bob (col int)
             GO
-            CREATE VIEW vob (vcol) AS SELECT bob.col
+            CREATE VIEW vob (vcol) AS SELECT bob.col from bob
             GO
             CREATE PROCEDURE pob AS BEGIN SELECT v.vcol FROM vob v END;
             """;

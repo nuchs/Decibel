@@ -6,9 +6,14 @@ namespace Mast.Parsing;
 internal class ReferenceVisitor : TSqlFragmentVisitor
 {
     private readonly Database db;
+    private readonly DbObject root;
     private readonly HashSet<FullyQualifiedName> ignore = new();
 
-    internal ReferenceVisitor(Database db) => this.db = db;
+    internal ReferenceVisitor(Database db, DbObject root)
+    {
+        this.db = db;
+        this.root = root;
+    }
 
     internal IReadOnlyCollection<FullyQualifiedName> Ignore => ignore;
 
@@ -70,9 +75,15 @@ internal class ReferenceVisitor : TSqlFragmentVisitor
                     ignore.Add(idParts.Id);
                 }
             }
-            else if (SourceHasColumn(parent, idParts) || AliasedSourceHasColumn(parent, idParts, sources))
+            else if (SourceHasColumn(parent, idParts))
             {
                 ignore.Add(idParts.Id);
+            }
+            else if (AliasedSourceHasColumn(parent, idParts, sources))
+            {
+                ignore.Add(idParts.Id);
+                ignore.Add(parent);
+                ignore.Add(FullyQualifiedName.FromDbSchema(idParts.Id.Db, idParts.Id.Schema));
             }
         }
     }
@@ -95,8 +106,10 @@ internal class ReferenceVisitor : TSqlFragmentVisitor
     }
 
     private bool SourceHasColumn(FullyQualifiedName parent, FqnBuilder columnIdParts)
-        => db.NameMap.TryGetValue(parent, out var dbo) && dbo.Constituents.Any(c => c == FullyQualifiedName.FromName(columnIdParts.Id.Name));
+        => root.Constituents.Contains(parent) || 
+        (db.NameMap.TryGetValue(parent, out var dbo) && dbo.Constituents.Any(c => c == FullyQualifiedName.FromName(columnIdParts.Id.Name)));
+    
 
     private bool UnqualifiedColumnHasParent(TableSource sources, FqnBuilder idParts)
-            => sources.TryFindParent(idParts.Id, out var parent1) && SourceHasColumn(parent1, idParts);
+        => sources.TryFindParent(idParts.Id, out var parent1) && SourceHasColumn(parent1, idParts);
 }

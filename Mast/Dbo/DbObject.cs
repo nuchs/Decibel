@@ -25,7 +25,7 @@ public class DbObject : DbFragment
     internal void CrossReference(Database db)
     {
         FqnBuilder idParts = new();
-        ReferenceVisitor referrer = new(db);
+        ReferenceVisitor referrer = new(db, this);
         fragment.Accept(referrer);
 
         foreach (var token in fragment.FragmentStream())
