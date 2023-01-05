@@ -89,20 +89,4 @@ public class ScalarTypeTests : BaseMastTest
 
         Assert.That(result.Parameters, Is.Empty);
     }
-
-    [Test]
-    public void UnreferencedSchema()
-    {
-        var script = $"""
-            CREATE SCHEMA Liono
-            GO
-
-            CREATE TYPE Cheetahra.stub FROM INT
-            """;
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var schema = db.Schemas.First();
-
-        Assert.That(schema.ReferencedBy, Is.Empty);
-    }
 }

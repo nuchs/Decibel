@@ -91,14 +91,4 @@ internal class UnreferencedTests
         Assert.That(result.CheckName, Is.EqualTo("Unreferenced"));
         Assert.That(result.Description, Contains.Substring(viewName));
     }
-
-    [Test]
-    public void UsersAreNotChecked()
-    {
-        var db = new DbBuilder().AddFromTsqlScript("CREATE USER bob").Build();
-
-        var resultSet = sut.Run(db);
-
-        Assert.That(resultSet.Results, Is.Empty);
-    }
 }

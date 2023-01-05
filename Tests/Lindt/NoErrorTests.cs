@@ -5,7 +5,7 @@ namespace Tests.Lindt;
 
 public class NoErrorTests
 {
-    private Linter sut = new();
+    private readonly Linter sut = new();
 
     [Test]
     public void ValidFunctions()
@@ -133,6 +133,18 @@ public class NoErrorTests
             GO
             CREATE PROCEDURE pob AS BEGIN SELECT v.vcol FROM vob v END;
             """;
+        var db = new DbBuilder().AddFromTsqlScript(script).Build();
+
+        var resultSet = sut.Run(db);
+
+        Assert.That(resultSet.Results, Is.Empty);
+    }
+
+
+    [Test]
+    public void ValidUsers()
+    {
+        var script = "CREATE USER bob";
         var db = new DbBuilder().AddFromTsqlScript(script).Build();
 
         var resultSet = sut.Run(db);

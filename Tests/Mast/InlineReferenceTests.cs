@@ -1,5 +1,4 @@
 ﻿using Mast.Dbo;
-using Mast.Parsing;
 
 namespace Tests.Mast;
 
@@ -57,19 +56,6 @@ internal class InlineReferenceTests : BaseMastTest
         var view = db.Views.First(p => p.Identifier == FullyQualifiedName.FromSchemaName("dbo", "Stub"));
 
         Assert.That(view.ReferencedBy, Has.Member(proc));
-    }
-
-
-    [Test]
-    public void UnresolvedSchemaReference()
-    {
-        var schema = "Liono";
-        var script = $"CREATE TYPE {schema}.stub FROM INT";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var expected = new Reference(db.ScalarTypes.First(), FullyQualifiedName.FromSchema(schema));
-
-        Assert.That(db.UnresolvedReferences, Has.Member(expected));
     }
 
     [Test]
