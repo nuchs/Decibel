@@ -79,6 +79,21 @@ public class NoErrorTests
     }
 
     [Test]
+    public void BareColumnNames()
+    {
+        var script = """
+            CREATE TABLE bob (col int)
+            GO
+            CREATE PROCEDURE pob AS BEGIN SELECT col FROM bob END;
+            """;
+        var db = new DbBuilder().AddFromTsqlScript(script).Build();
+
+        var resultSet = sut.Run(db);
+
+        Assert.That(resultSet.Results, Is.Empty);
+    }
+
+    [Test]
     public void ValidTableTypes()
     {
         var script = """

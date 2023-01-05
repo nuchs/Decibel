@@ -51,6 +51,19 @@ internal class TableSource
         TSqlTokenType.Variable,
     };
 
+    private readonly HashSet<FullyQualifiedName> sources = new();
+
+    private readonly HashSet<TSqlTokenType> sourceSeparatorTokens = new()
+    {
+        TSqlTokenType.Comma,
+        TSqlTokenType.Inner,
+        TSqlTokenType.Join,
+        TSqlTokenType.Left,
+        TSqlTokenType.Outer,
+        TSqlTokenType.Right,
+        TSqlTokenType.RightOuterJoin,
+    };
+
     internal TableSource(IEnumerable<TSqlParserToken> tokenStream)
     {
         var state = State.None;
@@ -62,23 +75,27 @@ internal class TableSource
             switch (state)
             {
                 case State.None:
-                    ProcessTokenStateNone(ref state, token);
+                    ProcessStateNone(ref state, token);
                     break;
 
                 case State.From:
-                    ProcessTokenStateFrom(ref state, ref id, token);
+                    ProcessStateFrom(ref state, ref id, token);
                     break;
 
                 case State.Table:
-                    ProcessTokenStateTable(ref state, ref table, id, token);
+                    ProcessStateTable(ref state, ref table, id, token);
                     break;
 
                 case State.Space:
-                    ProcessTokenStateSpace(ref state, ref id, token);
+                    ProcessStateSpace(ref state, ref id, token);
                     break;
 
                 case State.Alias:
-                    ProcessTokenStateAlias(ref state, table, id, token);
+                    ProcessStateAlias(ref state, ref table, id, token);
+                    break;
+
+                case State.Conditions:
+                    ProcessStateConditions(ref state, token);
                     break;
             }
         }
@@ -89,29 +106,60 @@ internal class TableSource
             id.Build();
             aliases[id.Id] = table;
         }
+
+        if (state == State.Table || state == State.From)
+        {
+            id.Build();
+
+            if (id.IsReady)
+            {
+                sources.Add(id.Id); 
+            }
+        }
     }
+
+    internal IReadOnlyCollection<FullyQualifiedName> Sources => sources;
 
     internal bool TryFindAlias(FullyQualifiedName alias, [MaybeNullWhen(false)] out FullyQualifiedName fqn)
         => aliases.TryGetValue(alias, out fqn);
 
-    internal bool TryFindParent(FullyQualifiedName child, [MaybeNullWhen(false)] out FullyQualifiedName parent)
-    {
-        parent = FullyQualifiedName.None;
-        return false;
-    }
-
-    private void ProcessTokenStateAlias(ref State state, FullyQualifiedName table, FqnBuilder id, TSqlParserToken token)
+    private void ProcessStateAlias(ref State state, ref FullyQualifiedName table, FqnBuilder id, TSqlParserToken token)
     {
         id.AddToken(token);
 
         if (id.IsReady)
         {
             aliases[id.Id] = table;
-            state = fromClauseTokens.Contains(token.TokenType) ? State.From : State.None;
+            table = FullyQualifiedName.None;
+
+            if (sourceSeparatorTokens.Contains(token.TokenType))
+            {
+                state = State.From;
+            }
+            else if (fromClauseTokens.Contains(token.TokenType))
+            {
+                state = State.Conditions;
+            }
+            else
+            {
+                state = State.None;
+            }
         }
     }
 
-    private void ProcessTokenStateFrom(ref State state, ref FqnBuilder id, TSqlParserToken token)
+    private void ProcessStateConditions(ref State state, TSqlParserToken token)
+    {
+        if (sourceSeparatorTokens.Contains(token.TokenType))
+        {
+            state = State.From;
+        }
+        else if (!fromClauseTokens.Contains(token.TokenType))
+        {
+            state = State.None;
+        }
+    }
+
+    private void ProcessStateFrom(ref State state, ref FqnBuilder id, TSqlParserToken token)
     {
         if (identifierTokens.Contains(token.TokenType))
         {
@@ -125,7 +173,7 @@ internal class TableSource
         }
     }
 
-    private void ProcessTokenStateNone(ref State state, TSqlParserToken token)
+    private void ProcessStateNone(ref State state, TSqlParserToken token)
     {
         if (token.TokenType == TSqlTokenType.From)
         {
@@ -133,7 +181,7 @@ internal class TableSource
         }
     }
 
-    private void ProcessTokenStateSpace(ref State state, ref FqnBuilder id, TSqlParserToken token)
+    private void ProcessStateSpace(ref State state, ref FqnBuilder id, TSqlParserToken token)
     {
         if (identifierTokens.Contains(token.TokenType))
         {
@@ -143,23 +191,44 @@ internal class TableSource
         }
         else if (token.TokenType != TSqlTokenType.WhiteSpace)
         {
-            state = fromClauseTokens.Contains(token.TokenType) ? State.From : State.None;
+            if (sourceSeparatorTokens.Contains(token.TokenType))
+            {
+                state = State.From;
+            }
+            else if (fromClauseTokens.Contains(token.TokenType))
+            {
+                state = State.Conditions;
+            }
+            else
+            {
+                state = State.None;
+            }
         }
     }
 
-    private void ProcessTokenStateTable(ref State state, ref FullyQualifiedName table, FqnBuilder id, TSqlParserToken token)
+    private void ProcessStateTable(ref State state, ref FullyQualifiedName table, FqnBuilder id, TSqlParserToken token)
     {
         id.AddToken(token);
         if (id.IsReady)
         {
+            sources.Add(table);
+
             if (token.TokenType == TSqlTokenType.WhiteSpace)
             {
                 table = id.Id;
                 state = State.Space;
             }
+            else if (sourceSeparatorTokens.Contains(token.TokenType))
+            {
+                state = State.From;
+            }
+            else if (fromClauseTokens.Contains(token.TokenType))
+            {
+                state = State.Conditions;
+            }
             else
             {
-                state = fromClauseTokens.Contains(token.TokenType) ? State.From : State.None;
+                state = State.None;
             }
         }
     }
@@ -171,5 +240,6 @@ internal class TableSource
         Table,
         Space,
         Alias,
+        Conditions,
     }
 }

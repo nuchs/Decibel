@@ -108,8 +108,8 @@ internal class ReferenceVisitor : TSqlFragmentVisitor
     private bool SourceHasColumn(FullyQualifiedName parent, FqnBuilder columnIdParts)
         => root.Constituents.Contains(parent) || 
         (db.NameMap.TryGetValue(parent, out var dbo) && dbo.Constituents.Any(c => c == FullyQualifiedName.FromName(columnIdParts.Id.Name)));
-    
 
-    private bool UnqualifiedColumnHasParent(TableSource sources, FqnBuilder idParts)
-        => sources.TryFindParent(idParts.Id, out var parent1) && SourceHasColumn(parent1, idParts);
+
+    private bool UnqualifiedColumnHasParent(TableSource sources, FqnBuilder idParts) 
+        => sources.Sources.Any(s => SourceHasColumn(s, idParts));
 }
