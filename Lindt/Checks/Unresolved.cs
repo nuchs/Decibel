@@ -7,17 +7,9 @@ internal class Unresolved : ICheck
     public bool Enabled { get; set; } = true;
 
     public IEnumerable<Result> Check(IDatabase db)
-    {
-        List<Result> results = new();
-
-        foreach (var item in db.UnresolvedReferences)
-        {
-            results.Add(new(
+        => from item in db.UnresolvedReferences
+           select new Result(
                 nameof(Unresolved),
                 Level.Error,
-                $"{item.Referent} is refered to by {item.Referee.Identifier} but it does not exist"));
-        }
-
-        return results;
-    }
+                $"{item.Referent} is refered to by {item.Referee.Identifier} but it does not exist");
 }

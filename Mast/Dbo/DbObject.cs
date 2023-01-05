@@ -5,7 +5,9 @@ namespace Mast.Dbo;
 
 public class DbObject : DbFragment
 {
+    private static readonly Aliases NoAlias = new(Array.Empty<TSqlParserToken>());
     private readonly IEnumerable<TSqlParserToken> tokenStream;
+    private readonly Aliases aliases;
 
     protected DbObject(TSqlFragment fragment)
         : base(fragment)
@@ -13,12 +15,14 @@ public class DbObject : DbFragment
         tokenStream = fragment.ScriptTokenStream
             .Skip(fragment.FirstTokenIndex)
             .Take(fragment.LastTokenIndex - fragment.FirstTokenIndex + 1);
+        aliases = new(tokenStream);
     }
 
     public FullyQualifiedName Identifier { get; protected set; } = FullyQualifiedName.None;
 
     public IEnumerable<DbObject> ReferencedBy => Referees;
 
+    internal virtual IEnumerable<FullyQualifiedName> Constituents => new[] { Identifier };
     internal HashSet<DbObject> Referees { get; } = new();
 
     internal void CrossReference(Database db)
@@ -44,10 +48,10 @@ public class DbObject : DbFragment
 
             if (!string.IsNullOrWhiteSpace(candidate.Schema))
             {
-                db.ResolveReference(this, FullyQualifiedName.FromSchema(candidate.Schema));
+                db.ResolveReference(this, FullyQualifiedName.FromSchema(candidate.Schema), NoAlias);
             }
 
-            db.ResolveReference(this, candidate);
+            db.ResolveReference(this, candidate, aliases);
 
             idParts = new();
         }

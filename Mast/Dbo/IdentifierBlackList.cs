@@ -34,6 +34,10 @@ internal static class IdentifierBlackList
         FullyQualifiedName.FromName("rowversion"),
         FullyQualifiedName.FromName("uniqueidentifier"),
         FullyQualifiedName.FromName("xml"),
+        FullyQualifiedName.FromName("after"),
+        FullyQualifiedName.FromName("before"),
+        FullyQualifiedName.FromName("returns"),
+        FullyQualifiedName.FromName("readonly"),
     };
 
     internal static bool Contains(FullyQualifiedName name)

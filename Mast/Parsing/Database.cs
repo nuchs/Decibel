@@ -77,14 +77,14 @@ internal sealed class Database : IDatabase
         }
     }
 
-    internal void ResolveReference(DbObject referee, FullyQualifiedName candidate)
+    internal void ResolveReference(DbObject referee, FullyQualifiedName candidate, Aliases aliases)
     {
-        if (candidate == referee.Identifier)
+        if (referee.Constituents.Contains(candidate))
         {
             return;
         }
 
-        if (Contains(candidate, out var referent))
+        if (NameMap.TryGetValue(candidate, out var referent))
         {
             referent.Referees.Add(referee);
         }
@@ -93,9 +93,4 @@ internal sealed class Database : IDatabase
             unresolvedReferencesSet.Add(new Reference(referee, candidate));
         }
     }
-
-    private bool Contains(FullyQualifiedName candidate, [MaybeNullWhen(false)] out DbObject referent)
-        => NameMap.TryGetValue(candidate, out referent) ||
-           NameMap.TryGetValue(candidate.ShiftRight(), out referent);
-    
 }

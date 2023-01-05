@@ -1,5 +1,4 @@
-﻿using Mast.Parsing;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace Mast.Dbo;
 
@@ -28,6 +27,9 @@ public sealed class Table : DbObject
     public PrimaryKey? PrimaryKey { get; }
 
     public IEnumerable<UniqueConstraint> UniqueConstraints { get; }
+
+    internal override IEnumerable<FullyQualifiedName> Constituents
+        => base.Constituents.Concat(Columns.Select(c => FullyQualifiedName.FromName(c.Name)));
 
     private FullyQualifiedName AssembleIdentifier(CreateTableStatement node)
     {

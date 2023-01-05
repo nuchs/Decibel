@@ -31,8 +31,6 @@ public sealed class FullyQualifiedName
     public static bool operator ==(FullyQualifiedName left, FullyQualifiedName right)
       => left.Equals(right);
 
-    public FullyQualifiedName ShiftRight() => new(string.Empty, Db, Schema);
-
     public override bool Equals(object? obj) =>
         obj is FullyQualifiedName other &&
         Db.Equals(other.Db) &&
