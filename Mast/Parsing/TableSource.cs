@@ -1,9 +1,10 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Mast.Dbo;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Mast.Dbo;
+namespace Mast.Parsing;
 
-internal class Aliases
+internal class TableSource
 {
     private readonly Dictionary<FullyQualifiedName, FullyQualifiedName> aliases = new();
 
@@ -49,7 +50,7 @@ internal class Aliases
         TSqlTokenType.Dot
     };
 
-    internal Aliases(IEnumerable<TSqlParserToken> tokenStream)
+    internal TableSource(IEnumerable<TSqlParserToken> tokenStream)
     {
         var state = State.None;
         var table = FullyQualifiedName.None;
@@ -89,8 +90,14 @@ internal class Aliases
         }
     }
 
-    internal bool LookupAlias(FullyQualifiedName alias, [MaybeNullWhen(false)] out FullyQualifiedName fqn)
+    internal bool TryFindAlias(FullyQualifiedName alias, [MaybeNullWhen(false)] out FullyQualifiedName fqn)
         => aliases.TryGetValue(alias, out fqn);
+
+    internal bool TryFindParent(FullyQualifiedName child, [MaybeNullWhen(false)] out FullyQualifiedName parent)
+    {
+        parent = FullyQualifiedName.None;
+        return false;
+    }
 
     private void ProcessTokenStateAlias(ref State state, FullyQualifiedName table, FqnBuilder id, TSqlParserToken token)
     {

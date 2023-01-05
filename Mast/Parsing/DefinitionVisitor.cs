@@ -9,28 +9,21 @@ internal sealed class DefinitionVisitor : TSqlFragmentVisitor
 
     public DefinitionVisitor(Database db) => this.db = db;
 
-    public override void Visit(CreateTableStatement node) => Visit(new Table(node), node);
+    public override void Visit(CreateTableStatement node) => db.AddObject(new Table(node));
 
-    public override void Visit(CreateTypeTableStatement node) => Visit(new TableType(node), node);
+    public override void Visit(CreateTypeTableStatement node) => db.AddObject(new TableType(node));
 
-    public override void Visit(CreateTypeUddtStatement node) => Visit(new ScalarType(node), node);
+    public override void Visit(CreateTypeUddtStatement node) => db.AddObject(new ScalarType(node));
 
-    public override void Visit(CreateProcedureStatement node) => Visit(new StoredProcedure(node), node);
+    public override void Visit(CreateProcedureStatement node) => db.AddObject(new StoredProcedure(node));
 
-    public override void Visit(CreateFunctionStatement node) => Visit(new Function(node), node);
+    public override void Visit(CreateFunctionStatement node) => db.AddObject(new Function(node));
 
-    public override void Visit(CreateSchemaStatement node) => Visit(new Schema(node), node);
+    public override void Visit(CreateSchemaStatement node) => db.AddObject(new Schema(node));
 
-    public override void Visit(CreateTriggerStatement node) => Visit(new Trigger(node), node);
+    public override void Visit(CreateTriggerStatement node) => db.AddObject(new Trigger(node));
 
-    public override void Visit(CreateViewStatement node) => Visit(new View(node), node);
+    public override void Visit(CreateViewStatement node) => db.AddObject(new View(node));
 
-    public override void Visit(CreateUserStatement node) => Visit(new User(node), node);
-
-    private void Visit<T>(DbObject mastItem, T node)
-        where T : TSqlFragment
-    {
-        db.AddObject(mastItem);
-        base.Visit(node);
-    }
+    public override void Visit(CreateUserStatement node) => db.AddObject(new User(node));
 }

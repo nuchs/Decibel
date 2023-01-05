@@ -1,5 +1,4 @@
 ﻿using Mast.Dbo;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Mast.Parsing;
 
@@ -77,9 +76,9 @@ internal sealed class Database : IDatabase
         }
     }
 
-    internal void ResolveReference(DbObject referee, FullyQualifiedName candidate, Aliases aliases)
+    internal void ResolveReference(DbObject referee, FullyQualifiedName candidate)
     {
-        if (referee.Constituents.Contains(candidate))
+        if (IdentifierBlackList.Contains(candidate))
         {
             return;
         }
@@ -88,7 +87,7 @@ internal sealed class Database : IDatabase
         {
             referent.Referees.Add(referee);
         }
-        else if (!IdentifierBlackList.Contains(candidate))
+        else
         {
             unresolvedReferencesSet.Add(new Reference(referee, candidate));
         }

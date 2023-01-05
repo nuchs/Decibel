@@ -5,17 +5,13 @@ namespace Mast.Dbo;
 
 public class DbObject : DbFragment
 {
-    private static readonly Aliases NoAlias = new(Array.Empty<TSqlParserToken>());
-    private readonly IEnumerable<TSqlParserToken> tokenStream;
-    private readonly Aliases aliases;
+    private static readonly IReadOnlyCollection<FullyQualifiedName> noIgnore = new HashSet<FullyQualifiedName>();
+    private readonly TSqlFragment fragment;
 
-    protected DbObject(TSqlFragment fragment)
+    private protected DbObject(TSqlFragment fragment)
         : base(fragment)
     {
-        tokenStream = fragment.ScriptTokenStream
-            .Skip(fragment.FirstTokenIndex)
-            .Take(fragment.LastTokenIndex - fragment.FirstTokenIndex + 1);
-        aliases = new(tokenStream);
+        this.fragment = fragment;
     }
 
     public FullyQualifiedName Identifier { get; protected set; } = FullyQualifiedName.None;
@@ -23,39 +19,59 @@ public class DbObject : DbFragment
     public IEnumerable<DbObject> ReferencedBy => Referees;
 
     internal virtual IEnumerable<FullyQualifiedName> Constituents => new[] { Identifier };
+
     internal HashSet<DbObject> Referees { get; } = new();
 
     internal void CrossReference(Database db)
     {
         FqnBuilder idParts = new();
+        ReferenceVisitor referrer = new(db);
+        fragment.Accept(referrer);
 
-        foreach (var token in tokenStream)
+        foreach (var token in fragment.FragmentStream())
         {
             idParts.AddToken(token);
-            idParts = ProcessIdStream(db, idParts);
+            idParts = ProcessIdStream(db, idParts, referrer.Ignore);
         }
 
         // Handle case where last token is final part of an identifier
         idParts.Build();
-        ProcessIdStream(db, idParts);
+        ProcessIdStream(db, idParts, referrer.Ignore);
+
+        ResolveObjectSchema(db);
     }
 
-    private FqnBuilder ProcessIdStream(Database db, FqnBuilder idParts)
+    private void ResolveObjectSchema(Database db)
+    {
+        var candidate = FullyQualifiedName.FromDbSchema(Identifier.Db, Identifier.Schema);
+
+        if (candidate != Identifier)
+        {
+            db.ResolveReference(this, candidate); 
+        }
+    }
+
+    private FqnBuilder ProcessIdStream(Database db, FqnBuilder idParts, IReadOnlyCollection<FullyQualifiedName> ignore)
     {
         if (idParts.IsReady)
         {
             var candidate = idParts.Id;
 
-            if (!string.IsNullOrWhiteSpace(candidate.Schema))
+            if (!(ignore.Contains(candidate) || Constituents.Contains(candidate)))
             {
-                db.ResolveReference(this, FullyQualifiedName.FromSchema(candidate.Schema), NoAlias);
-            }
+                if (HasSchema(candidate))
+                {
+                    db.ResolveReference(this, FullyQualifiedName.FromDbSchema(candidate.Db, candidate.Schema));
+                }
 
-            db.ResolveReference(this, candidate, aliases);
+                db.ResolveReference(this, candidate);
+            }
 
             idParts = new();
         }
 
         return idParts;
     }
+
+    private static bool HasSchema(FullyQualifiedName candidate) => !string.IsNullOrWhiteSpace(candidate.Schema);
 }

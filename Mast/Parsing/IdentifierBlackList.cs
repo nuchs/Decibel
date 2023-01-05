@@ -1,9 +1,12 @@
-﻿namespace Mast.Dbo;
+﻿using Mast.Dbo;
+
+namespace Mast.Parsing;
 
 internal static class IdentifierBlackList
 {
     private static readonly HashSet<FullyQualifiedName> items = new()
     {
+        FullyQualifiedName.None,
         FullyQualifiedName.FromName("type"),
         FullyQualifiedName.FromName("bit"),
         FullyQualifiedName.FromName("tinyint"),

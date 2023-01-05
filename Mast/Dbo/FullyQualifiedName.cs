@@ -40,4 +40,6 @@ public sealed class FullyQualifiedName
     public override int GetHashCode() => HashCode.Combine(Db, Schema, Name);
 
     public override string ToString() => string.Join('.', Db, Schema, Name).Trim('.');
+
+    internal FullyQualifiedName ShiftRight() => new(string.Empty, Db, Schema);
 }
