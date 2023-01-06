@@ -3,7 +3,7 @@ using Mast.Parsing;
 
 namespace Mast;
 
-public interface IDatabase
+public interface IDatabase : IReadOnlyDictionary<FullyQualifiedName, DbObject>
 {
     IEnumerable<Function> Functions { get; }
 

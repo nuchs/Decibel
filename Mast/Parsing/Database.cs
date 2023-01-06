@@ -1,4 +1,6 @@
 ﻿using Mast.Dbo;
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Mast.Parsing;
 
@@ -16,18 +18,45 @@ internal sealed class Database : IDatabase
     private readonly List<User> userList = new();
     private readonly List<View> viewList = new();
 
+    public int Count => nameMap.Count;
+
     public IEnumerable<Function> Functions => functionList;
+
+    public IEnumerable<FullyQualifiedName> Keys => nameMap.Keys;
+
     public IEnumerable<StoredProcedure> Procedures => procedureList;
+
     public IEnumerable<ScalarType> ScalarTypes => scalarTypeList;
+
     public IEnumerable<Schema> Schemas => schemaList;
+
     public IEnumerable<Table> Tables => tableList;
+
     public IEnumerable<TableType> TableTypes => tableTypeList;
+
     public IEnumerable<Trigger> Triggers => triggerList;
+
     public IEnumerable<Reference> UnresolvedReferences => unresolvedReferencesSet;
+
     public IEnumerable<User> Users => userList;
+
+    public IEnumerable<DbObject> Values => nameMap.Values;
+
     public IEnumerable<View> Views => viewList;
 
-    internal IReadOnlyDictionary<FullyQualifiedName, DbObject> NameMap => nameMap;
+    public DbObject this[FullyQualifiedName key]
+        => nameMap[key];
+
+    public bool ContainsKey(FullyQualifiedName key)
+        => nameMap.ContainsKey(key);
+
+    public IEnumerator<KeyValuePair<FullyQualifiedName, DbObject>> GetEnumerator()
+        => nameMap.GetEnumerator();
+
+    public bool TryGetValue(FullyQualifiedName key, [MaybeNullWhen(false)] out DbObject value)
+        => nameMap.TryGetValue(key, out value);
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     internal void AddObject(DbObject dbObject)
     {
@@ -83,7 +112,7 @@ internal sealed class Database : IDatabase
             return;
         }
 
-        if (NameMap.TryGetValue(candidate, out var referent))
+        if (TryGetValue(candidate, out var referent))
         {
             referent.Referees.Add(referee);
         }

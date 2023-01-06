@@ -64,7 +64,7 @@ internal class ReferenceVisitor : TSqlFragmentVisitor
     // been specified elsewhere in the token stream, thus its reference will be recorded.
     private void CheckIdentifierResolution(TableSource sources, FqnBuilder idParts)
     {
-        if (!db.NameMap.ContainsKey(idParts.Id))
+        if (!db.ContainsKey(idParts.Id))
         {
             var parent = idParts.Id.ShiftRight();
 
@@ -107,7 +107,7 @@ internal class ReferenceVisitor : TSqlFragmentVisitor
 
     private bool SourceHasColumn(FullyQualifiedName parent, FqnBuilder columnIdParts)
         => root.Constituents.Contains(parent) || 
-        (db.NameMap.TryGetValue(parent, out var dbo) && dbo.Constituents.Any(c => c == FullyQualifiedName.FromName(columnIdParts.Id.Name)));
+        (db.TryGetValue(parent, out var dbo) && dbo.Constituents.Any(c => c == FullyQualifiedName.FromName(columnIdParts.Id.Name)));
 
 
     private bool UnqualifiedColumnHasParent(TableSource sources, FqnBuilder idParts) 

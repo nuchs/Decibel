@@ -3,8 +3,6 @@ Mast
 -------------------------------------------------------------------------------
 grants/denies to users - too complicated for now
 
-blacklist - tables type, cursors
-
 -------------------------------------------------------------------------------
 Patcher
 -------------------------------------------------------------------------------
@@ -44,23 +42,12 @@ Data patching?
 -------------------------------------------------------------------------------
 Linter
 -------------------------------------------------------------------------------
-Easy to add new rules (somethign modular)
-
 Linter rules
-- Find unused types
-- Find unused tables
-- Find unused functions
 - Highlight private stored procs
 - concept of readonly stored procedures based on schema
-- Concep tof privielged actions
-- dropping referenced type
+- Concept of privielged actions
 - changing signature of referenced type
-- dropping referenced proc
 - changing signature of referenced proc
-- dropping referenced function
 - changing signature of referenced function
-- dropping referenced table column
-- changing referemced table column
+- changing referenced table column
 - has tabs rather than spaces
-
-How to handle syntax errors? (Maybe this happens in the parser)

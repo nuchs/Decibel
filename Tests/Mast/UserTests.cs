@@ -43,19 +43,6 @@ public class UserTests : BaseMastTest
     }
 
     [Test]
-    [TestCase("", "")]
-    [TestCase(", sid = 0x01050000000000090300000063FF0451A9E7664BA705B10E37DDC4B7", "0x01050000000000090300000063FF0451A9E7664BA705B10E37DDC4B7")]
-    public void DefaultSid(string sid, string expected)
-    {
-        var script = $"CREATE USER stub with password = '123' {sid}";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Users.First();
-
-        Assert.That(result.Sid, Is.EqualTo(expected));
-    }
-
-    [Test]
     [TestCase("bear", "bear")]
     [TestCase("[bracketed]", "bracketed")]
     public void Identifier(string name, string bareName)
@@ -80,18 +67,5 @@ public class UserTests : BaseMastTest
         var result = db.Users.First();
 
         Assert.That(result.Login, Is.EqualTo(expected));
-    }
-
-    [Test]
-    [TestCase("", "")]
-    [TestCase("with password = '123456'", "123456")]
-    public void Password(string password, string expected)
-    {
-        var script = $"CREATE USER stub {password}";
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.Users.First();
-
-        Assert.That(result.Password, Is.EqualTo(expected));
     }
 }

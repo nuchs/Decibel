@@ -26,7 +26,6 @@
   <ItemGroup>
     <Folder Include="Guitar\" />
     <Folder Include="Decibel\" />
-    <Folder Include="Patchwerk\" />
   </ItemGroup>
 
 </Project>
