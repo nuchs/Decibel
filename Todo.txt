@@ -4,42 +4,6 @@ Mast
 grants/denies to users - too complicated for now
 
 -------------------------------------------------------------------------------
-Patcher
--------------------------------------------------------------------------------
-Examines git history generates patches
-Runs linter (optional)
-Add git tag indicating pacth number being generated (optional)
-
-Support
--------
-Tabel creation
-adding unique constraint
-removing unique constraint
-adding default
-removing default
-adding column
-removing column
-adding primary key
-removing primary key
-adding index
-removing index
-
-adding stored proc
-modifying stored proc
-removing stored proc
-
-adding func
-modifying func
-removing func
-
-adding type
-modifying type
-removing type
-
-Data patching?
-
-
--------------------------------------------------------------------------------
 Linter
 -------------------------------------------------------------------------------
 Linter rules
@@ -51,3 +15,19 @@ Linter rules
 - changing signature of referenced function
 - changing referenced table column
 - has tabs rather than spaces
+
+-------------------------------------------------------------------------------
+Patcher
+-------------------------------------------------------------------------------
+Check dependencies
+Case insensitive
+Whitespace insensitive
+Batches correctly
+Doesn't drop tables
+
+-------------------------------------------------------------------------------
+Runner
+-------------------------------------------------------------------------------
+Examines git history generates patches
+Runs linter (optional)
+Add git tag indicating pacth number being generated (optional)

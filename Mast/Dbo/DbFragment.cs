@@ -4,20 +4,31 @@ namespace Mast.Dbo;
 
 public class DbFragment
 {
-    private protected DbFragment(TSqlFragment fragment)
+    protected DbFragment(TSqlFragment fragment)
        => Content = AssembleFragment(fragment);
 
     public string Content { get; }
 
+    public static bool operator !=(DbFragment left, DbFragment right)
+        => !(left == right);
+
+    public static bool operator ==(DbFragment left, DbFragment right)
+        => left.Equals(right);
+
+    public override bool Equals(object? obj)
+        => obj is DbFragment other && new CaseInsensitiveString(Content) == new CaseInsensitiveString(other.Content);
+
+    public override int GetHashCode() => Content.GetHashCode();
+
     public override string ToString() => Content;
 
-    private protected string AssembleFragment(TSqlFragment fragment)
+    protected string AssembleFragment(TSqlFragment fragment)
       => AssembleFragment(
           fragment,
           fragment.FirstTokenIndex,
           fragment.LastTokenIndex + 1);
 
-    private protected string AssembleFragment(TSqlFragment fragment, int start, int end)
+    protected string AssembleFragment(TSqlFragment fragment, int start, int end)
     {
         var tokenValues = fragment
             .ScriptTokenStream
@@ -27,6 +38,6 @@ public class DbFragment
         return string.Join(string.Empty, tokenValues).Trim();
     }
 
-    private protected string GetId(Identifier? identifier)
+    protected string GetId(Identifier? identifier)
         => identifier?.Value ?? string.Empty;
 }

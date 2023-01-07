@@ -3,23 +3,11 @@
 internal class UserPatchTests : BasePatchwerkTest
 {
     [Test]
-    public void AddNewUser()
+    public void Add()
     {
         var before = MakeDb();
         var after = MakeDb("CREATE USER blah");
         var expected = "CREATE USER blah";
-
-        var result = sut.GeneratePatches(before, after);
-
-        Assert.That(result, Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void RemoveExistingUser()
-    {
-        var before = MakeDb("CREATE USER blah");
-        var after = MakeDb();
-        var expected = "DROP USER blah";
 
         var result = sut.GeneratePatches(before, after);
 
@@ -91,5 +79,17 @@ internal class UserPatchTests : BasePatchwerkTest
         var result = sut.GeneratePatches(before, after);
 
         Assert.That(result, Is.Empty);
+    }
+
+    [Test]
+    public void Remove()
+    {
+        var before = MakeDb("CREATE USER blah");
+        var after = MakeDb();
+        var expected = "DROP USER blah";
+
+        var result = sut.GeneratePatches(before, after);
+
+        Assert.That(result, Is.EqualTo(expected));
     }
 }

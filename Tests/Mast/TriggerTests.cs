@@ -32,6 +32,25 @@ public class TriggerTests : BaseMastTest
     }
 
     [Test]
+    [TestCase("dbo")]
+    [TestCase("[dbo]")]
+    public void ReferenceSchema(string schemaName)
+    {
+        var script = $"""
+            CREATE SCHEMA {schemaName}
+            GO
+
+            CREATE trigger {schemaName}.stub on tab for insert as select 1
+            """;
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var trigger = db.Triggers.First();
+        var schema = db.Schemas.First();
+
+        Assert.That(schema.ReferencedBy, Has.Member(trigger));
+    }
+
+    [Test]
     public void Target()
     {
         var expected = "dbo.fred";
@@ -70,24 +89,4 @@ public class TriggerTests : BaseMastTest
 
         Assert.That(result.When, Is.EqualTo(expected));
     }
-
-    [Test]
-    [TestCase("dbo")]
-    [TestCase("[dbo]")]
-    public void ReferenceSchema(string schemaName)
-    {
-        var script = $"""
-            CREATE SCHEMA {schemaName}
-            GO
-
-            CREATE trigger {schemaName}.stub on tab for insert as select 1
-            """;
-
-        var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var trigger = db.Triggers.First();
-        var schema = db.Schemas.First();
-
-        Assert.That(schema.ReferencedBy, Has.Member(trigger));
-    }
-
 }

@@ -1,6 +1,6 @@
 ﻿namespace Lindt;
 
-public class ResultSet
+public sealed class ResultSet
 {
     private List<Result> results = new();
 
