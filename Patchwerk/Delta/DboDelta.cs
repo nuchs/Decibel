@@ -52,7 +52,7 @@ internal abstract class DboDelta<T> where T : DbObject
         }
     }
 
-    private (IEnumerable<FullyQualifiedName>, IEnumerable<FullyQualifiedName>) GetIds(IDatabase before, IDatabase after)
+    protected (IEnumerable<FullyQualifiedName>, IEnumerable<FullyQualifiedName>) GetIds(IDatabase before, IDatabase after)
         => (Selector(before).Select(dbo => dbo.Identifier), Selector(after).Select(dbo => dbo.Identifier));
 
     private IEnumerable<string> PatchChangedObjects(IDatabase before, IDatabase after, IEnumerable<FullyQualifiedName> preIds, IEnumerable<FullyQualifiedName> postIds)
