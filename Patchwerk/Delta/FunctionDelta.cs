@@ -3,13 +3,13 @@ using Mast.Dbo;
 
 namespace Patchwerk.Delta;
 
-internal sealed class TriggerDelta : DboDelta<Trigger>
+internal sealed class FunctionDelta : DboDelta<Function>
 {
-    public TriggerDelta()
-        : base("Trigger")
+    public FunctionDelta()
+        : base("Function")
     {
     }
 
     protected override IEnumerable<DbObject> Selector(IDatabase db)
-        => db.Triggers;
+        => db.Functions;
 }

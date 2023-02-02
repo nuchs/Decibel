@@ -11,8 +11,7 @@ internal abstract class DboDelta<T> where T : DbObject
 
     internal virtual IEnumerable<string> GenerateAddsAndUpdates(IDatabase before, IDatabase after)
     {
-        var preIds = Selector(before);
-        var postIds = Selector(after);
+        var (preIds, postIds) = GetIds(before, after);
         List<string> patches = new();
 
         patches.AddRange(AddNewObjects(after, preIds, postIds));
@@ -23,15 +22,20 @@ internal abstract class DboDelta<T> where T : DbObject
 
     internal IEnumerable<string> GenerateDrops(IDatabase before, IDatabase after)
     {
-        var preIds = Selector(before);
-        var postIds = Selector(after);
+        var (preIds, postIds) = GetIds(before, after);
 
         return preIds.Except(postIds).Select(id => before[id]).Select(dbo => $"DROP {type.ToUpper()} {dbo.Identifier}");
     }
 
-    protected abstract string Delta(T pre, T post);
+    protected virtual string Delta(T pre, T post)
+        => $"""
+        DROP {type.ToUpper()} {pre.Identifier}
+        GO
 
-    protected abstract IEnumerable<FullyQualifiedName> Selector(IDatabase db);
+        {post.Content}
+        """;
+
+    protected abstract IEnumerable<DbObject> Selector(IDatabase db);
 
     private IEnumerable<string> AddNewObjects(IDatabase after, IEnumerable<FullyQualifiedName> preIds, IEnumerable<FullyQualifiedName> postIds)
         => postIds.Except(preIds).Select(id => after[id].Content);
@@ -48,6 +52,9 @@ internal abstract class DboDelta<T> where T : DbObject
         }
     }
 
-    private IEnumerable<string> PatchChangedObjects(IDatabase before, IDatabase after, IEnumerable<FullyQualifiedName> preIds, IEnumerable<FullyQualifiedName> postIds) 
+    private (IEnumerable<FullyQualifiedName>, IEnumerable<FullyQualifiedName>) GetIds(IDatabase before, IDatabase after)
+        => (Selector(before).Select(dbo => dbo.Identifier), Selector(after).Select(dbo => dbo.Identifier));
+
+    private IEnumerable<string> PatchChangedObjects(IDatabase before, IDatabase after, IEnumerable<FullyQualifiedName> preIds, IEnumerable<FullyQualifiedName> postIds)
         => preIds.Intersect(postIds).Where(id => before[id] != after[id]).Select(id => GenerateDiff(before, after, id));
 }

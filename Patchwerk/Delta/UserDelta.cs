@@ -21,6 +21,6 @@ internal sealed class UserDelta : DboDelta<User>
         return $"ALTER USER {post.Identifier} WITH {mods}";
     }
 
-    protected override IEnumerable<FullyQualifiedName> Selector(IDatabase db)
-        => db.Users.Select(u => u.Identifier);
+    protected override IEnumerable<DbObject> Selector(IDatabase db)
+        => db.Users;
 }
