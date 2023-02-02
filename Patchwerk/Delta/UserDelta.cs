@@ -10,15 +10,15 @@ internal sealed class UserDelta : DboDelta<User>
     {
     }
 
-    protected override void Delta(User before, User after, List<string> patches)
+    protected override string Delta(User pre, User post)
     {
-        var schemaPart = before.DefaultSchema == after.DefaultSchema ? "" : $"DEFAULT_SCHEMA = {after.DefaultSchema}";
-        var loginPart = before.Login == after.Login ? "" : $"LOGIN = {after.Login}";
-        var languagePart = before.DefaultLanguage == after.DefaultLanguage ? "" : $"DEFAULT_LANGUAGE = {after.DefaultLanguage}";
+        var schemaPart = pre.DefaultSchema == post.DefaultSchema ? "" : $"DEFAULT_SCHEMA = {post.DefaultSchema}";
+        var loginPart = pre.Login == post.Login ? "" : $"LOGIN = {post.Login}";
+        var languagePart = pre.DefaultLanguage == post.DefaultLanguage ? "" : $"DEFAULT_LANGUAGE = {post.DefaultLanguage}";
 
         var mods = string.Join(", ", new string[] { schemaPart, loginPart, languagePart, }.Where(s => !string.IsNullOrWhiteSpace(s)));
 
-        patches.Add($"ALTER USER {after.Identifier} WITH {mods}");
+        return $"ALTER USER {post.Identifier} WITH {mods}";
     }
 
     protected override IEnumerable<FullyQualifiedName> Selector(IDatabase db)

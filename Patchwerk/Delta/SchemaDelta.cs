@@ -3,12 +3,14 @@ using Mast.Dbo;
 
 namespace Patchwerk.Delta;
 
-internal class SchemaDelta : DbDelta<Schema>
+internal sealed class SchemaDelta : DboDelta<Schema>
 {
     public SchemaDelta()
         : base("Schema")
     {
     }
+
+    protected override string Delta(Schema pre, Schema post) => throw new InvalidOperationException($"Schemas cannot be modified : {pre.Identifier}");
 
     protected override IEnumerable<FullyQualifiedName> Selector(IDatabase db)
         => db.Schemas.Select(u => u.Identifier);

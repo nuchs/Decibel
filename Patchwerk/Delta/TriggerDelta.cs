@@ -10,11 +10,13 @@ internal sealed class TriggerDelta : DboDelta<Trigger>
     {
     }
 
-    protected override void Delta(Trigger before, Trigger after, List<string> patches)
-    {
-        patches.Add($"DROP TRIGGER {before.Identifier}");
-        patches.Add(after.Content);
-    }
+    protected override string Delta(Trigger pre, Trigger post)
+        => $"""
+        DROP TRIGGER {pre.Identifier}
+        GO
+
+        {post.Content}
+        """;
 
     protected override IEnumerable<FullyQualifiedName> Selector(IDatabase db)
         => db.Triggers.Select(u => u.Identifier);

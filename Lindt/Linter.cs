@@ -4,7 +4,7 @@ using Mast;
 
 namespace Lindt;
 
-public class Linter
+public sealed class Linter
 {
     private static readonly ILog Log = LoggerFactory.CreateLogger<Linter>();
 
