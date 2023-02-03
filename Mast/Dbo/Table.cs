@@ -29,7 +29,14 @@ public sealed class Table : DbObject
     public IEnumerable<UniqueConstraint> UniqueConstraints { get; }
 
     internal override IEnumerable<FullyQualifiedName> Constituents
-        => base.Constituents.Concat(Columns.Select(c => FullyQualifiedName.FromName(c.Name)));
+        => base.Constituents
+            .Concat(Columns.SelectMany(col => col.Constituents))
+            .Concat(Checks.Select(ck => FullyQualifiedName.FromName(ck.Name)))
+            .Concat(ForeignKeys.Select(fk => FullyQualifiedName.FromName(fk.Name)))
+            .Concat(Indices.Select(idx => FullyQualifiedName.FromName(idx.Name)))
+            .Concat(new[] {FullyQualifiedName.FromName(PrimaryKey?.Name ?? string.Empty)})
+            .Concat(UniqueConstraints.Select(uq => FullyQualifiedName.FromName(uq.Name)))
+            .Where(c => !string.IsNullOrWhiteSpace(c.ToString()));
 
     private FullyQualifiedName AssembleIdentifier(CreateTableStatement node)
     {

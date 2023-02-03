@@ -7,6 +7,8 @@ public readonly record struct CaseInsensitiveString(string Value)
 
     public override int GetHashCode() => Value.GetHashCode();
 
+    public override string ToString() => Value;
+
     public static implicit operator string(CaseInsensitiveString c) => c.Value;
 
     public static implicit operator CaseInsensitiveString(string s) => new(s);

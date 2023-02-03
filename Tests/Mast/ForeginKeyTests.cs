@@ -44,7 +44,7 @@ public class ForeignKeyTests : BaseMastTest
     [Test]
     public void ForeignColumn()
     {
-        var expected = "fcol";
+        var expected = new CaseInsensitiveString("fcol");
         var script = $"CREATE TABLE dbo.stub (stub int references fstub ({expected}))";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();

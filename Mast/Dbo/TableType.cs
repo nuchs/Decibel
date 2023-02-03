@@ -26,7 +26,9 @@ public sealed class TableType : DbObject
     public IEnumerable<UniqueConstraint> UniqueConstraints { get; }
 
     internal override IEnumerable<FullyQualifiedName> Constituents
-       => base.Constituents.Concat(Columns.Select(c => FullyQualifiedName.FromName(c.Name)));
+        => base.Constituents
+            .Concat(Columns.Select(c => FullyQualifiedName.FromName(c.Name)))
+            .Concat(Indices.Select(i => FullyQualifiedName.FromName(i.Name)));
 
     private FullyQualifiedName AssembleIdentifier(CreateTypeTableStatement node)
         => FullyQualifiedName.FromSchemaName(GetId(node.Name.SchemaIdentifier), GetId(node.Name.BaseIdentifier));

@@ -11,7 +11,7 @@ public class NoErrorTests
     public void ValidFunctions()
     {
         var script = """
-            CREATE FUNCTION bob() RETURNS TABLE RETURN SELECT 1
+            CREATE FUNCTION bob(@a int, @b int) RETURNS TABLE RETURN SELECT 1
             GO
             CREATE PROCEDURE pob AS BEGIN SELECT bob() END;
             """;
@@ -25,7 +25,7 @@ public class NoErrorTests
     [Test]
     public void ValidProcedures()
     {
-        var script = "CREATE PROCEDURE pob AS BEGIN SELECT 1 END;";
+        var script = "CREATE PROCEDURE pob @a int AS BEGIN SELECT 1 END;";
         var db = new DbBuilder().AddFromTsqlScript(script).Build();
 
         var resultSet = sut.Run(db);
@@ -67,9 +67,32 @@ public class NoErrorTests
     public void ValidTables()
     {
         var script = """
-            CREATE TABLE bob (col int)
+            CREATE TABLE alice 
+            (
+                col1 INT, 
+                col2 INT, 
+                col3 INT, 
+                CONSTRAINT pk_alice_col1 PRIMARY KEY CLUSTERED (col1 ASC),
+                CONSTRAINT uq_alice_col2 UNIQUE (col2),
+                CONSTRAINT ck_alice_col1_col2 CHECK (col1 != col2),
+                INDEX idx_alice_col3 (col3)
+            )
             GO
-            CREATE PROCEDURE pob AS BEGIN SELECT b.col FROM bob b END;
+
+            CREATE TABLE bob 
+            (
+                bol1 INT CONSTRAINT fk_bob_bol1 REFERENCES alice (bol1), 
+                bol2 INT CONSTRAINT df_bob_bol2 DEFAULT null, 
+                bol3 INT CONSTRAINT pk_bob_bol3 PRIMARY KEY,
+                bol4 INT CONSTRAINT uq_bob_bol4 UNIQUE,
+                bol5 INT CONSTRAINT nn_bob_bol5 NOT NULL,
+                bol6 INT CONSTRAINT ck_bob_bol6 CHECK (bol6 > 1),
+                bol7 INT INDEX idx_bob_bol7,
+                CONSTRAINT fk_alice_col2 FOREIGN KEY (bol5) REFERENCES alice (bol2),
+            )
+            GO
+
+            CREATE PROCEDURE pob AS BEGIN SELECT b.bol1 FROM bob b END;
             """;
         var db = new DbBuilder().AddFromTsqlScript(script).Build();
 
@@ -97,9 +120,30 @@ public class NoErrorTests
     public void ValidTableTypes()
     {
         var script = """
-            CREATE TYPE bob AS TABLE (col int)
+            CREATE TYPE alice as TABLE
+            (
+                col1 INT,
+                col2 INT,
+                col3 INT,
+                PRIMARY KEY (col1 ASC),
+                UNIQUE (col2),
+                CHECK (col3 > 0),
+                INDEX idx_alice_col3 (col3 DESC)
+            )
             GO
-            CREATE PROCEDURE pob @arg bob READONLY AS BEGIN SELECT a.col FROM @arg a END;
+
+            CREATE TYPE bob AS TABLE 
+            ( 
+                bol1 INT DEFAULT 0,
+                bol2 INT NOT NULL,
+                bol3 INT IDENTITY(1,1),
+                bol4 INT PRIMARY KEY,
+                bol5 INT UNIQUE NONCLUSTERED,
+                bol6 INT CHECK(bol6 > 0)
+            )
+            GO
+
+            CREATE PROCEDURE pob @a alice, @b bob READONLY AS BEGIN SELECT b.bol1 FROM @b b END;
             """;
         var db = new DbBuilder().AddFromTsqlScript(script).Build();
 

@@ -117,4 +117,40 @@ public class UnresolvedTests
         Assert.That(results.Select(r => r.CheckName), Has.All.Contains("Unresolved"));
         Assert.That(results.Select(r => r.Description), Has.Some.Contain(symbol));
     }
+
+    [Test]
+    public void UnresolvedForeignKeyColumnConstraint()
+    {
+        var expected = "bacon";
+        var script = $"""
+            CREATE TABLE tab1 (col1 int)
+            GO
+
+            CREATE TABLE tab2 (col1 int references tab1 ({expected})) 
+            """;
+        var db = new DbBuilder().AddFromTsqlScript(script).Build();
+
+        var results = sut.Run(db).Results;
+
+        Assert.That(results.Select(r => r.CheckName), Has.All.Contains("Unresolved"));
+        Assert.That(results.Select(r => r.Description), Has.Some.Contain(expected));
+    }
+
+    [Test]
+    public void UnresolvedForeignKeyTableConstraint()
+    {
+        var expected = "bacon";
+        var script = $"""
+            CREATE TABLE tab1 (col1 int)
+            GO
+
+            CREATE TABLE tab2 (col1 int, foreign key (col1) references tab1 ({expected})) 
+            """;
+        var db = new DbBuilder().AddFromTsqlScript(script).Build();
+
+        var results = sut.Run(db).Results;
+
+        Assert.That(results.Select(r => r.CheckName), Has.All.Contains("Unresolved"));
+        Assert.That(results.Select(r => r.Description), Has.Some.Contain(expected));
+    }
 }

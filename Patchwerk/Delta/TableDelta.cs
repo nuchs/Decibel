@@ -34,10 +34,9 @@ internal sealed class TableDelta : DboDelta<Table>
             }
             else if (candidate != table)
             {
-                // Mega complicated case
                 sorter.AddNode(
                     table.Identifier,
-                    TableDiff(table),
+                    TableDiff(candidate, table),
                     table.ReferencedBy.Select(r => r.Identifier));
             }
         }
@@ -48,9 +47,25 @@ internal sealed class TableDelta : DboDelta<Table>
     protected override IEnumerable<DbObject> Selector(IDatabase db)
         => db.Tables;
 
-    private static string TableDiff(Table table)
+    private static string TableDiff(Table old, Table current)
     {
         StringBuilder patch = new();
+
+        var newColNames = current.Columns.Select(c => c.Name);
+        var oldColNames = old.Columns.Select(c => c.Name);
+
+        var drops = oldColNames.Except(newColNames);
+        var adds = newColNames.Except(oldColNames).Select(name => current.Columns.First(c => c.Name == name));
+        var updates = newColNames
+            .Intersect(oldColNames)
+            .Where(name => current.Columns.First(c => c.Name == name) != old.Columns.First(c => c.Name == name))
+            .Select(name => current.Columns.First(c => c.Name == name));
+
+
+
+        var currentRefs = current.ReferencedBy.OfType<Table>().Select(t => t.Identifier);
+        var continuingRefs = old.ReferencedBy.OfType<Table>().Where(t => currentRefs.Contains(t.Identifier));
+        var changedColumns = current.Columns.Where(old.Columns.Contains);
 
         return patch.ToString();
     }

@@ -84,17 +84,17 @@ public class ColumnTests : BaseMastTest
     }
 
     [Test]
-    [TestCase("", true)]
-    [TestCase(" NULL", true)]
-    [TestCase(" NOT NULL", false)]
-    public void Nullability(string nullSpec, bool? expected)
+    [TestCase("", null)]
+    [TestCase("NULL", "NULL")]
+    [TestCase("NOT NULL", "NOT NULL")]
+    public void Nullability(string nullSpec, string? expected)
     {
-        var script = $"CREATE TYPE dbo.stub AS TABLE (stub int{nullSpec})";
+        var script = $"CREATE TABLE dbo.stub (stub int {nullSpec})";
 
         var db = dbBuilder.AddFromTsqlScript(script).Build();
-        var result = db.TableTypes.First().Columns.First();
+        var result = db.Tables.First().Columns.First();
 
-        Assert.That(result.IsNullable, Is.EqualTo(expected));
+        Assert.That(result.Nullable?.Content, Is.EqualTo(expected));
     }
 
     [Test]

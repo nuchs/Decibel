@@ -1,4 +1,5 @@
 ﻿using Mast.Dbo;
+using Microsoft.SqlServer.Dac.Model;
 
 namespace Tests.Mast;
 
@@ -14,6 +15,18 @@ public class IndexTests : BaseMastTest
         var result = db.TableTypes.First().Indices.First();
 
         Assert.That(result.Content, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void ColumnIndex()
+    {
+        var expected = "index idx_1";
+        var script = $"CREATE TABLE dbo.stub (stub int {expected})";
+
+        var db = dbBuilder.AddFromTsqlScript(script).Build();
+        var result = db.Tables.First().Columns.First().Index;
+
+        Assert.That(result?.Content, Is.EqualTo(expected));
     }
 
     [Test]

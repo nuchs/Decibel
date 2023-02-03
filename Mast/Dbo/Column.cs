@@ -5,17 +5,18 @@ namespace Mast.Dbo;
 public sealed class Column : DbFragment
 {
     public Column(ColumnDefinition colDef)
-        : base(colDef)
+            : base(colDef)
     {
         Name = GetName(colDef);
         DataType = GetTypeId(colDef.DataType);
-        IsNullable = GetNullability(colDef);
+        Nullable = GetNullability(colDef);
         PrimaryKey = GetPrimaryKey(colDef);
         Unique = GetUniqueness(colDef);
         Check = GetCheck(colDef);
         Default = GetDefault(colDef);
         Identity = GetIdentity(colDef);
         ForeignKey = GetForeignKey(colDef);
+        Index = GetIndex(colDef);
     }
 
     public CheckConstraint? Check { get; }
@@ -28,21 +29,35 @@ public sealed class Column : DbFragment
 
     public IdentityConstraint? Identity { get; }
 
-    public bool IsNullable { get; }
+    public Index? Index { get; }
 
     public string Name { get; }
+
+    public NullConstraint? Nullable { get; }
 
     public PrimaryKey? PrimaryKey { get; }
 
     public UniqueConstraint? Unique { get; }
 
-    private static bool GetNullability(ColumnDefinition colDef)
+    internal IEnumerable<FullyQualifiedName> Constituents => new List<FullyQualifiedName>
     {
-        var nullConstrints = colDef
-            .Constraints.OfType<NullableConstraintDefinition>()
-            .Select(n => n.Nullable);
+        FullyQualifiedName.FromName(Name),
+        FullyQualifiedName.FromName(Check?.Name ?? string.Empty),
+        FullyQualifiedName.FromName(Default?.Name ?? string.Empty),
+        FullyQualifiedName.FromName(ForeignKey?.Name ?? string.Empty),
+        FullyQualifiedName.FromName(PrimaryKey?.Name ?? string.Empty),
+        FullyQualifiedName.FromName(Unique?.Name ?? string.Empty),
+        FullyQualifiedName.FromName(Nullable?.Name ?? string.Empty),
+        FullyQualifiedName.FromName(Index?.Name ?? string.Empty),
+    };
 
-        return !nullConstrints.Any() || nullConstrints.First();
+    private static NullConstraint? GetNullability(ColumnDefinition colDef)
+    {
+        var nullConstraint = colDef
+            .Constraints.OfType<NullableConstraintDefinition>()
+            .FirstOrDefault();
+
+        return nullConstraint is not null ? new(nullConstraint) : null;
     }
 
     private CheckConstraint? GetCheck(ColumnDefinition colDef)
@@ -64,6 +79,9 @@ public sealed class Column : DbFragment
 
     private IdentityConstraint? GetIdentity(ColumnDefinition colDef)
         => colDef.IdentityOptions is not null ? new(colDef.IdentityOptions) : null;
+
+    private Index? GetIndex(ColumnDefinition colDef) 
+        => colDef.Index is not null ? new(new[] { this }, colDef.Index) : null;
 
     private string GetName(ColumnDefinition colDef)
         => GetId(colDef.ColumnIdentifier);

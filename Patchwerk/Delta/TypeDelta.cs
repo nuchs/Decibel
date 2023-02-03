@@ -38,18 +38,22 @@ internal sealed class TypeDelta : DboDelta<DbObject>
         }
     }
 
+    private bool AlreadyRecreated(HashSet<FullyQualifiedName> done, DbObject depend) => done.Contains(depend.Identifier);
+
     private string GetDependencyType(FullyQualifiedName id, DbObject depend)
-    => depend switch
-    {
-        ScalarType _ => throw new InvalidOperationException($"{depend.Identifier} should have been processed prior to {id}. This code should be unreachable"),
-        TableType _ => throw new InvalidOperationException($"{depend.Identifier} should have been processed prior to {id}. This code should be unreachable"),
-        Table _ => throw new InvalidOperationException($"Type {id} is referenced by table {depend.Identifier} and cannot be modified"),
-        View _ => "VIEW",
-        Function _ => "FUNCTION",
-        StoredProcedure _ => "PROCEDURE",
-        Trigger _ => "TRIGGER",
-        _ => throw new InvalidOperationException($"Cannot determine database type of {depend.Identifier} a dependency for type {id}")
-    };
+        => depend switch
+        {
+            ScalarType _ => throw new InvalidOperationException($"{depend.Identifier} should have been processed prior to {id}. This code should be unreachable"),
+            TableType _ => throw new InvalidOperationException($"{depend.Identifier} should have been processed prior to {id}. This code should be unreachable"),
+            Table _ => throw new InvalidOperationException($"Type {id} is referenced by table {depend.Identifier} and cannot be modified"),
+            View _ => "VIEW",
+            Function _ => "FUNCTION",
+            StoredProcedure _ => "PROCEDURE",
+            Trigger _ => "TRIGGER",
+            _ => throw new InvalidOperationException($"Cannot determine database type of {depend.Identifier} a dependency for type {id}")
+        };
+
+    private bool IsNew(IDatabase before, DbObject depend) => !before.ContainsKey(depend.Identifier);
 
     private IEnumerable<string> PatchAndRecreatDependencies(IDatabase before, IEnumerable<DbObject> types)
     {
@@ -61,7 +65,7 @@ internal sealed class TypeDelta : DboDelta<DbObject>
         {
             foreach (var depend in type.ReferencedBy)
             {
-                if (done.Contains(depend.Identifier) || !before.ContainsKey(depend.Identifier))
+                if (AlreadyRecreated(done, depend) || IsNew(before, depend))
                 {
                     continue;
                 }
@@ -71,7 +75,7 @@ internal sealed class TypeDelta : DboDelta<DbObject>
                 done.Add(depend.Identifier);
             }
 
-            if (before.ContainsKey(type.Identifier))
+            if (!IsNew(before, type))
             {
                 drops.Add($"DROP TYPE {type.Identifier}");
             }

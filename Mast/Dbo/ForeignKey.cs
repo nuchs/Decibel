@@ -23,7 +23,7 @@ public sealed class ForeignKey : DbFragment
 
     public Column Column { get; }
 
-    public string ForeignColumn { get; }
+    public CaseInsensitiveString ForeignColumn { get; }
 
     public FullyQualifiedName ForeignTable { get; }
 
