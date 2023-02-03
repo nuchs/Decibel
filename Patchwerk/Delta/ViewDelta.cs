@@ -49,8 +49,4 @@ internal sealed class ViewDelta : DboDelta<View>
 
     protected override IEnumerable<DbObject> Selector(IDatabase db)
         => db.Views;
-
-    private record Edge(FullyQualifiedName From, FullyQualifiedName To);
-
-    private record Node(FullyQualifiedName Id, string Content);
 }

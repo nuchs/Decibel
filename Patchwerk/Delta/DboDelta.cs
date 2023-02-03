@@ -27,18 +27,24 @@ internal abstract class DboDelta<T> where T : DbObject
         return preIds.Except(postIds).Select(id => before[id]).Select(dbo => $"DROP {type.ToUpper()} {dbo.Identifier}");
     }
 
+    protected IEnumerable<string> AddNewObjects(IDatabase after, IEnumerable<FullyQualifiedName> preIds, IEnumerable<FullyQualifiedName> postIds)
+        => postIds.Except(preIds).Select(id => after[id].Content);
+
     protected virtual string Delta(T pre, T post)
-        => $"""
+            => $"""
         DROP {type.ToUpper()} {pre.Identifier}
         GO
 
         {post.Content}
         """;
 
-    protected abstract IEnumerable<DbObject> Selector(IDatabase db);
+    protected (IEnumerable<FullyQualifiedName>, IEnumerable<FullyQualifiedName>) GetIds(IDatabase before, IDatabase after)
+        => (Selector(before).Select(dbo => dbo.Identifier), Selector(after).Select(dbo => dbo.Identifier));
 
-    private IEnumerable<string> AddNewObjects(IDatabase after, IEnumerable<FullyQualifiedName> preIds, IEnumerable<FullyQualifiedName> postIds)
-        => postIds.Except(preIds).Select(id => after[id].Content);
+    protected IEnumerable<string> PatchChangedObjects(IDatabase before, IDatabase after, IEnumerable<FullyQualifiedName> preIds, IEnumerable<FullyQualifiedName> postIds)
+        => preIds.Intersect(postIds).Where(id => before[id] != after[id]).Select(id => GenerateDiff(before, after, id));
+
+    protected abstract IEnumerable<DbObject> Selector(IDatabase db);
 
     private string GenerateDiff(IDatabase before, IDatabase after, FullyQualifiedName dboId)
     {
@@ -51,10 +57,4 @@ internal abstract class DboDelta<T> where T : DbObject
             throw new InvalidCastException($"Bad id {dboId} does not refer to a {type.ToLower()}");
         }
     }
-
-    protected (IEnumerable<FullyQualifiedName>, IEnumerable<FullyQualifiedName>) GetIds(IDatabase before, IDatabase after)
-        => (Selector(before).Select(dbo => dbo.Identifier), Selector(after).Select(dbo => dbo.Identifier));
-
-    private IEnumerable<string> PatchChangedObjects(IDatabase before, IDatabase after, IEnumerable<FullyQualifiedName> preIds, IEnumerable<FullyQualifiedName> postIds)
-        => preIds.Intersect(postIds).Where(id => before[id] != after[id]).Select(id => GenerateDiff(before, after, id));
 }
