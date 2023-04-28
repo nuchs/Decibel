@@ -17,6 +17,7 @@ Linter rules
 - changing signature of referenced function
 - changing referenced table column
 - has tabs rather than spaces
+- warn about unnamed constraints
 
 -------------------------------------------------------------------------------
 Patcher

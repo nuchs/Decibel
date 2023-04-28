@@ -9,11 +9,17 @@ public class DbFragment
 
     public string Content { get; }
 
-    public static bool operator !=(DbFragment left, DbFragment right)
+    public static bool operator !=(DbFragment? left, DbFragment? right)
         => !(left == right);
 
-    public static bool operator ==(DbFragment left, DbFragment right)
-        => left.Equals(right);
+    public static bool operator ==(DbFragment? left, DbFragment? right)
+        => (left, right) switch
+        {
+            (null, null) => true,
+            (null, _) => false,
+            (_, null) => false,
+            _ => left.Equals(right),
+        };
 
     public override bool Equals(object? obj)
         => obj is DbFragment other && new CaseInsensitiveString(Content) == new CaseInsensitiveString(other.Content);
